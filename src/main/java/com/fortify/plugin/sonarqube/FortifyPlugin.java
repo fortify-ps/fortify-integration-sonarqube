@@ -83,7 +83,7 @@ public class FortifyPlugin implements Plugin {
 		result.add(PropertyDefinition.builder(FortifyConstants.PRP_SSC_URL)
 				.name("SSC URL")
 				.description("URL used to connect to SSC (http[s]://<user>:<password>@<host>[:port]/ssc or http[s]://authToken:token@<host>[:port]/ssc)")
-				.type(PropertyType.STRING)
+				.type(PropertyType.PASSWORD)
 				.build());
 		result.add(PropertyDefinition.builder(FortifyConstants.PRP_ENABLE_ISSUES)
 				.name("Enable issues collection")
