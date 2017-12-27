@@ -30,11 +30,11 @@ import java.util.Map;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.Metric;
 
-import com.fortify.api.ssc.connection.api.query.builder.SSCOrderByDirection;
-import com.fortify.api.util.rest.json.JSONMap;
-import com.fortify.api.util.rest.json.preprocessor.AbstractJSONMapFilter.MatchMode;
+import com.fortify.client.ssc.api.query.builder.SSCOrderByDirection;
 import com.fortify.plugin.sonarqube.FortifySSCConnectionFactory;
-import com.fortify.api.util.rest.json.preprocessor.JSONMapFilterSpEL;
+import com.fortify.util.rest.json.JSONMap;
+import com.fortify.util.rest.json.preprocessor.JSONMapFilterSpEL;
+import com.fortify.util.rest.json.preprocessor.AbstractJSONMapFilter.MatchMode;
 
 /**
  * This {@link FortifyMetricsProvider} implementation provides {@link Metric} definitions

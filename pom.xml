@@ -76,7 +76,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.fortify.api.client</groupId>
+			<groupId>com.fortify.client</groupId>
 			<artifactId>ssc-client</artifactId>
 			<version>4.0-SNAPSHOT</version>
 			<scope>compile</scope>

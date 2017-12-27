@@ -47,13 +47,13 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.api.util.rest.json.JSONList;
-import com.fortify.api.util.rest.json.JSONMap;
-import com.fortify.api.util.rest.json.processor.AbstractJSONMapProcessor;
-import com.fortify.api.util.rest.json.processor.IJSONMapProcessor;
-import com.fortify.api.util.spring.SpringExpressionUtil;
 import com.fortify.plugin.sonarqube.FortifyConstants;
 import com.fortify.plugin.sonarqube.FortifySSCConnectionFactory;
+import com.fortify.util.rest.json.JSONList;
+import com.fortify.util.rest.json.JSONMap;
+import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
+import com.fortify.util.rest.json.processor.IJSONMapProcessor;
+import com.fortify.util.spring.SpringExpressionUtil;
 
 /**
  * This SonarQube {@link Sensor} implementation retrieves vulnerability data from SSC and

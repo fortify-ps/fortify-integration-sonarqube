@@ -30,10 +30,10 @@ import java.util.Map;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.Metric;
 
-import com.fortify.api.ssc.connection.api.SSCMetricsAPI.MetricType;
-import com.fortify.api.util.rest.json.JSONList;
+import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
 import com.fortify.plugin.sonarqube.FortifySSCConnectionFactory;
 import com.fortify.plugin.sonarqube.util.MetricValueTypeUtil;
+import com.fortify.util.rest.json.JSONList;
 
 
 /**

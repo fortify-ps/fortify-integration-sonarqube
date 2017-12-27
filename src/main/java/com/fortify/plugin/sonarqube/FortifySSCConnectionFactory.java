@@ -38,11 +38,11 @@ import org.sonar.api.server.ServerSide;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.api.ssc.connection.SSCAuthenticatingRestConnection;
-import com.fortify.api.ssc.connection.api.SSCMetricsAPI.MetricType;
-import com.fortify.api.util.rest.json.JSONMap;
-import com.fortify.api.util.spring.SpringExpressionUtil;
-import com.fortify.api.util.spring.propertyaccessor.MapPropertyAccessor;
+import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
+import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
+import com.fortify.util.rest.json.JSONMap;
+import com.fortify.util.spring.SpringExpressionUtil;
+import com.fortify.util.spring.propertyaccessor.MapPropertyAccessor;
 
 /**
  * Connection factory used to access a {@link FortifySSCConnectionFactory} instance.
