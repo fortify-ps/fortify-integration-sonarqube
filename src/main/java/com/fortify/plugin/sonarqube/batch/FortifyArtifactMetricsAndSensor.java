@@ -114,7 +114,7 @@ public final class FortifyArtifactMetricsAndSensor extends AbstractFortifyMetric
 			return connFactory.getConnectionWithArtifactProcessing().api().artifact().queryArtifacts(connFactory.getApplicationVersionId())
 				.paramOrderBy("uploadDate", SSCOrderByDirection.DESC)
 				.paramEmbedScans()
-				.preProcessor(new JSONMapFilterSpEL(MatchMode.INCLUDE, "(_embed.scans?.getJSONObject(0)?.type=='SCA' && status=='PROCESS_COMPLETE') || status matches 'PROCESSING|SCHED_PROCESSING|REQUIRE_AUTH|ERROR_PROCESSING'"))
+				.preProcessor(new JSONMapFilterSpEL(MatchMode.INCLUDE, "(_embed.scans?.get(0)?.type=='SCA' && status=='PROCESS_COMPLETE') || status matches 'PROCESSING|SCHED_PROCESSING|REQUIRE_AUTH|ERROR_PROCESSING'"))
 				.useCache(true).maxResults(1).build().getUnique();
 		}
 	}
