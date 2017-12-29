@@ -1,6 +1,6 @@
 package com.fortify.plugin.sonarqube;
 /*******************************************************************************
- * (c) Copyright 2017 EntIT Software LLC
+ * (c) Copyright 2017 EntIT Software LLC, a Micro Focus company
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a 
  * copy of this software and associated documentation files (the 
