@@ -36,6 +36,8 @@
 			<outputDirectory>/</outputDirectory>
 			<directory>${project.build.directory}</directory>
 			<includes>
+				<include>THIRD_PARTY_LICENSES.*</include>
+				<include>THIRD_PARTY_LICENSES/*</include>
 				<include>fortify-sonarqube-plugin-${project.version}-dependency-sources.zip</include>
 				<include>fortify-sonarqube-plugin-${project.version}.jar</include>
 			</includes>
@@ -45,6 +47,7 @@
 			<directory>${project.build.directory}/../..</directory>
 			<includes>
 				<include>README.md</include>
+				<include>LICENSE.TXT</include>
 			</includes>
 		</fileSet>
 	</fileSets>
