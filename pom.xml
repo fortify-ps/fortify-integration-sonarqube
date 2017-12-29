@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>com.fortify.client</groupId>
 			<artifactId>ssc-client</artifactId>
-			<version>4.0-SNAPSHOT</version>
+			<version>4.0</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
