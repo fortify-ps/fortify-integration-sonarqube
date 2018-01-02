@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube.batch;
+package com.fortify.integration.sonarqube.ssc.batch;
 
 // TODO Implement this class as FortifyMetricsProvider
 public class FortifyFolderMetricsAndSensor {

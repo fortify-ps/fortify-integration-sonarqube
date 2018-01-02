@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube;
+package com.fortify.integration.sonarqube.ssc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +32,18 @@ import org.sonar.api.PropertyType;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 
-import com.fortify.plugin.sonarqube.batch.FortifyAppVersionMetricsAndSensor;
-import com.fortify.plugin.sonarqube.batch.FortifyArtifactMetricsAndSensor;
-import com.fortify.plugin.sonarqube.batch.FortifyIssueMetricsAndSensor;
-import com.fortify.plugin.sonarqube.batch.FortifySnapshotMetricsAndSensor;
-import com.fortify.plugin.sonarqube.rule.FortifyRulesDefinition;
-import com.fortify.plugin.sonarqube.ui.FortifyWidget;
+import com.fortify.integration.sonarqube.ssc.batch.FortifyAppVersionMetricsAndSensor;
+import com.fortify.integration.sonarqube.ssc.batch.FortifyArtifactMetricsAndSensor;
+import com.fortify.integration.sonarqube.ssc.batch.FortifyIssueMetricsAndSensor;
+import com.fortify.integration.sonarqube.ssc.batch.FortifySnapshotMetricsAndSensor;
+import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
+import com.fortify.integration.sonarqube.ssc.ui.FortifyWidget;
 
 /**
  * This main plugin class adds all relevant SonarQube extension points
  * that make up this Fortify integration.
  */
-public class FortifyPlugin implements Plugin {
+public class FortifySSCPlugin implements Plugin {
 	
 	@Override
 	public void define(Context context) {

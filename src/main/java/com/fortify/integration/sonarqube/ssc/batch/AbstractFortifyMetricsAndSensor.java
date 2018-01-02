@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube.batch;
+package com.fortify.integration.sonarqube.ssc.batch;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import org.sonar.api.measures.Metrics;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.plugin.sonarqube.FortifySSCConnectionFactory;
+import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 
 public abstract class AbstractFortifyMetricsAndSensor implements Metrics, Sensor {
 	private static final Logger LOG = Loggers.get(AbstractFortifyMetricsAndSensor.class); 

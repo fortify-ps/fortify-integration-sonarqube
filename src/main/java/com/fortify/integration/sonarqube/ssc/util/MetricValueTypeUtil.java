@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube.util;
+package com.fortify.integration.sonarqube.ssc.util;
 
 import java.util.HashMap;
 import java.util.Map;

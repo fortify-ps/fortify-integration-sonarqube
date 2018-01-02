@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube.batch;
+package com.fortify.integration.sonarqube.ssc.batch;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -47,8 +47,8 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.plugin.sonarqube.FortifyConstants;
-import com.fortify.plugin.sonarqube.FortifySSCConnectionFactory;
+import com.fortify.integration.sonarqube.ssc.FortifyConstants;
+import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 import com.fortify.util.rest.json.JSONList;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;

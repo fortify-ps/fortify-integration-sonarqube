@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube.batch;
+package com.fortify.integration.sonarqube.ssc.batch;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -31,8 +31,8 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.Metric;
 
 import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
-import com.fortify.plugin.sonarqube.FortifySSCConnectionFactory;
-import com.fortify.plugin.sonarqube.util.MetricValueTypeUtil;
+import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
+import com.fortify.integration.sonarqube.ssc.util.MetricValueTypeUtil;
 import com.fortify.util.rest.json.JSONList;
 
 

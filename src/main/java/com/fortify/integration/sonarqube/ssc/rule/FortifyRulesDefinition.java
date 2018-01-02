@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube.rule;
+package com.fortify.integration.sonarqube.ssc.rule;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.config.Settings;
@@ -32,7 +32,7 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RuleParamType;
 import org.sonar.api.server.rule.RulesDefinition;
 
-import com.fortify.plugin.sonarqube.FortifyConstants;
+import com.fortify.integration.sonarqube.ssc.FortifyConstants;
 
 /**
  * <p>This {@link RulesDefinition} implementation will generate Fortify-related

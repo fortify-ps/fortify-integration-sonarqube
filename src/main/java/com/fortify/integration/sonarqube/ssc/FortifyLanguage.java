@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube;
+package com.fortify.integration.sonarqube.ssc;
 
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.AbstractLanguage;

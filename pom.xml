@@ -25,9 +25,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.fortify.plugin.sonarqube</groupId>
-	<artifactId>fortify-sonarqube-plugin</artifactId>
-	<version>1.4</version>
+	<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+	<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
+	<version>2.0</version>
 	<packaging>sonar-plugin</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin</name>
 	<url>https://software.microfocus.com/en-us/software/application-security</url>
@@ -76,8 +76,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.fortify.client</groupId>
-			<artifactId>ssc-client</artifactId>
+			<groupId>com.fortify.client.api</groupId>
+			<artifactId>ssc-client-api</artifactId>
 			<version>4.0</version>
 			<scope>compile</scope>
 			<exclusions>
@@ -103,7 +103,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<pluginKey>fortify</pluginKey>
-					<pluginClass>com.fortify.plugin.sonarqube.FortifyPlugin</pluginClass>
+					<pluginClass>com.fortify.integration.sonarqube.ssc.FortifySSCPlugin</pluginClass>
 					<pluginName>Fortify</pluginName>
 					<pluginDescription>Gathers and displays information from Fortify SSC</pluginDescription>
 					<useChildFirstClassLoader>true</useChildFirstClassLoader>

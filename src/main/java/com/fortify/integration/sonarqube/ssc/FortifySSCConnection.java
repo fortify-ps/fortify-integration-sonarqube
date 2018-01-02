@@ -1,4 +1,4 @@
-package com.fortify.plugin.sonarqube;
+package com.fortify.integration.sonarqube.ssc;
 /*******************************************************************************
  * (c) Copyright 2017 EntIT Software LLC, a Micro Focus company
  * 

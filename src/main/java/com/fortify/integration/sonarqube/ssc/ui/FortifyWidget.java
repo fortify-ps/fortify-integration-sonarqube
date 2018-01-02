@@ -22,28 +22,41 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.plugin.sonarqube;
+package com.fortify.integration.sonarqube.ssc.ui;
 
-import org.sonar.api.profiles.ProfileDefinition;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.rules.Rule;
-import org.sonar.api.utils.ValidationMessages;
+import org.sonar.api.web.AbstractRubyTemplate;
+import org.sonar.api.web.Description;
+import org.sonar.api.web.RubyRailsWidget;
+import org.sonar.api.web.UserRole;
+import org.sonar.api.web.WidgetCategory;
 
 /**
- * This class defines a quality profile for the generic Fortify language (see {@link FortifyLanguage})
- * to activate the single Fortify rule for this language by default.
+ * This {@link RubyRailsWidget} implementation defines some metadata and the
+ * location of the ERB template for the SonarQube Fortify dashboard.
  * 
  * @author Ruud Senden
- *
  */
-public class FortifyProfile extends ProfileDefinition {
+@UserRole(UserRole.USER)
+@Description("Retrieves Security Metrics from Fortify SSC")
+@WidgetCategory("fortify-sonarqube")
+public class FortifyWidget extends AbstractRubyTemplate implements RubyRailsWidget {
 
-	@Override
-	public RulesProfile createProfile(ValidationMessages validation) {
-		final String language = FortifyConstants.FTFY_LANGUAGE_KEY;
-		RulesProfile profile = RulesProfile.create("Default", language);
-		profile.activateRule(Rule.create(FortifyConstants.FTFY_RULE_REPO_KEY(language), FortifyConstants.FTFY_RULE_KEY(language)), null);
-		return profile;
-	}
+  public String getId() {
+    return "fortify_ssc_widget";
+  }
+
+  public String getTitle() {
+    return "Fortify SSC";
+  }
+
+  @Override
+  protected String getTemplatePath() {
+    return "/FortifyWidget.html.erb";
+  }
+  
+  /* USEFUL METHODS FOR THE JRUBY SIDE */
+  
+  public void test() {
+  }
 
 }
