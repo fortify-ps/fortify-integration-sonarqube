@@ -47,6 +47,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import com.fortify.client.ssc.api.SSCIssueAPI;
 import com.fortify.integration.sonarqube.ssc.FortifyConstants;
 import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 import com.fortify.util.rest.json.JSONList;
@@ -288,7 +289,7 @@ public class FortifyIssueMetricsAndSensor extends AbstractFortifyMetricsAndSenso
 	 * @param processor
 	 */
 	protected void processFortifyIssues(FortifySSCConnectionFactory connFactory, JSONMap filterSet, IJSONMapProcessor processor) {
-		connFactory.getConnectionWithArtifactProcessing().api().issue().queryIssues(connFactory.getApplicationVersionId())
+		connFactory.getConnectionWithArtifactProcessing().api(SSCIssueAPI.class).queryIssues(connFactory.getApplicationVersionId())
 			.paramFilterSet(filterSet.get("guid",String.class))
 			.paramQAnd("hidden", "false")
 			.paramQAnd("suppressed", "false")

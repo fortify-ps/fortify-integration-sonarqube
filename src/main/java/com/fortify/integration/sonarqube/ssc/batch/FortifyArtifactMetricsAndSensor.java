@@ -30,6 +30,7 @@ import java.util.Map;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.Metric;
 
+import com.fortify.client.ssc.api.SSCArtifactAPI;
 import com.fortify.client.ssc.api.query.builder.SSCOrderByDirection;
 import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 import com.fortify.util.rest.json.JSONMap;
@@ -111,7 +112,7 @@ public final class FortifyArtifactMetricsAndSensor extends AbstractFortifyMetric
 		if ( connFactory.getArtifact() != null ) {
 			return connFactory.getArtifact();
 		} else {
-			return connFactory.getConnectionWithArtifactProcessing().api().artifact().queryArtifacts(connFactory.getApplicationVersionId())
+			return connFactory.getConnectionWithArtifactProcessing().api(SSCArtifactAPI.class).queryArtifacts(connFactory.getApplicationVersionId())
 				.paramOrderBy("uploadDate", SSCOrderByDirection.DESC)
 				.paramEmbedScans()
 				.preProcessor(new JSONMapFilterSpEL(MatchMode.INCLUDE, "(_embed.scans?.get(0)?.type=='SCA' && status=='PROCESS_COMPLETE') || status matches 'PROCESSING|SCHED_PROCESSING|REQUIRE_AUTH|ERROR_PROCESSING'"))

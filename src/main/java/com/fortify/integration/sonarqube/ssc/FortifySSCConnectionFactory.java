@@ -38,6 +38,8 @@ import org.sonar.api.server.ServerSide;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import com.fortify.client.ssc.api.SSCApplicationVersionAPI;
+import com.fortify.client.ssc.api.SSCArtifactAPI;
 import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 import com.fortify.util.rest.json.JSONMap;
@@ -85,7 +87,7 @@ public class FortifySSCConnectionFactory {
 			this.applicationVersion = null;
 		} else {
 			this.conn = SSCAuthenticatingRestConnection.builder().baseUrl(url).build();
-			this.applicationVersion = conn.api().applicationVersion().queryApplicationVersions()
+			this.applicationVersion = conn.api(SSCApplicationVersionAPI.class).queryApplicationVersions()
 					.nameOrId(applicationVersionNameOrId)
 					.onDemandFilterSets("filterSets")
 					.onDemandPerformanceIndicatorHistories(MetricType.performanceIndicator.toString())
@@ -145,7 +147,7 @@ public class FortifySSCConnectionFactory {
 			File file = new File(fprFileName);
 			if ( file.exists() && file.isFile() && file.canRead() ) {
 				LOG.info("Uploading FPR file "+file.getAbsolutePath());
-				return getConnection().api().artifact().uploadArtifactAndWaitProcessingCompletion(getApplicationVersionId(), file, timeout);
+				return getConnection().api(SSCArtifactAPI.class).uploadArtifactAndWaitProcessingCompletion(getApplicationVersionId(), file, timeout);
 			} else {
 				throw new IllegalArgumentException("FPR file doesn't exist or is not readable: "+fprFileName);
 			}
@@ -156,7 +158,7 @@ public class FortifySSCConnectionFactory {
 	private void checkArtifactStatus(String artifactId) {
 		Set<String> failOnArtifactStates = new HashSet<>(Arrays.asList(settings.getStringArray(FortifyConstants.PRP_SSC_FAIL_ON_ARTIFACT_STATES)));
 		if ( !failOnArtifactStates.isEmpty() && artifactId!=null ) {
-			this.artifact = getConnection().api().artifact().getArtifactById(artifactId, false);
+			this.artifact = getConnection().api(SSCArtifactAPI.class).getArtifactById(artifactId, false);
 			String status = this.artifact.get("status", String.class);
 			if ( failOnArtifactStates.contains(status) ) {
 				throw new IllegalStateException("Failing on SSC artifact status "+status);
