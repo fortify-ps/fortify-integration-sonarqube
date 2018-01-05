@@ -89,7 +89,7 @@ public class FortifySSCConnectionFactory {
 			this.conn = SSCAuthenticatingRestConnection.builder().baseUrl(url).build();
 			this.applicationVersion = conn.api(SSCApplicationVersionAPI.class).queryApplicationVersions()
 					.nameOrId(applicationVersionNameOrId)
-					.onDemandFilterSets("filterSets")
+					.onDemandFilterSets()
 					.onDemandPerformanceIndicatorHistories(MetricType.performanceIndicator.toString())
 					.onDemandVariableHistories(MetricType.variable.toString())
 					.build().getUnique();
