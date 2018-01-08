@@ -34,8 +34,8 @@ import com.fortify.client.ssc.api.SSCArtifactAPI;
 import com.fortify.client.ssc.api.query.builder.SSCOrderByDirection;
 import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 import com.fortify.util.rest.json.JSONMap;
-import com.fortify.util.rest.json.preprocessor.JSONMapFilterSpEL;
-import com.fortify.util.rest.json.preprocessor.AbstractJSONMapFilter.MatchMode;
+import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
+import com.fortify.util.rest.json.preprocessor.filter.AbstractJSONMapFilter.MatchMode;
 
 /**
  * This {@link FortifyMetricsProvider} implementation provides {@link Metric} definitions
