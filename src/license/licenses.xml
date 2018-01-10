@@ -13,5 +13,14 @@
 				</license>
 			</licenses>
 		</dependency>
+		<dependency>
+			<groupId>javax.xml.stream</groupId>
+			<artifactId>stax-api</artifactId>
+			<licenses>
+				<license>
+					<name>Dual license: CDDL 1.0 and GPL v2</name>
+				</license>
+			</licenses>
+		</dependency>
 	</dependencies>
 </licenseSummary>

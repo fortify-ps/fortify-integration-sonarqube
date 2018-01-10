@@ -129,7 +129,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/dependency-sources</outputDirectory>
+							<outputDirectory>${basedir}/target/THIRD_PARTY_SOURCES</outputDirectory>
 							<classifier>sources</classifier>
 						</configuration>
 					</execution>
@@ -196,7 +196,7 @@
 							<resources>
 								<resource>
 									<directory>${basedir}/src/license</directory>
-									<include>Creative Commons 2.5 Legal Code.html</include>
+									<include>*.html</include>
 									<filtering>false</filtering>
 								</resource>
 							</resources>
@@ -209,7 +209,6 @@
 				<version>3.0.0</version>
 				<configuration>
 					<descriptors>
-						<descriptor>src/main/assembly/dependency-sources.xml</descriptor>
 						<descriptor>src/main/assembly/dist.xml</descriptor>
 					</descriptors>
 				</configuration>

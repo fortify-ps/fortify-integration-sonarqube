@@ -38,8 +38,8 @@
 			<includes>
 				<include>THIRD_PARTY_LICENSES.*</include>
 				<include>THIRD_PARTY_LICENSES/*</include>
-				<include>fortify-sonarqube-plugin-${project.version}-dependency-sources.zip</include>
-				<include>fortify-sonarqube-plugin-${project.version}.jar</include>
+				<include>THIRD_PARTY_SOURCES/*</include>
+				<include>fortify-ssc-sonarqube-plugin-${project.version}.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
