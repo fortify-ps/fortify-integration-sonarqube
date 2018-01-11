@@ -43,8 +43,6 @@ import com.fortify.client.ssc.api.SSCArtifactAPI;
 import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 import com.fortify.util.rest.json.JSONMap;
-import com.fortify.util.spring.SpringExpressionUtil;
-import com.fortify.util.spring.propertyaccessor.MapPropertyAccessor;
 
 /**
  * Connection factory used to access a {@link FortifySSCConnectionFactory} instance.
@@ -66,11 +64,6 @@ public class FortifySSCConnectionFactory {
 	private final JSONMap applicationVersion;
 	private JSONMap artifact = null;
 	private boolean isFirstCallToArtifactProcessing = true;
-	
-	// TODO For some reason SpringExpressionUtil doesn't automatically pick up MapPropertyAccessor
-	static {
-		SpringExpressionUtil.addPropertyAccessors(new MapPropertyAccessor());
-	}
 	
 	/**
 	 * Constructor that initializes the connection instance
