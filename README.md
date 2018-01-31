@@ -22,7 +22,8 @@ The plugin loads all Fortify-related data from Fortify SSC. In order to allow th
 a SonarQube specific token in the SSC configuration, and then generate an authentication token for use by the plugin.
 
 * Add the following token definition to [SSC deployment directory]\WEB-INF\internal\serviceContext.xml:
-  ```<bean id="sonarQubeToken" class="com.fortify.manager.security.ws.AuthenticationTokenSpec">
+```xml
+	<bean id="sonarQubeToken" class="com.fortify.manager.security.ws.AuthenticationTokenSpec">
 		<property name="key" value="SonarQubeToken"/>
 		<property name="maxDaysToLive" value="90" />
 		<property name="actionPermitted">
@@ -45,7 +46,8 @@ a SonarQube specific token in the SSC configuration, and then generate an authen
 				<value>DELETE=/api/v\d+/auth/token</value>
 			</list>
 		</property>
-	</bean>```
+	</bean>
+```
 * Restart the SSC application server
 * Generate a new SSC authentication token for use by the Fortify SonarQube plug-in:
     * `fortifyclient token -gettoken SonarQubeToken -user [user] -url [SSC URL]`
