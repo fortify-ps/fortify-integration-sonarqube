@@ -48,6 +48,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.client.ssc.api.SSCIssueAPI;
+import com.fortify.client.ssc.api.query.builder.SSCApplicationVersionIssuesQueryBuilder.QueryMode;
 import com.fortify.integration.sonarqube.ssc.FortifyConstants;
 import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 import com.fortify.util.rest.json.JSONList;
@@ -293,7 +294,8 @@ public class FortifyIssueMetricsAndSensor extends AbstractFortifyMetricsAndSenso
 			.paramFilterSet(filterSet.get("guid",String.class))
 			.paramQAnd("hidden", "false")
 			.paramQAnd("suppressed", "false")
-			.paramQAnd("engineType", "SCA").build().processAll(processor);
+			.paramQAnd("engineType", "SCA")
+			.paramQm(QueryMode.issues).build().processAll(processor);
 	}
 
 	/**
