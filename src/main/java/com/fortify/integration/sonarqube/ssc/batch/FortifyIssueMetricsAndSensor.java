@@ -292,9 +292,10 @@ public class FortifyIssueMetricsAndSensor extends AbstractFortifyMetricsAndSenso
 	protected void processFortifyIssues(FortifySSCConnectionFactory connFactory, JSONMap filterSet, IJSONMapProcessor processor) {
 		connFactory.getConnectionWithArtifactProcessing().api(SSCIssueAPI.class).queryIssues(connFactory.getApplicationVersionId())
 			.paramFilterSet(filterSet.get("guid",String.class))
-			.paramQAnd("hidden", "false")
-			.paramQAnd("suppressed", "false")
-			.paramQAnd("engineType", "SCA")
+			.includeHidden(false)
+			.includeRemoved(false)
+			.includeSuppressed(false)
+			.paramFilter("ISSUE[11111111-1111-1111-1111-111111111151]:SCA")
 			.paramQm(QueryMode.issues).build().processAll(processor);
 	}
 

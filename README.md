@@ -22,6 +22,7 @@ The plugin loads all Fortify-related data from Fortify SSC. In order to allow th
 a SonarQube specific token in the SSC configuration, and then generate an authentication token for use by the plugin.
 
 * Add the following token definition to [SSC deployment directory]\WEB-INF\internal\serviceContext.xml:
+
   ```<bean id="sonarQubeToken" class="com.fortify.manager.security.ws.AuthenticationTokenSpec">
 		<property name="key" value="SonarQubeToken"/>
 		<property name="maxDaysToLive" value="90" />
@@ -35,6 +36,7 @@ a SonarQube specific token in the SSC configuration, and then generate an authen
 				<value>GET=/api/v\d+/projectVersions/\d+/issues</value>
 				<value>GET=/api/v\d+/projectVersions/\d+/performanceIndicatorHistories</value>
 				<value>GET=/api/v\d+/projectVersions/\d+/variableHistories</value>
+				<value>PUT=/api/v\d+/projectVersions/\d+/issueSearchOptions</value>
 				<value>POST=/api/v\d+/fileTokens</value>
 				<value>POST=/upload/resultFileUpload.html</value>
 			</list>
