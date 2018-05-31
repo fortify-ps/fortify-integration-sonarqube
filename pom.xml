@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>com.fortify.client.api</groupId>
 			<artifactId>ssc-client-api</artifactId>
-			<version>4.1</version>
+			<version>4.5</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
