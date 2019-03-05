@@ -49,7 +49,7 @@
 		</developer>
 	</developers>
 	<scm>
-		<developerConnection>scm:git:https://github.com/rsenden/fortify-integration-sonarqube-ssc</developerConnection>
+		<developerConnection>scm:git:https://github.com/fortify-ps/fortify-integration-sonarqube-ssc</developerConnection>
 		<tag>master</tag>
 	</scm>
 	<properties>
@@ -61,7 +61,7 @@
 	<repositories>
 		<repository>
 			<id>FortifyMavenRepo</id>
-			<url>https://raw.githubusercontent.com/rsenden/FortifyMavenRepo/master</url>
+			<url>https://raw.githubusercontent.com/fortify-ps/FortifyMavenRepo/master</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
@@ -71,6 +71,19 @@
 	<prerequisites>
 		<maven>3.1</maven>
 	</prerequisites>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.fortify.client.api</groupId>
+				<artifactId>client-api-root</artifactId>
+				<version>5.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.sonarsource.sonarqube</groupId>
@@ -80,13 +93,27 @@
 		</dependency>
 		<dependency>
 			<groupId>com.fortify.client.api</groupId>
-			<artifactId>ssc-client-api</artifactId>
-			<version>4.5</version>
-			<scope>compile</scope>
+			<artifactId>client-api-ssc</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jul</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jcl</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
