@@ -1,0 +1,108 @@
+<!--
+  (c) Copyright 2017 EntIT Software LLC, a Micro Focus company
+  
+  Permission is hereby granted, free of charge, to any person obtaining a 
+  copy of this software and associated documentation files (the 
+  "Software"), to deal in the Software without restriction, including without 
+  limitation the rights to use, copy, modify, merge, publish, distribute, 
+  sublicense, and/or sell copies of the Software, and to permit persons to 
+  whom the Software is furnished to do so, subject to the following 
+  conditions:
+  
+  The above copyright notice and this permission notice shall be included 
+  in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
+  KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+  PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+  IN THE SOFTWARE.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+		<artifactId>fortify-ssc-sonarqube-plugin-root</artifactId>
+		<version>2.4-SNAPSHOT</version>
+	</parent>
+	<artifactId>fortify-ssc-sonarqube-plugin-configure</artifactId>
+	<packaging>jar</packaging>
+	<name>Micro Focus Fortify SonarQube Plugin - Configuration Tool</name>
+	<url>https://software.microfocus.com/en-us/software/application-security</url>
+	<organization>
+		<name>Micro Focus Fortify</name>
+		<url>https://software.microfocus.com/en-us/software/application-security</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>rsenden</id>
+			<name>Ruud Senden</name>
+			<organization>Micro Focus Fortify</organization>
+		</developer>
+	</developers>
+	<scm>
+		<developerConnection>scm:git:https://github.com/fortify-ps/fortify-integration-sonarqube-ssc</developerConnection>
+		<tag>master</tag>
+	</scm>
+	<properties>
+		<project.build.sourceEncoding>cp1252</project.build.sourceEncoding>
+		<sonar.apiVersion>6.7</sonar.apiVersion>
+		<fortify.client-api.version>5.2-SNAPSHOT</fortify.client-api.version>
+		<jdk.min.version>1.8</jdk.min.version>
+		<mvn.min.version>1.8</mvn.min.version>
+	</properties>
+	<repositories>
+		<repository>
+			<id>FortifyMavenRepo</id>
+			<url>https://raw.githubusercontent.com/fortify-ps/FortifyMavenRepo/master</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<prerequisites>
+		<maven>3.1</maven>
+	</prerequisites>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.fortify.client.api</groupId>
+			<artifactId>client-api-ssc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.swt</groupId>
+			<artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+			<version>4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>jface</artifactId>
+			<version>3.3.0-I20070606-0010</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>${jdk.min.version}</source>
+					<target>${jdk.min.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
