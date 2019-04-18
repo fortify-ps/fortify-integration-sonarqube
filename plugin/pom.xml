@@ -31,7 +31,7 @@
 	</parent>
 	<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<name>Micro Focus Fortify SonarQube Plugin</name>
+	<name>Micro Focus Fortify SonarQube Plugin - SonarQube Plugin</name>
 	<url>https://software.microfocus.com/en-us/software/application-security</url>
 	<organization>
 		<name>Micro Focus Fortify</name>
@@ -76,50 +76,12 @@
 		<maven>3.1</maven>
 	</prerequisites>
 	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.fortify.client.api</groupId>
-				<artifactId>client-api-root</artifactId>
-				<version>${fortify.client-api.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	
 	<dependencies>
 		<dependency>
 			<groupId>org.sonarsource.sonarqube</groupId>
 			<artifactId>sonar-plugin-api</artifactId>
 			<version>${sonar.apiVersion}</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fortify.client.api</groupId>
-			<artifactId>common-log</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-jul</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-jcl</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.fortify.client.api</groupId>
@@ -151,6 +113,10 @@
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+			<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
 		</dependency>
 	</dependencies>
 	<build>

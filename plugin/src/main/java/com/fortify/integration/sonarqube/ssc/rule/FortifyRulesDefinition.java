@@ -29,33 +29,26 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.PropertyType;
-import org.sonar.api.config.Configuration;
-import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 
 import com.fortify.integration.sonarqube.ssc.FortifyConstants;
-import com.fortify.integration.sonarqube.ssc.rule.externalmetadata.ExternalCategory;
-import com.fortify.integration.sonarqube.ssc.rule.externalmetadata.ExternalList;
-import com.fortify.integration.sonarqube.ssc.rule.externalmetadata.FortifyExternalMetadata;
+import com.fortify.integration.sonarqube.ssc.config.RulesConfig;
+import com.fortify.integration.sonarqube.ssc.externalmetadata.ExternalCategory;
+import com.fortify.integration.sonarqube.ssc.externalmetadata.ExternalList;
+import com.fortify.integration.sonarqube.ssc.externalmetadata.FortifyExternalMetadata;
 
 /**
  * <p>This {@link RulesDefinition} implementation will generate Fortify-related
  * SonarQube rules.</p>
  */
 public class FortifyRulesDefinition implements RulesDefinition {
-	private static final String PRP_EXT_LIST_NAME = "fortify.externalListId";
 	private static final FortifyExternalMetadata externalMetadata = FortifyExternalMetadata.parse(); 
-	private final Configuration config;
-
-	public FortifyRulesDefinition(Configuration config) {
-		this.config = config;
-	}
 	
 	private ExternalList getExternalList() {
-		String externalListName = config.get(PRP_EXT_LIST_NAME).orElse(null);
-		return externalMetadata==null || StringUtils.isBlank(externalListName) ? null : externalMetadata.getExternalListByName(externalListName);
+		String rulesSourceName = RulesConfig.load().getRulesSourceName();
+		return externalMetadata==null || StringUtils.isBlank(rulesSourceName) || RulesConfig.SINGLE_RULE_SOURCE_NAME.equals(rulesSourceName) 
+				? null : externalMetadata.getExternalListByName(rulesSourceName);
 	}
 	
 	@Override
@@ -90,14 +83,5 @@ public class FortifyRulesDefinition implements RulesDefinition {
 		}
 		result.add("fortify.other");
 		return result;
-	}
-	
-	public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
-		propertyDefinitions.add(PropertyDefinition.builder(PRP_EXT_LIST_NAME)
-				.name("Rules")
-				.description("SonarQube rules definition")
-				.type(PropertyType.SINGLE_SELECT_LIST)
-				.options(new ArrayList<>(externalMetadata.getExternalListNames()))
-				.build());
 	}
 }

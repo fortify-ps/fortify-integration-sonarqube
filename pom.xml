@@ -28,6 +28,7 @@
 	<artifactId>fortify-ssc-sonarqube-plugin-root</artifactId>
 	<version>2.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<name>Micro Focus Fortify SonarQube Plugin - Root</name>
 	<organization>
 		<name>Micro Focus Fortify</name>
 		<url>https://software.microfocus.com/en-us/software/application-security</url>
@@ -66,6 +67,7 @@
 		</repository>
 	</repositories>
 	<modules>
+		<module>common</module>
 		<module>plugin</module>
 		<module>configure</module>
 		<module>dist</module>
@@ -81,6 +83,12 @@
 			</dependency>
 			<dependency>
 				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+				<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
+				<version>${project.version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
 				<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
@@ -90,6 +98,17 @@
 				<artifactId>fortify-ssc-sonarqube-plugin-configure</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
+			</dependency>
+			<dependency>
+			    <groupId>com.fasterxml.jackson.dataformat</groupId>
+			    <artifactId>jackson-dataformat-yaml</artifactId>
+			    <version>2.9.8</version>
+			    <scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.staxmate</groupId>
+				<artifactId>staxmate</artifactId>
+				<version>2.0.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -22,25 +22,21 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.metric.provider;
+package com.fortify.integration.sonarqube.ssc.config;
 
-import java.util.Collection;
+public class RulesConfig extends AbstractYmlRootConfig {
+	public static final String SINGLE_RULE_SOURCE_NAME = "Single Fortify Rule";
+	private String rulesSourceName = SINGLE_RULE_SOURCE_NAME;
+	
+	public static final RulesConfig load() {
+		return load("rules.yml", RulesConfig.class);
+	}
 
-import org.sonar.api.batch.InstantiationStrategy;
-import org.sonar.api.batch.ScannerSide;
-import org.sonar.api.ce.ComputeEngineSide;
-import org.sonar.api.server.ServerSide;
+	public String getRulesSourceName() {
+		return rulesSourceName;
+	}
 
-@ScannerSide
-@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
-@ServerSide
-@ComputeEngineSide
-public interface IFortifyMetricsProvider {
-	/**
-	 * Get the collection of {@link IFortifyMetricProvider} instances.
-	 * May never return null.
-	 * 
-	 * @return
-	 */
-	public abstract Collection<IFortifyMetricProvider> getMetricProviders();
+	public void setRulesSourceName(String rulesSourceName) {
+		this.rulesSourceName = rulesSourceName;
+	}
 }

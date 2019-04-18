@@ -22,25 +22,16 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.metric.provider;
+package com.fortify.integration.sonarqube.ssc.metric.config;
 
-import java.util.Collection;
+import java.io.File;
 
-import org.sonar.api.batch.InstantiationStrategy;
-import org.sonar.api.batch.ScannerSide;
-import org.sonar.api.ce.ComputeEngineSide;
-import org.sonar.api.server.ServerSide;
+import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
 
-@ScannerSide
-@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
-@ServerSide
-@ComputeEngineSide
-public interface IFortifyMetricsProvider {
-	/**
-	 * Get the collection of {@link IFortifyMetricProvider} instances.
-	 * May never return null.
-	 * 
-	 * @return
-	 */
-	public abstract Collection<IFortifyMetricProvider> getMetricProviders();
+public class Test {
+
+	public static void main(String[] args) throws Exception {
+		System.out.println(MetricsConfig.load());
+		MetricsConfig.load().save(new File("test.yml"));
+	}
 }

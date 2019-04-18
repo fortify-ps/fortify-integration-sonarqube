@@ -1,0 +1,12 @@
+metrics:
+  test1: 
+    name: Test CFPO
+    type: INT
+    expr: var['CFPO']
+    domain: Fortify - Test
+    
+  test2:
+    name: Test HFPO
+    type: INT
+    expr: var['HFPO']
+    domain: Fortify - Test

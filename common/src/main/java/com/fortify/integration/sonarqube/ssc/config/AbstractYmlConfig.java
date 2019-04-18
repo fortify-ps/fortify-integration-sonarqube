@@ -22,25 +22,21 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.metric.provider;
+package com.fortify.integration.sonarqube.ssc.config;
 
-import java.util.Collection;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import org.sonar.api.batch.InstantiationStrategy;
-import org.sonar.api.batch.ScannerSide;
-import org.sonar.api.ce.ComputeEngineSide;
-import org.sonar.api.server.ServerSide;
-
-@ScannerSide
-@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
-@ServerSide
-@ComputeEngineSide
-public interface IFortifyMetricsProvider {
-	/**
-	 * Get the collection of {@link IFortifyMetricProvider} instances.
-	 * May never return null.
-	 * 
-	 * @return
-	 */
-	public abstract Collection<IFortifyMetricProvider> getMetricProviders();
+public class AbstractYmlConfig {
+	protected static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
+	
+	@Override
+	public String toString() {
+		try {
+			return MAPPER.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			return super.toString();
+		}
+	}
 }

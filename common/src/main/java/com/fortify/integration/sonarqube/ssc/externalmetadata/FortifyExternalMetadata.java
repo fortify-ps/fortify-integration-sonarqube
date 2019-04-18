@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.rule.externalmetadata;
+package com.fortify.integration.sonarqube.ssc.externalmetadata;
 
 import java.net.URL;
 import java.util.Collection;
@@ -64,7 +64,7 @@ public class FortifyExternalMetadata {
 		}
 	}
 
-	private static final FortifyExternalMetadata parse(URL url) throws XMLStreamException {
+	public static final FortifyExternalMetadata parse(URL url) throws XMLStreamException {
 		Map<String, ExternalList> map = new LinkedHashMap<>();
 		SMHierarchicCursor rootC = getInputFactory().rootElementCursor(url);
 		rootC.advance(); // <ExternalMetadataPack>

@@ -22,10 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.rule.externalmetadata;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+package com.fortify.integration.sonarqube.ssc.externalmetadata;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -34,19 +31,17 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.codehaus.staxmate.in.SMInputCursor;
 
 
-public class ExternalList {
-	private String id;
+public class ExternalCategory {
+	private ExternalList externalList;
 	private String name;
 	private String description;
-	private final Map<String, ExternalCategory> externalCategories = new LinkedHashMap<>();
-	private final Map<String, String> internalToExternalCategoryMapping = new LinkedHashMap<>();
-
-	public String getId() {
-		return id;
+	
+	public ExternalCategory(ExternalList externalList) {
+		this.externalList = externalList;
 	}
-
-	public void setId(String id) {
-		this.id = id;
+	
+	public String getId() {
+		return "fortify."+externalList.getId()+"."+getName().hashCode();
 	}
 
 	public String getName() {
@@ -65,49 +60,20 @@ public class ExternalList {
 		this.description = description;
 	}
 
-	public Map<String, ExternalCategory> getExternalCategories() {
-		return externalCategories;
-	}
-
-	public Map<String, String> getInternalToExternalCategoryMapping() {
-		return internalToExternalCategoryMapping;
-	}
-
-	public static final ExternalList parse(SMInputCursor childCursor) throws XMLStreamException {
-		ExternalList result = new ExternalList();
+	public static ExternalCategory parse(ExternalList externalList, SMInputCursor childCursor) throws XMLStreamException {
+		ExternalCategory result = new ExternalCategory(externalList);
 		while (childCursor.getNext() != null) {
 			String nodeName = childCursor.getLocalName();
 
-			if ("ExternalListID".equals(nodeName)) {
-				result.setId(StringUtils.trim(childCursor.collectDescendantText(false)));
-			} else if ("Name".equals(nodeName)) {
+			if ("Name".equals(nodeName)) {
 				result.setName(StringUtils.trim(childCursor.collectDescendantText(false)));
 			} else if ("Description".equals(nodeName)) {
 				result.setDescription(StringUtils.trim(childCursor.collectDescendantText(false)));
-			} else if ("ExternalCategoryDefinition".equals(nodeName)) {
-				ExternalCategory category = ExternalCategory.parse(result, childCursor.childCursor());
-				result.getExternalCategories().put(category.getId(), category);
-			} else if ("Mapping".equals(nodeName)) {
-				addMapping(result, childCursor.childCursor());
 			}
 		}
 		return result;
 	}
 	
-	private static final void addMapping(ExternalList externalList, SMInputCursor childCursor) throws XMLStreamException {
-		String internalCategory = null;
-		String externalCategory = null;
-		while (childCursor.getNext() != null) {
-			String nodeName = childCursor.getLocalName();
-			if ("InternalCategory".equals(nodeName)) {
-				internalCategory = StringUtils.trim(childCursor.collectDescendantText(false));
-			} else if ("ExternalCategory".equals(nodeName)) {
-				externalCategory = StringUtils.trim(childCursor.collectDescendantText(false));
-			}
-		}
-		externalList.getInternalToExternalCategoryMapping().put(internalCategory, externalCategory);
-	}
-
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
