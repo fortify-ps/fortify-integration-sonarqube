@@ -24,8 +24,8 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.ssc.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MetricsConfig extends AbstractYmlRootConfig {
 	public static enum MetricValueType {
@@ -87,22 +87,23 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 	}
 	
 	
-	private Map<String, MetricConfig> metrics = new LinkedHashMap<>();
+	private List<MetricConfig> metrics = new ArrayList<>();
 	
 	public static final MetricsConfig load() {
 		return load("metrics.yml", MetricsConfig.class);
 	}
 
-	public Map<String, MetricConfig> getMetrics() {
+	public List<MetricConfig> getMetrics() {
 		return metrics;
 	}
 
-	public void setMetrics(Map<String, MetricConfig> metrics) {
+	public void setMetrics(List<MetricConfig> metrics) {
 		this.metrics = metrics;
 	}
 
 	
 	public static final class MetricConfig extends AbstractYmlConfig {
+		private String key;
 		private String name;
 		private String domain = "Fortify";
 		private String description = "Custom metric";
@@ -110,6 +111,13 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 		private boolean qualitative = false;
 		private Direction direction = Direction.NONE;
 		private String expr;
+		
+		public String getKey() {
+			return key;
+		}
+		public void setKey(String key) {
+			this.key = key;
+		}
 		public String getName() {
 			return name;
 		}
@@ -153,5 +161,4 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 			this.expr = expr;
 		}
 	}
-
 }

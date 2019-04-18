@@ -79,6 +79,8 @@ import java.util.Map;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
 import org.jdesktop.beansbinding.ELProperty;
 import org.jdesktop.beansbinding.ObjectProperty;
+import org.jdesktop.swingbinding.JListBinding;
+import org.jdesktop.swingbinding.SwingBindings;
 
 public class PluginConfiguration {
 
@@ -92,6 +94,7 @@ public class PluginConfiguration {
 	private MetricsConfig metricsConfig;
 	private JComboBox comboBoxRulesSource;
 	private JList listMetricKeys;
+	private MetricDetailsPanel metricDetailsPanel;
 
 	/**
 	 * Launch the application.
@@ -280,12 +283,12 @@ public class PluginConfiguration {
 		panelMetricAddRemoveButtons.add(btnRemove);
 		
 		listMetricKeys = new JList();
-		listMetricKeys.setListData(metricsConfig.getMetrics().keySet().toArray());
+		listMetricKeys.setBorder(new LineBorder(new Color(0, 0, 0)));
 		listMetricKeys.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		panelMetrics.add(listMetricKeys, "cell 0 1,alignx left,aligny top");
+		panelMetrics.add(listMetricKeys, "cell 0 1,grow");
 		
-		MetricDetailsPanel metricDetailsPanel = new MetricDetailsPanel();
-		panelMetrics.add(metricDetailsPanel, "cell 1 0 1 2,alignx left,aligny top");
+		metricDetailsPanel = new MetricDetailsPanel();
+		panelMetrics.add(metricDetailsPanel, "cell 1 0 1 2,grow");
 		
 		JPanel panelButtons = new JPanel();
 		frmFortifySscSonarqube.getContentPane().add(panelButtons, BorderLayout.SOUTH);
@@ -328,5 +331,18 @@ public class PluginConfiguration {
 		BeanProperty<JComboBox, Object> jComboBoxBeanProperty = BeanProperty.create("selectedItem");
 		AutoBinding<RulesConfig, String, JComboBox, Object> autoBinding = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, rulesConfig, rulesConfigBeanProperty, comboBoxRulesSource, jComboBoxBeanProperty, "rulesSourceName");
 		autoBinding.bind();
+		//
+		BeanProperty<MetricsConfig, List<MetricConfig>> metricsConfigBeanProperty = BeanProperty.create("metrics");
+		JListBinding<MetricConfig, MetricsConfig, JList> jListBinding = SwingBindings.createJListBinding(UpdateStrategy.READ, metricsConfig, metricsConfigBeanProperty, listMetricKeys);
+		//
+		BeanProperty<MetricConfig, String> metricConfigBeanProperty = BeanProperty.create("name");
+		jListBinding.setDetailBinding(metricConfigBeanProperty);
+		//
+		jListBinding.bind();
+		//
+		BeanProperty<JList, Object> jListBeanProperty = BeanProperty.create("selectedElement");
+		BeanProperty<MetricDetailsPanel, MetricConfig> metricDetailsPanelBeanProperty = BeanProperty.create("metricConfig");
+		AutoBinding<JList, Object, MetricDetailsPanel, MetricConfig> autoBinding_1 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, listMetricKeys, jListBeanProperty, metricDetailsPanel, metricDetailsPanelBeanProperty);
+		autoBinding_1.bind();
 	}
 }

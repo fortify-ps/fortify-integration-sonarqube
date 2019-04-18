@@ -1,12 +1,18 @@
 metrics:
-  test1: 
-    name: Test CFPO
-    type: INT
-    expr: var['CFPO']
-    domain: Fortify - Test
-    
-  test2:
-    name: Test HFPO
-    type: INT
-    expr: var['HFPO']
-    domain: Fortify - Test
+- key: "test1"
+  name: "Name - test1"
+  domain: "Fortify"
+  description: "Custom metric"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "var['CFPO']"
+  
+- key: "test2"
+  name: "Name - test2"
+  domain: "Fortify"
+  description: "Custom metric"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "var['CFPO']"

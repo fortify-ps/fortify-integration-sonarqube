@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.Metric;
@@ -49,11 +48,9 @@ public class FortifyConfigurableMetricsProvider implements IFortifyMetricsProvid
 	@Override
 	public Collection<IFortifyMetricProvider> getMetricProviders() {
 		List<IFortifyMetricProvider> result = new ArrayList<>();
-		for ( Map.Entry<String, MetricConfig> entry : metricsConfig.getMetrics().entrySet() ) {
-			String key = entry.getKey();
-			MetricConfig mc = entry.getValue();
+		for ( MetricConfig mc : metricsConfig.getMetrics() ) {
 			Metric.ValueType type = Metric.ValueType.valueOf(mc.getType().name());
-			result.add(new FortifySpELMetricValueRetriever(new Metric.Builder(key, mc.getName(), type)
+			result.add(new FortifySpELMetricValueRetriever(new Metric.Builder(mc.getKey(), mc.getName(), type)
 					.setDescription(mc.getDescription()).setDirection(mc.getDirection().intValue())
 					.setQualitative(mc.isQualitative()).setDomain(mc.getDomain()).create(), mc.getExpr()));
 		}
