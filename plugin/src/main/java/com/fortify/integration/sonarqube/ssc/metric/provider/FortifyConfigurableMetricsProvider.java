@@ -32,13 +32,10 @@ import java.util.List;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.measures.Metric;
 
-import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
 import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
 import com.fortify.integration.sonarqube.ssc.metric.MetricValueTypeHelper;
-import com.fortify.util.rest.json.JSONList;
-import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.spring.SpringExpressionUtil;
 import com.fortify.util.spring.expression.SimpleExpression;
 
@@ -65,11 +62,7 @@ public class FortifyConfigurableMetricsProvider implements IFortifyMetricsProvid
 		}
 		@Override
 		public Serializable getValue(SensorContext context, FortifySSCConnectionFactory connFactory) {
-			JSONMap metrics = new JSONMap();
-			// TODO, add properties here, or as on-demand properties in FortifySSCConnectionFactory? 
-			metrics.put("var", connFactory.getApplicationVersion().get(MetricType.variable.toString(), JSONList.class).toJSONMap("name", String.class, "value", Object.class));
-			metrics.put("pi", connFactory.getApplicationVersion().get(MetricType.performanceIndicator.toString(), JSONList.class).toJSONMap("name", String.class, "value", Object.class));
-			return (Serializable) SpringExpressionUtil.evaluateExpression(metrics, expression, MetricValueTypeHelper.getValueTypeClass(getMetric()));
+			return (Serializable) SpringExpressionUtil.evaluateExpression(connFactory.getApplicationVersion(), expression, MetricValueTypeHelper.getValueTypeClass(getMetric()));
 		}
 	}
 

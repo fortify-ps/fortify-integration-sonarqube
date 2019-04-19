@@ -40,11 +40,17 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import com.fortify.client.ssc.annotation.SSCCopyToConstructors;
 import com.fortify.client.ssc.api.SSCApplicationVersionAPI;
 import com.fortify.client.ssc.api.SSCArtifactAPI;
-import com.fortify.client.ssc.api.SSCMetricsAPI.MetricType;
+import com.fortify.client.ssc.api.query.builder.SSCOrderByDirection;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 import com.fortify.util.rest.json.JSONMap;
+import com.fortify.util.rest.json.ondemand.AbstractJSONMapOnDemandLoaderWithConnection;
+import com.fortify.util.rest.json.preprocessor.enrich.JSONMapEnrichWithOnDemandJSONMapFromJSONList;
+import com.fortify.util.rest.json.preprocessor.enrich.JSONMapEnrichWithOnDemandProperty;
+import com.fortify.util.rest.json.preprocessor.filter.AbstractJSONMapFilter.MatchMode;
+import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
 
 /**
  * Connection factory used to access a {@link FortifySSCConnectionFactory} instance.
@@ -96,14 +102,40 @@ public class FortifySSCConnectionFactory {
 			this.applicationVersion = conn.api(SSCApplicationVersionAPI.class).queryApplicationVersions()
 					.nameOrId(applicationVersionNameOrId)
 					.onDemandFilterSets()
-					.onDemandPerformanceIndicatorHistories(MetricType.performanceIndicator.toString())
-					.onDemandVariableHistories(MetricType.variable.toString())
+					.onDemandPerformanceIndicatorHistories()
+					.onDemandVariableHistories()
+					// Add convenience properties for defining custom metrics
+					.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("var", "variableHistories", "name", "value", true))
+					.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("pi", "performanceIndicatorHistories", "name", "value", true))
+					.preProcessor(new JSONMapEnrichWithOnDemandProperty("scaArtifact", new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
 					.build().getUnique();
 			if ( this.applicationVersion==null ) {
 				throw new IllegalArgumentException("SSC application version "+applicationVersionNameOrId+" not found");
 			}
 		}
 		
+	}
+	
+	private static final class JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact extends AbstractJSONMapOnDemandLoaderWithConnection<SSCAuthenticatingRestConnection> {
+		private static final long serialVersionUID = 1L;
+
+		public JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(SSCAuthenticatingRestConnection conn) {
+			super(conn, true);
+		}
+		
+		@Override @SSCCopyToConstructors
+		public Object getOnDemand(SSCAuthenticatingRestConnection conn, String propertyName, JSONMap parent) {
+			return conn.api(SSCArtifactAPI.class).queryArtifacts(parent.get("id", String.class))
+					.paramOrderBy("uploadDate", SSCOrderByDirection.DESC)
+					.paramEmbedScans()
+					.preProcessor(new JSONMapFilterSpEL(MatchMode.INCLUDE, "(_embed.scans?.get(0)?.type=='SCA' && status=='PROCESS_COMPLETE') || status matches 'PROCESSING|SCHED_PROCESSING|REQUIRE_AUTH|ERROR_PROCESSING'"))
+					.useCache(true).maxResults(1).build().getUnique();
+		}
+		
+		@Override
+		protected Class<SSCAuthenticatingRestConnection> getConnectionClazz() {
+			return SSCAuthenticatingRestConnection.class;
+		}
 	}
 	
 	/**

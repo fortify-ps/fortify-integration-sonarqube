@@ -263,12 +263,12 @@ public class PluginConfiguration {
 		
 		JPanel panelMetrics = new JPanel();
 		tabbedPane.addTab("Metrics", null, panelMetrics, null);
-		panelMetrics.setLayout(new MigLayout("", "[139px][grow]", "[][]"));
+		panelMetrics.setLayout(new MigLayout("", "[150px:n,grow 20][grow]", "[][]"));
 		
 		JPanel panelMetricAddRemoveButtons = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panelMetricAddRemoveButtons.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		panelMetrics.add(panelMetricAddRemoveButtons, "cell 0 0,alignx left,aligny top");
+		panelMetrics.add(panelMetricAddRemoveButtons, "cell 0 0,alignx right,aligny top");
 		
 		JButton btnMetricAdd = new JButton("Add");
 		btnMetricAdd.addActionListener(new ActionListener() {

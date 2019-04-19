@@ -1,18 +1,180 @@
 metrics:
-- key: "test1"
-  name: "Name - test1"
-  domain: "Fortify"
-  description: "Custom metric"
+- key: "fortify.sscProjectUrl"
+  name: "SSC Application Version URL"
+  domain: "Fortify - Project"
+  description: "SSC Application Version URL"
   type: "STRING"
   qualitative: false
   direction: "NONE"
+  expr: "deepLink"
+  
+- key: "fortify.sscAppName"
+  name: "SSC Application Name"
+  domain: "Fortify - Project"
+  description: "SSC Application Name"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "project.name"
+  
+- key: "fortify.sscVersionName"
+  name: "SSC Version Name"
+  domain: "Fortify - Project"
+  description: "SSC Version Name"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "name"
+  
+- key: "fortify.ssc.securityRating"  
+  name: "Fortify Security Rating"
+  domain: "Fortify - SSC Performance Indicators"
+  description: "Fortify Security Rating"
+  type: "FLOAT"
+  qualitative: true
+  direction: "BETTER"
+  expr: "pi['Fortify Security Rating']"
+  
+- key: "fortify.ssc.remediationEffort"  
+  name: "Total Remediation Effort"
+  domain: "Fortify - SSC Performance Indicators"
+  description: "Total Remediation Effort"
+  type: "FLOAT"
+  qualitative: true
+  direction: "BETTER"
+  expr: "pi['Remediation Effort Total']"
+  
+- key: "fortify.ssc.ACFPO" 
+  name: "Audited Critical Priority Issues"
+  domain: "Fortify - SSC Performance Indicators"
+  description: "Audited Critical Priority Issues"
+  type: "PERCENT"
+  qualitative: true
+  direction: "BETTER"
+  expr: "pi['Critical Priority Issues Audited']"
+  
+- key: "fortify.ssc.AHFPO"  
+  name: "Audited High Priority Issues"
+  domain: "Fortify - SSC Performance Indicators"
+  description: "Audited High Priority Issues"
+  type: "PERCENT"
+  qualitative: true
+  direction: "BETTER"
+  expr: "pi['High Priority Issues Audited']"
+  
+- key: "fortify.ssc.CFPO"
+  name: "Critical Priority Issues" 
+  domain: "Fortify - SSC Variables"
+  description: "Critical Priority Issues"
+  type: "INT"
+  qualitative: true
+  direction: "WORST"
   expr: "var['CFPO']"
   
-- key: "test2"
-  name: "Name - test2"
-  domain: "Fortify"
-  description: "Custom metric"
+- key: "fortify.ssc.HFPO"
+  name: "High Priority Issues" 
+  domain: "Fortify - SSC Variables"
+  description: "High Priority Issues"
+  type: "INT"
+  qualitative: true
+  direction: "WORST"
+  expr: "var['HFPO']"  
+  
+- key: "fortify.ssc.MFPO"
+  name: "Medium Priority Issues" 
+  domain: "Fortify - SSC Variables"
+  description: "Medium Priority Issues"
+  type: "INT"
+  qualitative: true
+  direction: "WORST"
+  expr: "var['MFPO']"   
+  
+- key: "fortify.ssc.LFPO"
+  name: "Low Priority Issues" 
+  domain: "Fortify - SSC Variables"
+  description: "Low Priority Issues"
+  type: "INT"
+  qualitative: true
+  direction: "WORST"
+  expr: "var['LFPO']" 
+  
+- key: "fortify.ssc.LOC"
+  name: "Lines of Code" 
+  domain: "Fortify - SSC Variables"
+  description: "Lines of Code"
+  type: "INT"
+  qualitative: false
+  direction: "NONE"
+  expr: "var['LOC']"    
+  
+- key: "fortify.ssc.ExecutableLOC"
+  name: "Executable Lines of Code" 
+  domain: "Fortify - SSC Variables"
+  description: "Executable Lines of Code"
+  type: "INT"
+  qualitative: false
+  direction: "NONE"
+  expr: "var['ExecutableLOC']"
+  
+- key: "fortify.ssc.FILES"
+  name: "Number of Files" 
+  domain: "Fortify - SSC Variables"
+  description: "Number of Files"
+  type: "INT"
+  qualitative: false
+  direction: "NONE"
+  expr: "var['FILES']"       
+  
+- key: "fortify.artifact.sca.approvalDate"
+  name: "Approval Date" 
+  domain: "Fortify - SCA Artifact"
+  description: "Artifact Approval Date"
   type: "STRING"
   qualitative: false
   direction: "NONE"
-  expr: "var['CFPO']"
+  expr: "scaArtifact.approvalDate"   
+  
+- key: "fortify.artifact.sca.lastScanDate"
+  name: "Last Scan Date" 
+  domain: "Fortify - SCA Artifact"
+  description: "Artifact Last Scan Date"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "scaArtifact.lastScanDate"   
+            
+- key: "fortify.artifact.sca.originalFileName"
+  name: "Scan File Name" 
+  domain: "Fortify - SCA Artifact"
+  description: "Artifact Scan File Name"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "scaArtifact.originalFileName"
+  
+- key: "fortify.artifact.sca.uploadDate"
+  name: "Scan Upload Date" 
+  domain: "Fortify - SCA Artifact"
+  description: "Artifact Scan Upload Date"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "scaArtifact.uploadDate"     
+      
+- key: "fortify.artifact.sca.messages"
+  name: "Artifact Messages" 
+  domain: "Fortify - SCA Artifact"
+  description: "Artifact Messages"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "scaArtifact.messages" 
+  
+- key: "fortify.artifact.sca.status"
+  name: "Artifact Status" 
+  domain: "Fortify - SCA Artifact"
+  description: "Artifact Status"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "scaArtifact.status"  

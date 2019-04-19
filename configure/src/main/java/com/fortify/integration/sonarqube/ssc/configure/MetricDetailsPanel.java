@@ -47,7 +47,7 @@ import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricValueType;
 
 public class MetricDetailsPanel extends JPanel {
-
+	private static final long serialVersionUID = 1L;
 	private BindingGroup m_bindingGroup;
 	private com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig metricConfig = new com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig();
 	private JTextField nameJTextField;

@@ -36,9 +36,6 @@ import org.sonar.api.config.PropertyDefinition;
 import com.fortify.integration.sonarqube.ssc.metric.FortifyMetrics;
 import com.fortify.integration.sonarqube.ssc.metric.FortifyMetricsSensor;
 import com.fortify.integration.sonarqube.ssc.metric.provider.FortifyConfigurableMetricsProvider;
-import com.fortify.integration.sonarqube.ssc.metric.provider.impl.FortifyAppVersionMetricsProvider;
-import com.fortify.integration.sonarqube.ssc.metric.provider.impl.FortifyArtifactMetricsProvider;
-import com.fortify.integration.sonarqube.ssc.metric.provider.impl.FortifySnapshotMetricsProvider;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
 
 /**
@@ -52,9 +49,6 @@ public class FortifySSCPlugin implements Plugin {
 			FortifyLanguage.class,
 			FortifyProfile.class, 
 			FortifyConfigurableMetricsProvider.class,
-			FortifyAppVersionMetricsProvider.class,
-			FortifyArtifactMetricsProvider.class,
-			FortifySnapshotMetricsProvider.class,
 			FortifyMetrics.class,
 			FortifyMetricsSensor.class};
 

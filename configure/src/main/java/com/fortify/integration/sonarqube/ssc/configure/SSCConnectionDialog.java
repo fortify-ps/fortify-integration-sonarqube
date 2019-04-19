@@ -45,6 +45,7 @@ import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 import net.miginfocom.swing.MigLayout;
 
 public class SSCConnectionDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldSSCURL;
 	private JTextField textFieldUserName;
