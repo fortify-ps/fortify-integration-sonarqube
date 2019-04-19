@@ -13,6 +13,13 @@ Plugin:
   - Show information similar to previous widget
 - Clean up/remove FortifyConstants
 - Remove code duplication between MetricValueTypeHelper and MetricsConfig (both have functionality for mapping metric types to Java types)
+- Refactoring:
+  - IFortifyMetricsProvider must be enabled for all SQ sides (due to providing metric definitions), but this means
+    that any component implementing this interface is automatically enabled for all SQ sides. This means that any
+    dependencies for such a component must also be enabled for all sides, for example FortifySSCConnectionFactory.
+    At the moment having FortifySSCConnectionFactory available on server/CE side doesn't make sense, as it doesn't
+    receive batch-side configuration options like current SSC application name and version.
+  - Refactor FortifySSCConnectionFactory such that it can be used on all sides.
   
 Metrics:
 - Add support and default metrics for folder counts
