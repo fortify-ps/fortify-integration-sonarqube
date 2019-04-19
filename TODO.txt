@@ -2,12 +2,12 @@ Update README.md
 
 Plugin:
 - Issue collection
-  - SCA
-  - Other (WebInspect, SonaType, ...)
+  - SCA, Other (WebInspect, SonaType, ...)?
   - Retrieve only issue fields that are actually necessary for plugin operation
-  - Cache issues (see FortifyBugTrackerUtility for disk-backed map)
+  - Cache issues (see FortifyBugTrackerUtility for disk-backed map example used for grouping)
   - Configurable mapping between friority and SonarQube severity
   - Configurable support for using folder instead of friority to determine SonarQube severity
+  - Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
 - FPR file is not uploaded if issue collection is disabled
 - Web pages 
   - Show information similar to previous widget
