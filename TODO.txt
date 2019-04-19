@@ -1,0 +1,16 @@
+Update README.md
+
+Plugin:
+- Issue collection
+  - SCA
+  - Other (WebInspect, SonaType, ...)
+- Web pages 
+  - Show information similar to previous widget
+  
+Metrics:
+- Add support and default metrics for folder counts
+
+Configuration utility:
+- Hide MetricDetailsPanel if no item selected in listMetrics
+- Add validation (duplicate metric keys, test metric expressions)
+- Add help information/tooltips for various input fields 
