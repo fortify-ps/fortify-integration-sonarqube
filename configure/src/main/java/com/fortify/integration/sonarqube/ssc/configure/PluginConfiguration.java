@@ -89,7 +89,7 @@ public class PluginConfiguration {
 	private RulesConfig rulesConfig;
 	private MetricsConfig metricsConfig;
 	private JComboBox comboBoxRulesSource;
-	private JList listMetricKeys;
+	private JList listMetrics;
 	private MetricDetailsPanel metricDetailsPanel;
 
 	/**
@@ -274,8 +274,8 @@ public class PluginConfiguration {
 		btnMetricAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				metricsConfig.addMetricConfig(new MetricConfig());
-				listMetricKeys.setSelectedIndex(listMetricKeys.getModel().getSize()-1);
-				listMetricKeys.repaint();
+				listMetrics.setSelectedIndex(listMetrics.getModel().getSize()-1);
+				listMetrics.repaint();
 			}
 		});
 		btnMetricAdd.setHorizontalAlignment(SwingConstants.LEFT);
@@ -284,21 +284,21 @@ public class PluginConfiguration {
 		JButton btnRemove = new JButton("Remove");
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metricsConfig.removeMetricConfig(metricsConfig.getMetrics().get(listMetricKeys.getSelectedIndex()));
-				listMetricKeys.repaint();
+				metricsConfig.removeMetricConfig(metricsConfig.getMetrics().get(listMetrics.getSelectedIndex()));
+				listMetrics.repaint();
 			}
 		});
 		btnRemove.setHorizontalAlignment(SwingConstants.LEFT);
 		panelMetricAddRemoveButtons.add(btnRemove);
 		
-		listMetricKeys = new JList();
-		listMetricKeys.setSelectedIndex(0);
-		listMetricKeys.setBorder(new LineBorder(new Color(0, 0, 0)));
-		listMetricKeys.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		panelMetrics.add(listMetricKeys, "cell 0 1,grow");
+		listMetrics = new JList();
+		listMetrics.setSelectedIndex(0);
+		listMetrics.setBorder(new LineBorder(new Color(0, 0, 0)));
+		listMetrics.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		panelMetrics.add(listMetrics, "cell 0 1,grow");
 		
 		metricDetailsPanel = new MetricDetailsPanel();
-		panelMetrics.add(metricDetailsPanel, "cell 1 0 1 2,grow");
+		panelMetrics.add(metricDetailsPanel, "cell 1 1,grow");
 		
 		JPanel panelButtons = new JPanel();
 		frmFortifySscSonarqube.getContentPane().add(panelButtons, BorderLayout.SOUTH);
@@ -343,7 +343,7 @@ public class PluginConfiguration {
 		autoBinding.bind();
 		//
 		BeanProperty<MetricsConfig, List<MetricConfig>> metricsConfigBeanProperty = BeanProperty.create("metrics");
-		JListBinding<MetricConfig, MetricsConfig, JList> jListBinding = SwingBindings.createJListBinding(UpdateStrategy.READ, metricsConfig, metricsConfigBeanProperty, listMetricKeys);
+		JListBinding<MetricConfig, MetricsConfig, JList> jListBinding = SwingBindings.createJListBinding(UpdateStrategy.READ, metricsConfig, metricsConfigBeanProperty, listMetrics);
 		//
 		BeanProperty<MetricConfig, String> metricConfigBeanProperty = BeanProperty.create("name");
 		jListBinding.setDetailBinding(metricConfigBeanProperty);
@@ -352,7 +352,7 @@ public class PluginConfiguration {
 		//
 		BeanProperty<JList, Object> jListBeanProperty = BeanProperty.create("selectedElement");
 		BeanProperty<MetricDetailsPanel, MetricConfig> metricDetailsPanelBeanProperty = BeanProperty.create("metricConfig");
-		AutoBinding<JList, Object, MetricDetailsPanel, MetricConfig> autoBinding_1 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, listMetricKeys, jListBeanProperty, metricDetailsPanel, metricDetailsPanelBeanProperty);
+		AutoBinding<JList, Object, MetricDetailsPanel, MetricConfig> autoBinding_1 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, listMetrics, jListBeanProperty, metricDetailsPanel, metricDetailsPanelBeanProperty);
 		autoBinding_1.bind();
 	}
 }
