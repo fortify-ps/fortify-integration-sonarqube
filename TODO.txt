@@ -19,7 +19,7 @@ Plugin:
     dependencies for such a component must also be enabled for all sides, for example FortifySSCConnectionFactory.
     At the moment having FortifySSCConnectionFactory available on server/CE side doesn't make sense, as it doesn't
     receive batch-side configuration options like current SSC application name and version.
-  - Refactor FortifySSCConnectionFactory such that it can be used on all sides.
+  - Refactor FortifySSCConnectionFactory such that it can be used on all sides (also see below about MeasureComputer)
   
 Metrics:
 - Add support and default metrics for folder counts
