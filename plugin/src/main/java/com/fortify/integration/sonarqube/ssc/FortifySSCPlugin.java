@@ -33,6 +33,7 @@ import java.util.List;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 
+import com.fortify.integration.sonarqube.ssc.issue.FortifyIssueMetricsAndSensor;
 import com.fortify.integration.sonarqube.ssc.metric.FortifyMetrics;
 import com.fortify.integration.sonarqube.ssc.metric.FortifyMetricsSensor;
 import com.fortify.integration.sonarqube.ssc.metric.provider.FortifyConfigurableMetricsProvider;
@@ -48,6 +49,7 @@ public class FortifySSCPlugin implements Plugin {
 			FortifyRulesDefinition.class, 
 			FortifyLanguage.class,
 			FortifyProfile.class, 
+			FortifyIssueMetricsAndSensor.class,
 			FortifyConfigurableMetricsProvider.class,
 			FortifyMetrics.class,
 			FortifyMetricsSensor.class};

@@ -43,6 +43,8 @@ import com.fortify.integration.sonarqube.ssc.externalmetadata.FortifyExternalMet
  * SonarQube rules.</p>
  */
 public class FortifyRulesDefinition implements RulesDefinition {
+	public static final String REPOSITORY_KEY = "fortify";
+	public static final String RULE_KEY_OTHER = "fortify.other";
 	private static final FortifyExternalMetadata externalMetadata = FortifyExternalMetadata.parse(); 
 	
 	private ExternalList getExternalList() {
@@ -53,7 +55,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 	
 	@Override
 	public void define(Context context) {
-		NewRepository repo = context.createRepository("fortify", FortifyConstants.FTFY_LANGUAGE_KEY);
+		NewRepository repo = context.createRepository(REPOSITORY_KEY, FortifyConstants.FTFY_LANGUAGE_KEY);
 		repo.setName("Fortify");
 		ExternalList externalList = getExternalList();
 		if ( externalList != null ) {
@@ -62,15 +64,15 @@ public class FortifyRulesDefinition implements RulesDefinition {
 					.setName(category.getName())
 					.setHtmlDescription(category.getDescription())
 					.setType(RuleType.VULNERABILITY)
-					.setTags("fortify")
+					.setTags(REPOSITORY_KEY)
 					.setActivatedByDefault(true);
 			}
 		}
-		repo.createRule("fortify.other")
+		repo.createRule(RULE_KEY_OTHER)
 			.setName("Other")
 			.setHtmlDescription("This SonarQube rule is used for any vulnerabilities that are not mapped to any external category.")
 			.setType(RuleType.VULNERABILITY)
-			.setTags("fortify")
+			.setTags(REPOSITORY_KEY)
 			.setActivatedByDefault(true);
 		repo.done();
 	}
@@ -81,7 +83,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 		if ( externalList != null ) {
 			externalList.getExternalCategories().values().forEach(c -> result.add(c.getId()));
 		}
-		result.add("fortify.other");
+		result.add(RULE_KEY_OTHER);
 		return result;
 	}
 }

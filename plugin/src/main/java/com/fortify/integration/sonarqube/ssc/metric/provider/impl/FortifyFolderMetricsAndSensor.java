@@ -24,7 +24,7 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.ssc.metric.provider.impl;
 
-// TODO Implement this class as FortifyMetricsProvider
+// TODO Remove this class, make folder information available through configurable metrics
 public class FortifyFolderMetricsAndSensor {
 	/*
 	public static final Metric<Serializable> folder1 = new Metric.Builder("fortify.folder1",

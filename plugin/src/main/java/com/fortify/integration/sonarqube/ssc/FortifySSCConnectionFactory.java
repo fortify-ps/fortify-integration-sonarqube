@@ -34,9 +34,11 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.PropertyType;
 import org.sonar.api.batch.InstantiationStrategy;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.ce.ComputeEngineSide;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.server.ServerSide;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -62,6 +64,8 @@ import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
  */
 @ScannerSide
 @InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+@ServerSide
+@ComputeEngineSide
 public class FortifySSCConnectionFactory {
 	/** SonarQube property holding the SSC URL */
 	private static final String PRP_SSC_URL = "sonar.fortify.ssc.url";
@@ -216,14 +220,6 @@ public class FortifySSCConnectionFactory {
 				.description("URL used to connect to SSC (http[s]://<user>:<password>@<host>[:port]/ssc or http[s]://authToken:token@<host>[:port]/ssc)")
 				.type(PropertyType.PASSWORD)
 				.build());
-		/*
-		propertyDefinitions.add(PropertyDefinition.builder(PRP_ENABLE_ISSUES)
-				.name("Enable issues collection")
-				.description("Enable collecting Fortify issues")
-				.type(PropertyType.BOOLEAN)
-				.defaultValue("true")
-				.build());
-		*/
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_MAX_PROCESSING_TIMEOUT)
 				.name("Maximum processing time-out (seconds)")
 				.description("Maximum amount of time SonarQube will wait for SSC to finish processing scan results")
@@ -236,6 +232,7 @@ public class FortifySSCConnectionFactory {
 						" Valid states are PROCESS_COMPLETE, REQUIRE_AUTH, ERROR_PROCESSING")
 				.type(PropertyType.STRING)
 				.defaultValue("")
+				.multiValues(true)
 				.build());
 		
 		// TODO Can we dynamically get the list of projects/versions from SSC?
@@ -251,13 +248,5 @@ public class FortifySSCConnectionFactory {
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
 				.build());
-		/*
-		propertyDefinitions.add(PropertyDefinition.builder(PRP_FILTER_SET)
-				.name("Filter set id")
-				.description("Filter set id used to retrieve issue data from SSC (optional)")
-				.type(PropertyType.STRING)
-				.onQualifiers(Qualifiers.PROJECT)
-				.build());
-		*/
 	}
 }

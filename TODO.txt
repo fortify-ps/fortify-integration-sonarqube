@@ -4,13 +4,36 @@ Plugin:
 - Issue collection
   - SCA
   - Other (WebInspect, SonaType, ...)
+  - Retrieve only issue fields that are actually necessary for plugin operation
+  - Cache issues (see FortifyBugTrackerUtility for disk-backed map)
+  - Configurable mapping between friority and SonarQube severity
+  - Configurable support for using folder instead of friority to determine SonarQube severity
+- FPR file is not uploaded if issue collection is disabled
 - Web pages 
   - Show information similar to previous widget
+- Clean up/remove FortifyConstants
+- Remove code duplication between MetricValueTypeHelper and MetricsConfig (both have functionality for mapping metric types to Java types)
   
 Metrics:
 - Add support and default metrics for folder counts
+- Add support for default value if no value available from SSC?
+- Add support for retrieving metrics in MeasureComputer instead of Sensor
+  - Save SSC URL, credentials and applicationVersionNameOrId in metrics
+  - In MeasureComputer, use these metrics to configure new connection to SSC
+
 
 Configuration utility:
 - Hide MetricDetailsPanel if no item selected in listMetrics
-- Add validation (duplicate metric keys, test metric expressions)
+- Add validation (duplicate metric keys, test metric expressions by loading application version from SSC)
 - Add help information/tooltips for various input fields 
+- Remove hardcoded SSC URL (replace with generic sample URL) & credentials
+- Add support for configuring default values for plugin PropertyDefinitions?
+  - How to keep property definitions in sync between plugin and configuration tool?
+  - Hot to avoid code duplication?
+
+Build:
+- Remove unnecessary elements in pom.xml files if already defined in parent
+- Fix warnings
+
+Test:
+- Multi-module project
