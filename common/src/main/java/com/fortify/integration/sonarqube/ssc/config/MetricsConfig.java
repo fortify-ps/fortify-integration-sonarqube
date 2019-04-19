@@ -100,13 +100,27 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 	public void setMetrics(List<MetricConfig> metrics) {
 		this.metrics = metrics;
 	}
+	
+	public void addMetricConfig(MetricConfig metricConfig) {
+		List<MetricConfig> oldValue = this.metrics;
+		this.metrics = new ArrayList<>(this.metrics);
+		this.metrics.add(metricConfig);
+		propertyChangeSupport.firePropertyChange("metrics", oldValue, this.metrics);
+	}
+	
+	public void removeMetricConfig(MetricConfig metricConfig) {
+		List<MetricConfig> oldValue = this.metrics;
+		this.metrics = new ArrayList<>(this.metrics);
+		this.metrics.remove(metricConfig);
+		propertyChangeSupport.firePropertyChange("metrics", oldValue, this.metrics);
+	}
 
 	
 	public static final class MetricConfig extends AbstractYmlConfig {
-		private String key;
-		private String name;
+		private String key = "newKey";
+		private String name = "New Metric";
 		private String domain = "Fortify";
-		private String description = "Custom metric";
+		private String description = "No Description";
 		private MetricValueType type = MetricValueType.STRING;
 		private boolean qualitative = false;
 		private Direction direction = Direction.NONE;
@@ -115,50 +129,66 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 		public String getKey() {
 			return key;
 		}
-		public void setKey(String key) {
-			this.key = key;
+		public void setKey(String newValue) {
+			String oldValue = this.key;
+			this.key = newValue;
+			propertyChangeSupport.firePropertyChange("key", oldValue, newValue);
 		}
 		public String getName() {
 			return name;
 		}
-		public void setName(String name) {
-			this.name = name;
+		public void setName(String newValue) {
+			String oldValue = this.name;
+			this.name = newValue;
+			propertyChangeSupport.firePropertyChange("name", oldValue, newValue);
 		}
 		public String getDomain() {
 			return domain;
 		}
-		public void setDomain(String domain) {
-			this.domain = domain;
+		public void setDomain(String newValue) {
+			String oldValue = this.domain;
+			this.domain = newValue;
+			propertyChangeSupport.firePropertyChange("domain", oldValue, newValue);
 		}
 		public String getDescription() {
 			return description;
 		}
-		public void setDescription(String description) {
-			this.description = description;
+		public void setDescription(String newValue) {
+			String oldValue = this.description;
+			this.description = newValue;
+			propertyChangeSupport.firePropertyChange("description", oldValue, newValue);
 		}
 		public MetricValueType getType() {
 			return type;
 		}
-		public void setType(MetricValueType type) {
-			this.type = type;
+		public void setType(MetricValueType newValue) {
+			MetricValueType oldValue = this.type;
+			this.type = newValue;
+			propertyChangeSupport.firePropertyChange("type", oldValue, newValue);
 		}
 		public boolean isQualitative() {
 			return qualitative;
 		}
-		public void setQualitative(boolean qualitative) {
-			this.qualitative = qualitative;
+		public void setQualitative(boolean newValue) {
+			boolean oldValue = this.qualitative;
+			this.qualitative = newValue;
+			propertyChangeSupport.firePropertyChange("qualitative", oldValue, newValue);
 		}
 		public Direction getDirection() {
 			return direction;
 		}
-		public void setDirection(Direction direction) {
-			this.direction = direction;
+		public void setDirection(Direction newValue) {
+			Direction oldValue = this.direction;
+			this.direction = newValue;
+			propertyChangeSupport.firePropertyChange("direction", oldValue, newValue);
 		}
 		public String getExpr() {
 			return expr;
 		}
-		public void setExpr(String expr) {
-			this.expr = expr;
+		public void setExpr(String newValue) {
+			String oldValue = this.expr;
+			this.expr = newValue;
+			propertyChangeSupport.firePropertyChange("expr", oldValue, newValue);
 		}
 	}
 }

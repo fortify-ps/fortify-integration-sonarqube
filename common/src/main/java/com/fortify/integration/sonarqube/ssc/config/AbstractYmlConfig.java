@@ -28,7 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-public class AbstractYmlConfig {
+public class AbstractYmlConfig extends AbstractPropertyChangeSupport {
 	protected static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
 	
 	@Override

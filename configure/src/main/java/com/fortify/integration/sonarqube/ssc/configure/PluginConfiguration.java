@@ -25,6 +25,7 @@
 package com.fortify.integration.sonarqube.ssc.configure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -51,6 +52,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.stream.XMLStreamException;
 
@@ -58,11 +61,14 @@ import org.jdesktop.beansbinding.AutoBinding;
 import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
 import org.jdesktop.beansbinding.BeanProperty;
 import org.jdesktop.beansbinding.Bindings;
+import org.jdesktop.swingbinding.JListBinding;
+import org.jdesktop.swingbinding.SwingBindings;
 
 import com.fortify.client.ssc.api.SSCRulepackAPI;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 import com.fortify.integration.sonarqube.ssc.config.AbstractYmlRootConfig;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
+import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
 import com.fortify.integration.sonarqube.ssc.config.RulesConfig;
 import com.fortify.integration.sonarqube.ssc.externalmetadata.FortifyExternalMetadata;
 import com.fortify.util.rest.json.JSONMap;
@@ -71,16 +77,6 @@ import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
 import com.google.common.io.PatternFilenameFilter;
 
 import net.miginfocom.swing.MigLayout;
-import javax.swing.border.LineBorder;
-import java.awt.Color;
-import javax.swing.SwingConstants;
-import javax.swing.AbstractListModel;
-import java.util.Map;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
-import org.jdesktop.beansbinding.ELProperty;
-import org.jdesktop.beansbinding.ObjectProperty;
-import org.jdesktop.swingbinding.JListBinding;
-import org.jdesktop.swingbinding.SwingBindings;
 
 public class PluginConfiguration {
 
@@ -229,7 +225,7 @@ public class PluginConfiguration {
 		frmFortifySscSonarqube = new JFrame();
 		initDependencies(frmFortifySscSonarqube);
 		frmFortifySscSonarqube.setTitle("Fortify SSC SonarQube Plugin Configuration");
-		frmFortifySscSonarqube.setBounds(100, 100, 450, 300);
+		frmFortifySscSonarqube.setBounds(100, 100, 700, 500);
 		frmFortifySscSonarqube.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmFortifySscSonarqube.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -245,7 +241,7 @@ public class PluginConfiguration {
 		
 		comboBoxRulesSource = new JComboBox();
 		updateComboBoxRulesSource(comboBoxRulesSource);
-		panelRules.add(comboBoxRulesSource, "cell 1 0,alignx left,aligny center");
+		panelRules.add(comboBoxRulesSource, "cell 1 0,growx,aligny center");
 		
 		JButton btnUpdateFromSsc = new JButton("Update from SSC");
 		btnUpdateFromSsc.addActionListener(new ActionListener() {
@@ -275,14 +271,28 @@ public class PluginConfiguration {
 		panelMetrics.add(panelMetricAddRemoveButtons, "cell 0 0,alignx left,aligny top");
 		
 		JButton btnMetricAdd = new JButton("Add");
+		btnMetricAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metricsConfig.addMetricConfig(new MetricConfig());
+				listMetricKeys.setSelectedIndex(listMetricKeys.getModel().getSize()-1);
+				listMetricKeys.repaint();
+			}
+		});
 		btnMetricAdd.setHorizontalAlignment(SwingConstants.LEFT);
 		panelMetricAddRemoveButtons.add(btnMetricAdd);
 		
 		JButton btnRemove = new JButton("Remove");
+		btnRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metricsConfig.removeMetricConfig(metricsConfig.getMetrics().get(listMetricKeys.getSelectedIndex()));
+				listMetricKeys.repaint();
+			}
+		});
 		btnRemove.setHorizontalAlignment(SwingConstants.LEFT);
 		panelMetricAddRemoveButtons.add(btnRemove);
 		
 		listMetricKeys = new JList();
+		listMetricKeys.setSelectedIndex(0);
 		listMetricKeys.setBorder(new LineBorder(new Color(0, 0, 0)));
 		listMetricKeys.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		panelMetrics.add(listMetricKeys, "cell 0 1,grow");
