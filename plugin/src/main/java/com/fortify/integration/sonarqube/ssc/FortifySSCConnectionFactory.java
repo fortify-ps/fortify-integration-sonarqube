@@ -133,7 +133,7 @@ public class FortifySSCConnectionFactory {
 					.paramOrderBy("uploadDate", SSCOrderByDirection.DESC)
 					.paramEmbedScans()
 					.preProcessor(new JSONMapFilterSpEL(MatchMode.INCLUDE, "(_embed.scans?.get(0)?.type=='SCA' && status=='PROCESS_COMPLETE') || status matches 'PROCESSING|SCHED_PROCESSING|REQUIRE_AUTH|ERROR_PROCESSING'"))
-					.useCache(true).maxResults(1).build().getUnique();
+					.useCache(false).maxResults(1).build().getUnique();
 		}
 		
 		@Override
