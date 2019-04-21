@@ -26,11 +26,8 @@ package com.fortify.integration.sonarqube.ssc.scanner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.PropertyType;
@@ -49,9 +46,11 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.client.ssc.api.SSCIssueAPI;
+import com.fortify.client.ssc.api.SSCIssueTemplateAPI;
 import com.fortify.client.ssc.api.query.builder.SSCApplicationVersionIssuesQueryBuilder.QueryMode;
 import com.fortify.integration.sonarqube.ssc.FortifyConstants;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
+import com.fortify.util.rest.json.JSONList;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
 import com.fortify.util.rest.json.processor.IJSONMapProcessor;
@@ -81,99 +80,16 @@ public class FortifyIssuesSensor implements Sensor {
 	private static final String PRP_FILTER_SET = "sonar.fortify.ssc.filterset";
 	
 	private final FortifySSCScannerSideConnectionHelper connHelper;
-	private final Map<String, Integer> issueCounts = new HashMap<>();
-	private final Set<String> processedIssues = new HashSet<String>();
 	
-	/*
-	private final IFortifyMetricProvider[] METRIC_PROVIDERS = {
-			/* Example
-			new FortifySnapshotMetricValueRetriever(new Metric.Builder("fortify.ssc.securityRating",
-					"Fortify Security Rating (SSC)", Metric.ValueType.FLOAT).setDescription("Fortify Security Rating (SSC)")
-					.setDirection(Metric.DIRECTION_BETTER).setQualitative(true).setDomain(DOMAIN)
-					.create(), "pi['Fortify Securit yRating']"),
-			*/
-			
-			/* Old metric-related code
-			 * 
-			 private class IssueCountMetricValueRetriever extends AbstractMetricValueRetriever {
-		private final String friority;
-		public IssueCountMetricValueRetriever(String friority) {
-			this.friority = friority;
-		}
-		@Override
-		public Serializable getMetricValue(SensorContext context, Metric<Serializable> metric, FortifySSCConnectionFactory connFactory) {
-			Integer value = issueCounts.get(friority);
-			return value==null?0:value;
-		}
-	}
-			 
-			 metricsMap.put(new Metric.Builder("fortify.sonarqube.CFPO", "Critical Priority Issues (SonarQube)",
-				Metric.ValueType.INT).setDescription("Critical Issues (SonarQube)").setDirection(Metric.DIRECTION_WORST)
-				.setQualitative(true).setDomain("Fortify").create(), new IssueCountMetricValueRetriever("critical"));
-		
-		metricsMap.put(new Metric.Builder("fortify.sonarqube.HFPO", "High Priority Issues (SonarQube)",
-				Metric.ValueType.INT).setDescription("High Issues (SonarQube)").setDirection(Metric.DIRECTION_WORST)
-				.setQualitative(true).setDomain("Fortify").create(), new IssueCountMetricValueRetriever("high"));
-		
-		metricsMap.put(new Metric.Builder("fortify.sonarqube.MFPO", "Medium Priority Issues (SonarQube)",
-				Metric.ValueType.INT).setDescription("Medium Issues (SonarQube)").setDirection(Metric.DIRECTION_WORST)
-				.setQualitative(true).setDomain("Fortify").create(), new IssueCountMetricValueRetriever("medium"));
-		
-		metricsMap.put(new Metric.Builder("fortify.sonarqube.LFPO", "Low Priority Issues (SonarQube)",
-				Metric.ValueType.INT).setDescription("Low Issues (SonarQube)").setDirection(Metric.DIRECTION_WORST)
-				.setQualitative(true).setDomain("Fortify").create(), new IssueCountMetricValueRetriever("low"));
-		
-		metricsMap.put(new Metric.Builder("fortify.json.filterSets", "Relevant Filter Sets",
-				Metric.ValueType.DATA).setDescription("Relevant Filter Sets").setDirection(Metric.DIRECTION_NONE)
-				.setQualitative(false).setDomain("Fortify").setHidden(true).create(), 
-				new AbstractMetricValueRetriever() {
-					@Override
-					public Serializable getMetricValue(SensorContext context, Metric<Serializable> metric, FortifySSCConnectionFactory connFactory) {
-						JSONMap result = new JSONMap();
-						result.put("sonarqube", getSonarQubeFilterSet(context, connFactory));
-						result.put("ssc", getSSCDefaultFilterSet(connFactory));
-						return result.toString();
-					}
-				});
-		
-		metricsMap.put(new Metric.Builder("fortify.json.effectiveLanguageFilters", "Effective Language Filters",
-				Metric.ValueType.DATA).setDescription("Effective Language Filters").setDirection(Metric.DIRECTION_NONE)
-				.setQualitative(false).setDomain("Fortify").setHidden(true).create(), 
-				new AbstractMetricValueRetriever() {
-					@Override
-					public Serializable getMetricValue(SensorContext context, Metric<Serializable> metric, FortifySSCConnectionFactory connFactory) {
-						return new JSONMap(effectiveLanguageFilters).toString();
-					}
-				});
-		
-		metricsMap.put(new Metric.Builder("fortify.json.unresolvedIssues", "Unresolved Issues",
-				Metric.ValueType.DATA).setDescription("Unresolved Issue").setDirection(Metric.DIRECTION_NONE)
-				.setQualitative(false).setDomain("Fortify").setHidden(false).create(), 
-				new AbstractMetricValueRetriever() {
-					@Override
-					public Serializable getMetricValue(SensorContext context, Metric<Serializable> metric, FortifySSCConnectionFactory connFactory) {
-						final JSONList result = new JSONList();
-						JSONMap filterSet = getSonarQubeFilterSet(context, connFactory);
-						processFortifyIssues(connFactory, filterSet, new AbstractJSONMapProcessor() {
-							@Override
-							public void process(JSONMap issue) {
-								String vulnId = issue.get("id", String.class);
-								if ( !processedIssues.contains(vulnId) ) {
-									JSONMap newIssue = new JSONMap();
-									newIssue.put("path", issue.get("fullFileName", String.class));
-									newIssue.put("lineNumber", issue.get("lineNumber", String.class));
-									newIssue.put("issueName", issue.get("issueName", String.class));
-									newIssue.put("deepLink", issue.get("deepLink", String.class));
-									result.add(newIssue);
-								}
-							}
-						});
-						return result.toString();
-					}
-				});
-			 
-			 
-	}; */
+	/* Sample code for file-backed issue database (this allows us to download issues from SSC only once per scanner invocation):
+	 
+	   		DB db = DBMaker.tempFileDB()
+					.closeOnJvmShutdown().fileDeleteAfterClose()
+					.fileMmapEnableIfSupported()
+					.make();
+			Map<String, List<Object>> groups = db.hashMap("groups", Serializer.STRING, Serializer.JAVA).create();
+	 
+	 */
 	
 	/**
 	 * Constructor for injecting dependencies
@@ -195,19 +111,15 @@ public class FortifyIssuesSensor implements Sensor {
 	public void execute(SensorContext context) {
 		final String defaultMatchExpression = "(suppressed==false && hidden==false && engineCategory=='STATIC')";
 		if ( isActive(context) ) {
-			JSONMap filterSet = null; // TODO Re-implement this: getSonarQubeFilterSet(context);
+			JSONMap filterSet = getSonarQubeFilterSet(context);
 			FileSystem fs = context.fileSystem();
 			processFortifyIssues(connHelper, filterSet, new AbstractJSONMapProcessor() {	
 				@Override
 				public void process(JSONMap issue) {
-					String vulnId = issue.get("id", String.class);
-					// Skip issue if it has already been processed (for another module) 
-					if ( processedIssues.contains(vulnId) ) { return; }
 					try {
 						// Get the inputFile for the current issue
 						InputFile inputFile = getInputFile(fs, issue);
 						if ( inputFile != null ) { // Skip issue if filename doesn't belong to current module
-							processedIssues.add(vulnId);
 							ActiveRule rule = getActiveRule(context, inputFile, issue);
 							if ( rule != null ) {
 								if ( SpringExpressionUtil.evaluateExpression(issue, defaultMatchExpression, Boolean.class)) {
@@ -227,7 +139,6 @@ public class FortifyIssuesSensor implements Sensor {
 					newIssue.overrideSeverity(FortifyConstants.FRIORITY_TO_SEVERITY(friority));
 					// TODO Low: Add .addFlow(Fortify evidence flow)
 					newIssue.save();
-					addIssueCount(friority);
 				}
 
 				private void addIssueLocation(SensorContext context, NewIssue newIssue, InputFile inputFile, JSONMap issue) {
@@ -271,35 +182,22 @@ public class FortifyIssuesSensor implements Sensor {
 	 * @throws IllegalArgumentException if specified filter set cannot be found
 	 */
 	
-/* TODO Re-implement this
 	private JSONMap getSonarQubeFilterSet(SensorContext context) {
 		JSONMap filterSet = null;
+		JSONList filterSets = connHelper.getConnection().api(SSCIssueTemplateAPI.class).queryApplicationVersionFilterSets(connHelper.getApplicationVersionId()).build().getAll();
 		String filterSetGuidOrTitle = context.config().get(PRP_FILTER_SET).orElse(null);
 		if ( StringUtils.isNotBlank(filterSetGuidOrTitle) ) {
 			String matchExpr = MessageFormat.format("guid==''{0}'' || title==''{0}''", new Object[]{filterSetGuidOrTitle});
-			filterSet = connHelper.getApplicationVersion().get("filterSets", JSONList.class).find(matchExpr, true, JSONMap.class);
+			filterSet = filterSets.find(matchExpr, true, JSONMap.class);
 			if ( filterSet==null ) {
 				throw new IllegalArgumentException("Unknown filter set "+filterSetGuidOrTitle);
 			}
 		}
-		return filterSet==null ? getSSCDefaultFilterSet(connHelper) : filterSet;
+		return filterSet==null ? getSSCDefaultFilterSet(filterSets) : filterSet;
 	}
 	
-	private JSONMap getSSCDefaultFilterSet(FortifySSCScannerSideConnectionHelper connFactory) {
-		return connFactory.getApplicationVersion().get("filterSets", JSONList.class).find("defaultFilterSet", true, JSONMap.class);
-	}
-*/
-
-	/**
-	 * Add 1 issue to the issue count for the given friority
-	 * @param friority for which to add an issue to the issue count
-	 */
-	private void addIssueCount(String friority) {
-		Integer count = issueCounts.get(friority);
-		if ( count == null ) {
-			count = 0;
-		}
-		issueCounts.put(friority, count+1);
+	private JSONMap getSSCDefaultFilterSet(JSONList filterSets) {
+		return filterSets.find("defaultFilterSet", true, JSONMap.class);
 	}
 
 	/**
@@ -309,7 +207,7 @@ public class FortifyIssuesSensor implements Sensor {
 	 */
 	protected void processFortifyIssues(FortifySSCScannerSideConnectionHelper connFactory, JSONMap filterSet, IJSONMapProcessor processor) {
 		connFactory.getConnection().api(SSCIssueAPI.class).queryIssues(connFactory.getApplicationVersionId())
-			//.paramFilterSet(filterSet.get("guid",String.class)) TODO Re-implement this
+			.paramFilterSet(filterSet.get("guid",String.class))
 			.includeHidden(false)
 			.includeRemoved(false)
 			.includeSuppressed(false)
@@ -338,8 +236,8 @@ public class FortifyIssuesSensor implements Sensor {
 				.defaultValue("true")
 				.build());
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FILTER_SET)
-				.name("Filter set id")
-				.description("Filter set id used to retrieve issue data from SSC (optional)")
+				.name("Filter set name/id")
+				.description("Filter set name or id used to retrieve issue data from SSC (optional)")
 				.type(PropertyType.STRING)
 				.onQualifiers(Qualifiers.PROJECT)
 				.build());
