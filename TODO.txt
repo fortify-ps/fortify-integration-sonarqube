@@ -8,26 +8,19 @@ Plugin:
   - Configurable mapping between friority and SonarQube severity
   - Configurable support for using folder instead of friority to determine SonarQube severity
   - Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
-- FPR file is not uploaded if issue collection is disabled
+  - Why is Fortify profile selected instead of Java profile?
 - Web pages 
   - Show information similar to previous widget
-- Clean up/remove FortifyConstants
-- Remove code duplication between MetricValueTypeHelper and MetricsConfig (both have functionality for mapping metric types to Java types)
-- Refactoring:
-  - IFortifyMetricsProvider must be enabled for all SQ sides (due to providing metric definitions), but this means
-    that any component implementing this interface is automatically enabled for all SQ sides. This means that any
-    dependencies for such a component must also be enabled for all sides, for example FortifySSCConnectionFactory.
-    At the moment having FortifySSCConnectionFactory available on server/CE side doesn't make sense, as it doesn't
-    receive batch-side configuration options like current SSC application name and version.
-  - Refactor FortifySSCConnectionFactory such that it can be used on all sides (also see below about MeasureComputer)
+- Clean-up/remove FortifyConstants
+- Clean-up & generalize code for passing SSC connection properties from scanner-side to compute-engine side
+- Add error handling, for example don't fail complete scan if metric calculation in FortifyConfigurableMetricsProvider fails (for example due to incorrect SpEL expression)
+- Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
+  - Apparently measures cannot be saved on modules with packaging type pom 
   
 Metrics:
 - Add support and default metrics for folder counts
 - Add support for default value if no value available from SSC?
-- Add support for retrieving metrics in MeasureComputer instead of Sensor
-  - Save SSC URL, credentials and applicationVersionNameOrId in metrics
-  - In MeasureComputer, use these metrics to configure new connection to SSC
-
+- Fortify security rating -> SonarQube rating (RATING metric type) in metrics.yml
 
 Configuration utility:
 - Hide MetricDetailsPanel if no item selected in listMetrics

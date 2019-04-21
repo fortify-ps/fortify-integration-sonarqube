@@ -30,7 +30,7 @@ metrics:
   name: "Fortify Security Rating"
   domain: "Fortify - SSC Performance Indicators"
   description: "Fortify Security Rating"
-  type: "FLOAT"
+  type: "INT"
   qualitative: true
   direction: "BETTER"
   expr: "pi['Fortify Security Rating']"

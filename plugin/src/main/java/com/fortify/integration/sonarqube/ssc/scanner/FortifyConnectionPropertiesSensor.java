@@ -22,47 +22,49 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.metric;
+package com.fortify.integration.sonarqube.ssc.scanner;
 
-import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
+import org.sonar.api.measures.Metrics;
 
-import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
-import com.fortify.integration.sonarqube.ssc.metric.provider.IFortifyMetricsProvider;
-
-public class FortifyMetricsSensor implements Sensor {
-	private static final Logger LOG = Loggers.get(FortifyMetricsSensor.class);
-	private final IFortifyMetricsProvider[] metricsProviders;
-	private final FortifySSCConnectionFactory connFactory;
-	public FortifyMetricsSensor(IFortifyMetricsProvider[] metricsProviders, FortifySSCConnectionFactory connFactory) {
-		this.metricsProviders = metricsProviders;
-		this.connFactory = connFactory;
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class FortifyConnectionPropertiesSensor implements Sensor {
+	public static final String PRP_SSC_URL = "fortify.sscUrl";
+	public static final String PRP_APP_VERSION_ID = "fortify.sscApplicationVersionId";
+	private static final Metric METRIC_SSC_URL = new Metric.Builder(PRP_SSC_URL, "SSC URL", Metric.ValueType.STRING)
+			.setDomain("Fortify").setHidden(true).create();
+	private static final Metric METRIC_SSC_APP_VERSION_ID = new Metric.Builder(PRP_APP_VERSION_ID, "SSC Application Version Id", Metric.ValueType.STRING)
+			.setDomain("Fortify").setHidden(true).create();
+	
+	private static final List<Metric> METRICS = Arrays.asList(new Metric[] {METRIC_SSC_URL, METRIC_SSC_APP_VERSION_ID});
+	
+	private final FortifySSCScannerSideConnectionHelper connHelper;
+	
+	public FortifyConnectionPropertiesSensor(FortifySSCScannerSideConnectionHelper connHelper) {
+		this.connHelper = connHelper;
 	}
-
+	
 	@Override
 	public void describe(SensorDescriptor descriptor) {
-		descriptor.name("Calculate Fortify metrics");
+		descriptor.name("Set connection properties for compute engine");
 	}
 
 	@Override
 	public void execute(SensorContext context) {
-		Arrays.asList(metricsProviders).forEach(mps -> mps.getMetricProviders().forEach(mp -> {
-			Metric<Serializable> metric = mp.getMetric();
-			Serializable value = mp.getValue(context, connFactory);
-			if ( value == null ) {
-				LOG.debug("Not adding null value for metric "+metric.getKey());
-			} else {
-				LOG.debug("Adding metric "+metric.getKey()+" with value "+value);
-				context.newMeasure().forMetric(metric).on(context.module()).withValue(value).save();
-			}
-		}));
+		context.newMeasure().forMetric(METRIC_SSC_URL).on(context.module()).withValue(connHelper.getSSCUrl()).save();
+		context.newMeasure().forMetric(METRIC_SSC_APP_VERSION_ID).on(context.module()).withValue(connHelper.getApplicationVersionId()).save();
 	}
 
+	public static final class MetricsImpl implements Metrics {
+		@Override
+		public List<Metric> getMetrics() {
+			return METRICS;
+		}
+	}
 }

@@ -33,26 +33,37 @@ import java.util.List;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 
-import com.fortify.integration.sonarqube.ssc.issue.FortifyIssueMetricsAndSensor;
-import com.fortify.integration.sonarqube.ssc.metric.FortifyMetrics;
-import com.fortify.integration.sonarqube.ssc.metric.FortifyMetricsSensor;
-import com.fortify.integration.sonarqube.ssc.metric.provider.FortifyConfigurableMetricsProvider;
+import com.fortify.integration.sonarqube.ssc.ce.FortifyConfigurableMetricsProvider;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
+import com.fortify.integration.sonarqube.ssc.scanner.FortifyConnectionPropertiesSensor;
+import com.fortify.integration.sonarqube.ssc.scanner.FortifyIssuesSensor;
+import com.fortify.integration.sonarqube.ssc.scanner.FortifySSCScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.ssc.scanner.FortifyUploadFPRStartable;
 
 /**
  * This main plugin class adds all relevant SonarQube extension points that make
  * up this Fortify integration.
  */
 public class FortifySSCPlugin implements Plugin {
-	private static Class<?>[] extensions = { 
-			FortifySSCConnectionFactory.class,
+	private static Class<?>[] extensions = {
+			// Rules, language and quality profile
 			FortifyRulesDefinition.class, 
 			FortifyLanguage.class,
 			FortifyProfile.class, 
-			FortifyIssueMetricsAndSensor.class,
-			FortifyConfigurableMetricsProvider.class,
-			FortifyMetrics.class,
-			FortifyMetricsSensor.class};
+			
+			// SSC connection properties 
+			FortifySSCConnectionProperties.class,
+			
+			// Scanner-side extensions
+			FortifySSCScannerSideConnectionHelper.class,
+			FortifyUploadFPRStartable.class,
+			FortifyConnectionPropertiesSensor.MetricsImpl.class,
+			FortifyConnectionPropertiesSensor.class,
+			FortifyIssuesSensor.class,
+			
+			// ComputeEngine-side extensions
+			FortifyConfigurableMetricsProvider.MetricsImpl.class,
+			FortifyConfigurableMetricsProvider.class};
 
 	@Override
 	public void define(Context context) {

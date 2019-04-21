@@ -22,13 +22,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.issue;
+package com.fortify.integration.sonarqube.ssc.scanner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,11 +51,7 @@ import org.sonar.api.utils.log.Loggers;
 import com.fortify.client.ssc.api.SSCIssueAPI;
 import com.fortify.client.ssc.api.query.builder.SSCApplicationVersionIssuesQueryBuilder.QueryMode;
 import com.fortify.integration.sonarqube.ssc.FortifyConstants;
-import com.fortify.integration.sonarqube.ssc.FortifySSCConnectionFactory;
-import com.fortify.integration.sonarqube.ssc.metric.provider.IFortifyMetricProvider;
-import com.fortify.integration.sonarqube.ssc.metric.provider.IFortifyMetricsProvider;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
-import com.fortify.util.rest.json.JSONList;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
 import com.fortify.util.rest.json.processor.IJSONMapProcessor;
@@ -82,15 +75,16 @@ import com.fortify.util.spring.SpringExpressionUtil;
  * Configure SSC search string in plugin configuration instead of rule configuration?
  * Report all issues on generic Fortify rule? Disables language-based filtering in SQ UI, but makes configuration of plugin easier (no need to activate rules) 
  */
-public class FortifyIssueMetricsAndSensor implements Sensor, IFortifyMetricsProvider {
-	private static final Logger LOG = Loggers.get(FortifyIssueMetricsAndSensor.class);
+public class FortifyIssuesSensor implements Sensor {
+	private static final Logger LOG = Loggers.get(FortifyIssuesSensor.class);
 	private static final String PRP_ENABLE_ISSUES = "sonar.fortify.issues.enable";
 	private static final String PRP_FILTER_SET = "sonar.fortify.ssc.filterset";
 	
-	private final FortifySSCConnectionFactory connFactory;
+	private final FortifySSCScannerSideConnectionHelper connHelper;
 	private final Map<String, Integer> issueCounts = new HashMap<>();
 	private final Set<String> processedIssues = new HashSet<String>();
 	
+	/*
 	private final IFortifyMetricProvider[] METRIC_PROVIDERS = {
 			/* Example
 			new FortifySnapshotMetricValueRetriever(new Metric.Builder("fortify.ssc.securityRating",
@@ -178,19 +172,15 @@ public class FortifyIssueMetricsAndSensor implements Sensor, IFortifyMetricsProv
 					}
 				});
 			 
-			 */
-	};
+			 
+	}; */
 	
-	@Override
-	public Collection<IFortifyMetricProvider> getMetricProviders() {
-		return Arrays.asList(METRIC_PROVIDERS);
-	}
 	/**
 	 * Constructor for injecting dependencies
 	 * @param connFactory
 	 */
-	public FortifyIssueMetricsAndSensor(FortifySSCConnectionFactory connFactory) {
-		this.connFactory = connFactory;
+	public FortifyIssuesSensor(FortifySSCScannerSideConnectionHelper connFactory) {
+		this.connHelper = connFactory;
 	}
 	
 	@Override
@@ -205,9 +195,9 @@ public class FortifyIssueMetricsAndSensor implements Sensor, IFortifyMetricsProv
 	public void execute(SensorContext context) {
 		final String defaultMatchExpression = "(suppressed==false && hidden==false && engineCategory=='STATIC')";
 		if ( isActive(context) ) {
-			JSONMap filterSet = getSonarQubeFilterSet(context);
+			JSONMap filterSet = null; // TODO Re-implement this: getSonarQubeFilterSet(context);
 			FileSystem fs = context.fileSystem();
-			processFortifyIssues(connFactory, filterSet, new AbstractJSONMapProcessor() {	
+			processFortifyIssues(connHelper, filterSet, new AbstractJSONMapProcessor() {	
 				@Override
 				public void process(JSONMap issue) {
 					String vulnId = issue.get("id", String.class);
@@ -280,22 +270,25 @@ public class FortifyIssueMetricsAndSensor implements Sensor, IFortifyMetricsProv
 	 * @return JSONObject representing the specified filter set, or the default filter set if not specified
 	 * @throws IllegalArgumentException if specified filter set cannot be found
 	 */
+	
+/* TODO Re-implement this
 	private JSONMap getSonarQubeFilterSet(SensorContext context) {
 		JSONMap filterSet = null;
 		String filterSetGuidOrTitle = context.config().get(PRP_FILTER_SET).orElse(null);
 		if ( StringUtils.isNotBlank(filterSetGuidOrTitle) ) {
 			String matchExpr = MessageFormat.format("guid==''{0}'' || title==''{0}''", new Object[]{filterSetGuidOrTitle});
-			filterSet = connFactory.getApplicationVersion().get("filterSets", JSONList.class).find(matchExpr, true, JSONMap.class);
+			filterSet = connHelper.getApplicationVersion().get("filterSets", JSONList.class).find(matchExpr, true, JSONMap.class);
 			if ( filterSet==null ) {
 				throw new IllegalArgumentException("Unknown filter set "+filterSetGuidOrTitle);
 			}
 		}
-		return filterSet==null ? getSSCDefaultFilterSet(connFactory) : filterSet;
+		return filterSet==null ? getSSCDefaultFilterSet(connHelper) : filterSet;
 	}
 	
-	private JSONMap getSSCDefaultFilterSet(FortifySSCConnectionFactory connFactory) {
+	private JSONMap getSSCDefaultFilterSet(FortifySSCScannerSideConnectionHelper connFactory) {
 		return connFactory.getApplicationVersion().get("filterSets", JSONList.class).find("defaultFilterSet", true, JSONMap.class);
 	}
+*/
 
 	/**
 	 * Add 1 issue to the issue count for the given friority
@@ -314,9 +307,9 @@ public class FortifyIssueMetricsAndSensor implements Sensor, IFortifyMetricsProv
 	 * @param conn
 	 * @param processor
 	 */
-	protected void processFortifyIssues(FortifySSCConnectionFactory connFactory, JSONMap filterSet, IJSONMapProcessor processor) {
-		connFactory.getConnectionWithArtifactProcessing().api(SSCIssueAPI.class).queryIssues(connFactory.getApplicationVersionId())
-			.paramFilterSet(filterSet.get("guid",String.class))
+	protected void processFortifyIssues(FortifySSCScannerSideConnectionHelper connFactory, JSONMap filterSet, IJSONMapProcessor processor) {
+		connFactory.getConnection().api(SSCIssueAPI.class).queryIssues(connFactory.getApplicationVersionId())
+			//.paramFilterSet(filterSet.get("guid",String.class)) TODO Re-implement this
 			.includeHidden(false)
 			.includeRemoved(false)
 			.includeSuppressed(false)
@@ -330,7 +323,7 @@ public class FortifyIssueMetricsAndSensor implements Sensor, IFortifyMetricsProv
 	 */
 	private final boolean isActive(SensorContext context) {
 		// Check whether connection is available
-		boolean result = connFactory.isConnectionAvailable();
+		boolean result = connHelper.isConnectionAvailable();
 		// Check whether issue collection is enabled
 		result &= context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
 		// TODO Check whether there are any active Fortify rules
