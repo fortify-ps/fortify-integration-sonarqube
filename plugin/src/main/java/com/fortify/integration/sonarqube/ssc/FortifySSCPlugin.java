@@ -33,9 +33,9 @@ import java.util.List;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 
-import com.fortify.integration.sonarqube.ssc.ce.FortifyConfigurableMetricsProvider;
+import com.fortify.integration.sonarqube.ssc.ce.FortifyConfigurableMeasureComputer;
+import com.fortify.integration.sonarqube.ssc.ce.FortifySSCComputeEngineSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
-import com.fortify.integration.sonarqube.ssc.scanner.FortifyConnectionPropertiesSensor;
 import com.fortify.integration.sonarqube.ssc.scanner.FortifyIssuesSensor;
 import com.fortify.integration.sonarqube.ssc.scanner.FortifySSCScannerSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.scanner.FortifyUploadFPRStartable;
@@ -51,19 +51,25 @@ public class FortifySSCPlugin implements Plugin {
 			FortifyLanguage.class,
 			FortifyProfile.class, 
 			
-			// SSC connection properties 
+			// Scanner-side extensions for handling SSC connection
 			FortifySSCConnectionProperties.class,
+			FortifySSCScannerSideConnectionHelper.class,
+			
+			// ComputeEngine-side extensions for handling SSC connection,
+			// including scanner-side sensor for passing connection properties
+			// from scanner-side to compute engine side
+			FortifySSCComputeEngineSideConnectionHelper.SensorImpl.class,
+			FortifySSCComputeEngineSideConnectionHelper.MetricsImpl.class,
+			FortifySSCComputeEngineSideConnectionHelper.class,
 			
 			// Scanner-side extensions
-			FortifySSCScannerSideConnectionHelper.class,
 			FortifyUploadFPRStartable.class,
-			FortifyConnectionPropertiesSensor.MetricsImpl.class,
-			FortifyConnectionPropertiesSensor.class,
 			FortifyIssuesSensor.class,
 			
 			// ComputeEngine-side extensions
-			FortifyConfigurableMetricsProvider.MetricsImpl.class,
-			FortifyConfigurableMetricsProvider.class};
+			FortifyConfigurableMeasureComputer.MetricsImpl.class,
+			FortifyConfigurableMeasureComputer.class
+	};
 
 	@Override
 	public void define(Context context) {

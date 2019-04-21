@@ -77,7 +77,7 @@ public class FortifyUploadFPRStartable implements Startable {
 	@Override
 	public void start() {
 		String fprFileName = config.get(PRP_UPLOAD_FPR).orElse(null);
-		if ( StringUtils.isNotBlank(fprFileName) ) {
+		if ( connHelper.isConnectionAvailable() && StringUtils.isNotBlank(fprFileName) ) {
 			checkArtifactStatus(uploadFPRAndWaitForProcessingToComplete(fprFileName));
 		}
 	}

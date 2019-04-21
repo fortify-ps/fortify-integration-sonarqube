@@ -65,8 +65,8 @@ public class FortifySSCScannerSideConnectionHelper {
 	
 	public final synchronized String getApplicationVersionId() {
 		String applicationVersionNameOrId = getApplicationVersionNameOrId();
-		if ( applicationVersionId==null && connection!=null && StringUtils.isNotBlank(applicationVersionNameOrId) ) {
-			JSONMap applicationVersion = connection.api(SSCApplicationVersionAPI.class).queryApplicationVersions()
+		if ( applicationVersionId==null && StringUtils.isNotBlank(applicationVersionNameOrId) && getConnection()!=null ) {
+			JSONMap applicationVersion = getConnection().api(SSCApplicationVersionAPI.class).queryApplicationVersions()
 					.nameOrId(applicationVersionNameOrId)
 					.paramFields("id")
 					.build().getUnique();

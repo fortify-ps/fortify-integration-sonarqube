@@ -25,13 +25,16 @@
 package com.fortify.integration.sonarqube.ssc.ce;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.sonar.api.ce.measure.Component;
-import org.sonar.api.ce.measure.MeasureComputer;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metrics;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.client.ssc.annotation.SSCCopyToConstructors;
 import com.fortify.client.ssc.api.SSCApplicationVersionAPI;
@@ -40,7 +43,6 @@ import com.fortify.client.ssc.api.query.builder.SSCOrderByDirection;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
-import com.fortify.integration.sonarqube.ssc.scanner.FortifyConnectionPropertiesSensor;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.ondemand.AbstractJSONMapOnDemandLoaderWithConnection;
 import com.fortify.util.rest.json.preprocessor.enrich.JSONMapEnrichWithOnDemandJSONMapFromJSONList;
@@ -50,44 +52,30 @@ import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
 import com.fortify.util.spring.SpringExpressionUtil;
 
 @SuppressWarnings("rawtypes")
-public class FortifyConfigurableMetricsProvider implements MeasureComputer {
+public class FortifyConfigurableMeasureComputer extends AbstractFortifyMeasureComputerWithConnectionHelper {
+	private static final Logger LOG = Loggers.get(FortifyConfigurableMeasureComputer.class);
 	private static final MetricsConfig METRICS_CONFIG = MetricsConfig.load();
 	private static final List<Metric> METRICS = _getMetrics();
 	
 	@Override
-	public MeasureComputerDefinition define(MeasureComputerDefinitionContext defContext) {
-		return defContext.newDefinitionBuilder()
-			.setInputMetrics(FortifyConnectionPropertiesSensor.PRP_SSC_URL, FortifyConnectionPropertiesSensor.PRP_APP_VERSION_ID)
-			.setOutputMetrics(METRICS.stream().map(Metric::getKey).collect(Collectors.toList()).toArray(new String[] {}))
-			.build();
+	protected String[] getOutputMetricKeys() {
+		return METRICS.stream().map(Metric::getKey).collect(Collectors.toList()).toArray(new String[] {});
 	}
 	
 	@Override
-	public void compute(MeasureComputerContext context) {
-		if ( context.getComponent().getType() == Component.Type.PROJECT ) {
-			String sscUrl = context.getMeasure(FortifyConnectionPropertiesSensor.PRP_SSC_URL).getStringValue();
-			String applicationVersionId = context.getMeasure(FortifyConnectionPropertiesSensor.PRP_APP_VERSION_ID).getStringValue();
-			
-			// TODO Remove these System.out statements
-			System.out.println("SSC URL: "+sscUrl);
-			System.out.println("SSC app version id: "+applicationVersionId);
-			
-			SSCAuthenticatingRestConnection conn = SSCAuthenticatingRestConnection.builder().baseUrl(sscUrl).build();
-			JSONMap applicationVersion = conn.api(SSCApplicationVersionAPI.class).queryApplicationVersions()
-					.id(applicationVersionId)
-					.onDemandFilterSets()
-					.onDemandPerformanceIndicatorHistories()
-					.onDemandVariableHistories()
-					// Add convenience properties for defining custom metrics
-					.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("var", "variableHistories", "name", "value", true))
-					.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("pi", "performanceIndicatorHistories", "name", "value", true))
-					.preProcessor(new JSONMapEnrichWithOnDemandProperty("scaArtifact", new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
-					.build().getUnique();
-			if ( applicationVersion==null ) {
-				throw new IllegalArgumentException("SSC application version "+applicationVersionId+" not found");
-			}
-			for ( MetricConfig mc : METRICS_CONFIG.getMetrics() ) {
-				// TODO Any better way for implementing this?
+	protected Set<Component.Type> getSupportedComponentTypes() {
+		return Collections.singleton(Component.Type.PROJECT);
+	}
+	
+	@Override
+	public void compute(MeasureComputerContext context, FortifySSCComputeEngineSideConnectionHelper connHelper) {
+		addMeasures(context, getApplicationVersionData(connHelper));
+	}
+
+	private void addMeasures(MeasureComputerContext context, JSONMap applicationVersion) {
+		for ( MetricConfig mc : METRICS_CONFIG.getMetrics() ) {
+			// TODO Any better way for implementing this?
+			try {
 				Object value = SpringExpressionUtil.evaluateExpression(applicationVersion, mc.getExpr(), mc.getType().valueType());
 				if ( value != null ) {
 					switch ( mc.getType() ) {
@@ -108,8 +96,29 @@ public class FortifyConfigurableMetricsProvider implements MeasureComputer {
 							break;
 					}
 				}
+			} catch ( RuntimeException e ) {
+				LOG.error("Error computing metric "+mc.getKey()+" (expression: "+mc.getExpr()+")", e);
 			}
 		}
+	}
+
+	private JSONMap getApplicationVersionData(FortifySSCComputeEngineSideConnectionHelper connHelper) {
+		SSCAuthenticatingRestConnection conn = connHelper.getConnection();
+		String applicationVersionId = connHelper.getApplicationVersionId();
+		JSONMap applicationVersion = connHelper.getConnection().api(SSCApplicationVersionAPI.class).queryApplicationVersions()
+				.id(applicationVersionId)
+				.onDemandFilterSets()
+				.onDemandPerformanceIndicatorHistories()
+				.onDemandVariableHistories()
+				// Add convenience properties for defining custom metrics
+				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("var", "variableHistories", "name", "value", true))
+				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("pi", "performanceIndicatorHistories", "name", "value", true))
+				.preProcessor(new JSONMapEnrichWithOnDemandProperty("scaArtifact", new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
+				.build().getUnique();
+		if ( applicationVersion==null ) {
+			throw new IllegalArgumentException("SSC application version "+applicationVersionId+" not found");
+		}
+		return applicationVersion;
 	}
 	
 	private static final List<Metric> _getMetrics() {

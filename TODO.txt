@@ -1,3 +1,5 @@
+
+
 Update README.md
 
 Plugin:
@@ -12,8 +14,7 @@ Plugin:
 - Web pages 
   - Show information similar to previous widget
 - Clean-up/remove FortifyConstants
-- Clean-up & generalize code for passing SSC connection properties from scanner-side to compute-engine side
-- Add error handling, for example don't fail complete scan if metric calculation in FortifyConfigurableMetricsProvider fails (for example due to incorrect SpEL expression)
+- Add/improve error handling
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
   - Apparently measures cannot be saved on modules with packaging type pom 
 - Check whether hidden metric to pass SSC URL/credentials is somehow visible (for example through API)
