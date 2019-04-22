@@ -118,6 +118,10 @@
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
 			<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

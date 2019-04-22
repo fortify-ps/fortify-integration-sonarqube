@@ -80,23 +80,15 @@ public class FortifyIssuesSensor implements Sensor {
 	private static final String PRP_FILTER_SET = "sonar.fortify.ssc.filterset";
 	
 	private final FortifySSCScannerSideConnectionHelper connHelper;
-	
-	/* Sample code for file-backed issue database (this allows us to download issues from SSC only once per scanner invocation):
-	 
-	   		DB db = DBMaker.tempFileDB()
-					.closeOnJvmShutdown().fileDeleteAfterClose()
-					.fileMmapEnableIfSupported()
-					.make();
-			Map<String, List<Object>> groups = db.hashMap("groups", Serializer.STRING, Serializer.JAVA).create();
-	 
-	 */
+	private final FortifyIssueHelper issueHelper; // TODO Use this
 	
 	/**
 	 * Constructor for injecting dependencies
 	 * @param connFactory
 	 */
-	public FortifyIssuesSensor(FortifySSCScannerSideConnectionHelper connFactory) {
+	public FortifyIssuesSensor(FortifySSCScannerSideConnectionHelper connFactory, FortifyIssueHelper issueHelper) {
 		this.connHelper = connFactory;
+		this.issueHelper = issueHelper;
 	}
 	
 	@Override
