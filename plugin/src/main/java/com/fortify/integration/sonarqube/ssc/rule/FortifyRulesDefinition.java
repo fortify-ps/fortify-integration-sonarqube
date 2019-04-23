@@ -46,21 +46,26 @@ public class FortifyRulesDefinition implements RulesDefinition {
 	public static final String REPOSITORY_KEY = "fortify";
 	public static final String RULE_KEY_OTHER = "fortify.other";
 	private static final FortifyExternalMetadata externalMetadata = FortifyExternalMetadata.parse(); 
+	private static final ExternalList externalList = _getExternalList();
 	
-	private ExternalList getExternalList() {
+	private static ExternalList _getExternalList() {
 		String rulesSourceName = RulesConfig.load().getRulesSourceName();
 		return externalMetadata==null || StringUtils.isBlank(rulesSourceName) || RulesConfig.SINGLE_RULE_SOURCE_NAME.equals(rulesSourceName) 
 				? null : externalMetadata.getExternalListByName(rulesSourceName);
+	}
+	
+	public static final String getExternalListId() {
+		return externalList==null ? null : externalList.getId();
 	}
 	
 	@Override
 	public void define(Context context) {
 		NewRepository repo = context.createRepository(REPOSITORY_KEY, FortifyConstants.FTFY_LANGUAGE_KEY);
 		repo.setName("Fortify");
-		ExternalList externalList = getExternalList();
 		if ( externalList != null ) {
 			for ( ExternalCategory category : externalList.getExternalCategories().values() ) {
 				repo.createRule(category.getId())
+					.setInternalKey(category.getName())
 					.setName(category.getName())
 					.setHtmlDescription(category.getDescription())
 					.setType(RuleType.VULNERABILITY)
@@ -69,6 +74,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 			}
 		}
 		repo.createRule(RULE_KEY_OTHER)
+			.setInternalKey(externalList==null?null:"[NONE]")
 			.setName("Other")
 			.setHtmlDescription("This SonarQube rule is used for any vulnerabilities that are not mapped to any external category.")
 			.setType(RuleType.VULNERABILITY)
@@ -79,7 +85,6 @@ public class FortifyRulesDefinition implements RulesDefinition {
 	
 	public Collection<String> getRuleKeys() {
 		List<String> result = new ArrayList<>();
-		ExternalList externalList = getExternalList();
 		if ( externalList != null ) {
 			externalList.getExternalCategories().values().forEach(c -> result.add(c.getId()));
 		}
