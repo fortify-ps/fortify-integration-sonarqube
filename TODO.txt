@@ -5,16 +5,15 @@ Update README.md
 Plugin:
 - Issue collection
   - SCA, Other (WebInspect, SonaType, ...)?
-  - Retrieve only issue fields that are actually necessary for plugin operation
-  - Cache issues (see FortifyBugTrackerUtility for disk-backed map example used for grouping)
+  - Works for SQ 7.6, doesn't work for 6.7.7, not sure about versions inbetween
+    - SQ 7.6 provides a project-level filesystem, whereas earlier versions only provide filesystems for individual modules
+    - For older versions we may need to revert to the older method of reporting issues per module, but we should cache issue data to prevent re-loading issues from SSC for every module
   - Configurable mapping between friority and SonarQube severity
   - Configurable support for using folder instead of friority to determine SonarQube severity
   - Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
-  - Why is Fortify profile selected instead of Java profile?
 - Web pages 
   - Show information similar to previous widget
 - Clean-up/remove FortifyConstants
-- Clean-up FortifyIssueHelper/FortifyIssueSensor
 - Add/improve error handling
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
   - Apparently measures cannot be saved on modules with packaging type pom 
@@ -38,5 +37,7 @@ Build:
 - Remove unnecessary elements in pom.xml files if already defined in parent
 - Fix warnings
 
-Test:
-- Multi-module project
+Tests:
+- Multi-module project/Single-module project
+- Sonar Scanner/Maven scanner
+- Different SonarQube versions
