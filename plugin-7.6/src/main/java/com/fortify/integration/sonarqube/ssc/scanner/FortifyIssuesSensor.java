@@ -206,6 +206,7 @@ public class FortifyIssuesSensor extends FortifyAbstractProjectSensor {
 				.type(PropertyType.STRING)
 				.onQualifiers(Qualifiers.PROJECT)
 				.build());
+		// TODO Add property to specify whether non-SCA results should be loaded into SonarQube
 	}
 	
 	private static final class FortifyIssueProcessor extends AbstractJSONMapProcessor {
@@ -256,7 +257,7 @@ public class FortifyIssuesSensor extends FortifyAbstractProjectSensor {
 		private void addIssueLocation(NewIssue newIssue, InputProject inputProject, JSONMap issue) {
 			NewIssueLocation primaryLocation = newIssue.newLocation()
 					.on(inputProject)
-					.message(getIssueMessage(issue));
+					.message(getIssueMessage(issue)); //TODO Add Fortify issue location to message
 			newIssue.at(primaryLocation);
 		}
 		
