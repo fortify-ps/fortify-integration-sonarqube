@@ -2,22 +2,27 @@
 
 Update README.md
 
-Plugin:
-- Issue collection
-  - SCA, Other (WebInspect, SonaType, ...)?
-  - Works for SQ 7.6, doesn't work for 6.7.7, not sure about versions inbetween
-    - SQ 7.6 provides a project-level filesystem, whereas earlier versions only provide filesystems for individual modules
-    - For older versions we may need to revert to the older method of reporting issues per module, but we should cache issue data to prevent re-loading issues from SSC for every module
-  - Configurable mapping between friority and SonarQube severity
-  - Configurable support for using folder instead of friority to determine SonarQube severity
-  - Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
+Plugin general:
+- Remove code duplication between 7.7 and 7.6 plugins
+- Configurable mapping between friority and SonarQube severity
+- Configurable support for using folder instead of friority to determine SonarQube severity
+- Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
 - Web pages 
   - Show information similar to previous widget
 - Clean-up/remove FortifyConstants
 - Add/improve error handling
+- Check whether hidden metric to pass SSC URL/credentials is somehow visible (for example through API)
+
+Plugin 6.7:
+- Current functionality works OK, still general items to be implemented
+
+Plugin 7.6:
+- Fix issue collection
+  - SQ versions before 7.6 only provide filesystems for individual modules
+  - We may need to revert to the older method of reporting issues per module, but we should cache issue data to prevent re-loading issues from SSC for every module
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
   - Apparently measures cannot be saved on modules with packaging type pom 
-- Check whether hidden metric to pass SSC URL/credentials is somehow visible (for example through API)
+
   
 Metrics:
 - Add support and default metrics for folder counts

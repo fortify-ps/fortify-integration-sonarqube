@@ -32,60 +32,42 @@
 	<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
 	<packaging>jar</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin - Common</name>
-	<url>https://software.microfocus.com/en-us/software/application-security</url>
-	<organization>
-		<name>Micro Focus Fortify</name>
-		<url>https://software.microfocus.com/en-us/software/application-security</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<id>rsenden</id>
-			<name>Ruud Senden</name>
-			<organization>Micro Focus Fortify</organization>
-		</developer>
-	</developers>
-	<scm>
-		<developerConnection>scm:git:https://github.com/fortify-ps/fortify-integration-sonarqube-ssc</developerConnection>
-		<tag>master</tag>
-	</scm>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
+			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+			<artifactId>fortify-ssc-sonarqube-plugin-config-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
+			<groupId>com.fortify.client.api</groupId>
+			<artifactId>client-api-ssc</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jul</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jcl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.staxmate</groupId>
-			<artifactId>staxmate</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.junit.jupiter</groupId>
-		    <artifactId>junit-jupiter-api</artifactId>
-		    <version>5.4.2</version>
-		    <scope>test</scope>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

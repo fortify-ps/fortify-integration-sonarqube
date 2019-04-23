@@ -48,7 +48,7 @@
 		</developer>
 	</developers>
 	<scm>
-		<developerConnection>scm:git:https://github.com/fod-dev/FoDBugTrackerUtility.git</developerConnection>
+		<developerConnection>scm:git:https://github.com/fortify-ps/fortify-integration-sonarqube-ssc.git</developerConnection>
 		<tag>master</tag>
 	</scm>
 	<inceptionYear>2016</inceptionYear>
@@ -67,8 +67,10 @@
 		</repository>
 	</repositories>
 	<modules>
-		<module>common</module>
-		<module>plugin</module>
+		<module>config-common</module>
+		<module>plugin-common</module>
+		<module>plugin-6.7</module>
+		<module>plugin-7.6</module>
 		<module>configure</module>
 		<module>dist</module>
 	</modules>
@@ -83,13 +85,25 @@
 			</dependency>
 			<dependency>
 				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+				<artifactId>fortify-ssc-sonarqube-plugin-config-common</artifactId>
+				<version>${project.version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
 				<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-				<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
+				<artifactId>fortify-ssc-sonarqube-plugin-6.7</artifactId>
+				<version>${project.version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
+				<artifactId>fortify-ssc-sonarqube-plugin-7.6</artifactId>
 				<version>${project.version}</version>
 				<scope>compile</scope>
 			</dependency>

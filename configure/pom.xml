@@ -32,49 +32,6 @@
 	<artifactId>fortify-ssc-sonarqube-plugin-configure</artifactId>
 	<packaging>jar</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin - Configuration Tool</name>
-	<url>https://software.microfocus.com/en-us/software/application-security</url>
-	<organization>
-		<name>Micro Focus Fortify</name>
-		<url>https://software.microfocus.com/en-us/software/application-security</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<id>rsenden</id>
-			<name>Ruud Senden</name>
-			<organization>Micro Focus Fortify</organization>
-		</developer>
-	</developers>
-	<scm>
-		<developerConnection>scm:git:https://github.com/fortify-ps/fortify-integration-sonarqube-ssc</developerConnection>
-		<tag>master</tag>
-	</scm>
-	<properties>
-		<project.build.sourceEncoding>cp1252</project.build.sourceEncoding>
-		<sonar.apiVersion>6.7</sonar.apiVersion>
-		<fortify.client-api.version>5.2-SNAPSHOT</fortify.client-api.version>
-		<jdk.min.version>1.8</jdk.min.version>
-		<mvn.min.version>1.8</mvn.min.version>
-	</properties>
-	<repositories>
-		<repository>
-			<id>FortifyMavenRepo</id>
-			<url>https://raw.githubusercontent.com/fortify-ps/FortifyMavenRepo/master</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
-	<prerequisites>
-		<maven>3.1</maven>
-	</prerequisites>
 	
 	<dependencies>
 		<dependency>
@@ -83,7 +40,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
+			<artifactId>fortify-ssc-sonarqube-plugin-config-common</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>com.miglayout</groupId>
@@ -98,15 +55,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>${jdk.min.version}</source>
-					<target>${jdk.min.version}</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>

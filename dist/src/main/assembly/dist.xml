@@ -52,9 +52,16 @@
 		</fileSet>
 		<fileSet>
 			<outputDirectory>/</outputDirectory>
-			<directory>${project.build.directory}/../../plugin/target</directory>
+			<directory>${project.build.directory}/../../plugin-6.7/target</directory>
 			<includes>
-				<include>fortify-ssc-sonarqube-plugin-${project.version}.jar</include>
+				<include>fortify-ssc-sonarqube-plugin-6.7-${project.version}.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<outputDirectory>/</outputDirectory>
+			<directory>${project.build.directory}/../../plugin-7.6/target</directory>
+			<includes>
+				<include>fortify-ssc-sonarqube-plugin-7.6-${project.version}.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
