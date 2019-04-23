@@ -24,7 +24,6 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.ssc;
 
-import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,37 +38,12 @@ import org.sonar.api.batch.rule.Severity;
  */
 public final class FortifyConstants {
 	private FortifyConstants() {}
-
-	/** Formatter for the language-specific SonarQube Fortify rule key */
-	private static final MessageFormat FMT_FTFY_RULE_KEY = new MessageFormat("fortify-{0}");
-	/** Formatter for the language-specific SonarQube Fortify rule repository key */
-	private static final MessageFormat FMT_FTFY_RULE_REPO_KEY = new MessageFormat("fortify-{0}");
-	/** Map containing Fortify friority to SonarQube severity mapping */
-	private static final Map<String,Severity> MAP_FRIORITY_TO_SEVERITY = getFriorityToSeverityMap();
 	
 	/** SonarQube key for the Fortify language, see {@link FortifyLanguage} */
 	public static final String FTFY_LANGUAGE_KEY = "fortify";
-	/** SonarQube key for the filter parameter for Fortify rules */
-	public static final String RULE_PARAM_FILTER_KEY = "filter";
-	
-	
-	/**
-	 * Get the SonarQube key for the generic Fortify rule for the given language
-	 * @param language
-	 * @return
-	 */
-	public static final String FTFY_RULE_KEY(String language) {
-		return FMT_FTFY_RULE_KEY.format(new String[]{language});
-	}
-	
-	/**
-	 * Get the SonarQube key for the Fortify rule repository for the given language
-	 * @param language
-	 * @return
-	 */
-	public static final String FTFY_RULE_REPO_KEY(String language) {
-		return FMT_FTFY_RULE_REPO_KEY.format(new String[]{language});
-	}
+
+	/** Map containing Fortify friority to SonarQube severity mapping */
+	private static final Map<String,Severity> MAP_FRIORITY_TO_SEVERITY = getFriorityToSeverityMap();
 	
 	/** 
 	 * Get the SonarQube severity for the given Fortify friority
