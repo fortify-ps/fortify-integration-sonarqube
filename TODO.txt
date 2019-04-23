@@ -14,6 +14,7 @@ Plugin:
 - Web pages 
   - Show information similar to previous widget
 - Clean-up/remove FortifyConstants
+- Clean-up FortifyIssueHelper/FortifyIssueSensor
 - Add/improve error handling
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
   - Apparently measures cannot be saved on modules with packaging type pom 

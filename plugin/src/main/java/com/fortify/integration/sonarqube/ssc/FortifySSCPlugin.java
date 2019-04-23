@@ -36,7 +36,6 @@ import org.sonar.api.config.PropertyDefinition;
 import com.fortify.integration.sonarqube.ssc.ce.FortifyConfigurableMeasureComputer;
 import com.fortify.integration.sonarqube.ssc.ce.FortifySSCComputeEngineSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
-import com.fortify.integration.sonarqube.ssc.scanner.FortifyIssueHelper;
 import com.fortify.integration.sonarqube.ssc.scanner.FortifyIssuesSensor;
 import com.fortify.integration.sonarqube.ssc.scanner.FortifySSCScannerSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.scanner.FortifyUploadFPRStartable;
@@ -65,7 +64,6 @@ public class FortifySSCPlugin implements Plugin {
 			
 			// Scanner-side extensions
 			FortifyUploadFPRStartable.class,
-			FortifyIssueHelper.class,
 			FortifyIssuesSensor.class,
 			
 			// ComputeEngine-side extensions

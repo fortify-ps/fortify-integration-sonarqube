@@ -27,10 +27,16 @@ package com.fortify.integration.sonarqube.ssc.scanner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.PropertyType;
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.ActiveRule;
@@ -52,9 +58,9 @@ import com.fortify.integration.sonarqube.ssc.FortifyConstants;
 import com.fortify.integration.sonarqube.ssc.rule.FortifyRulesDefinition;
 import com.fortify.util.rest.json.JSONList;
 import com.fortify.util.rest.json.JSONMap;
+import com.fortify.util.rest.json.preprocessor.filter.AbstractJSONMapFilter.MatchMode;
+import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
-import com.fortify.util.rest.json.processor.IJSONMapProcessor;
-import com.fortify.util.spring.SpringExpressionUtil;
 
 /**
  * This SonarQube {@link Sensor} implementation retrieves vulnerability data from SSC and
@@ -66,29 +72,34 @@ import com.fortify.util.spring.SpringExpressionUtil;
 
 /*
  * TODO
- * Add list of issues for which the corresponding language rule has not be activated, to be displayed on dashboard
- * Add list of issues for which the match expression is false
- * Retrieve list of vulnerabilities only once
  * Retrieve only relevant issue fields from SSC
  * Use SSC search string (see FortifyBugTrackerUtility) instead of SpEL to filter issues to be reported?
  * Configure SSC search string in plugin configuration instead of rule configuration?
  * Report all issues on generic Fortify rule? Disables language-based filtering in SQ UI, but makes configuration of plugin easier (no need to activate rules) 
  */
-public class FortifyIssuesSensor implements Sensor {
-	private static final Logger LOG = Loggers.get(FortifyIssuesSensor.class);
+@ScannerSide
+@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+public class FortifyIssuesSensor extends FortifyAbstractProjectSensor {
+	//private static final Logger LOG = Loggers.get(FortifyIssuesSensor.class);
 	private static final String PRP_ENABLE_ISSUES = "sonar.fortify.issues.enable";
 	private static final String PRP_FILTER_SET = "sonar.fortify.ssc.filterset";
 	
-	private final FortifySSCScannerSideConnectionHelper connHelper;
-	private final FortifyIssueHelper issueHelper; // TODO Use this
+	private static enum fortifyFields {
+		deepLink, engineCategory, issueName, friority, lineNumber, fullFileName;
+		
+		public <T> T get(JSONMap issue, Class<T> returnType) {
+			return issue.get(name(), returnType);
+		}
+	}
+	
+	private static final String[] fortifyFieldNames = Arrays.stream(fortifyFields.values()).map(Enum::name).toArray(String[]::new);
 	
 	/**
 	 * Constructor for injecting dependencies
 	 * @param connFactory
 	 */
-	public FortifyIssuesSensor(FortifySSCScannerSideConnectionHelper connFactory, FortifyIssueHelper issueHelper) {
-		this.connHelper = connFactory;
-		this.issueHelper = issueHelper;
+	public FortifyIssuesSensor(FortifySSCScannerSideConnectionHelper connHelper) {
+		super(connHelper);
 	}
 	
 	@Override
@@ -100,70 +111,17 @@ public class FortifyIssuesSensor implements Sensor {
 	 * Sensor implementation that retrieves issue details from SSC, and reports them as SonarQube violations
 	 */
 	@Override
-	public void execute(SensorContext context) {
-		final String defaultMatchExpression = "(suppressed==false && hidden==false && engineCategory=='STATIC')";
-		if ( isActive(context) ) {
-			JSONMap filterSet = getSonarQubeFilterSet(context);
-			FileSystem fs = context.fileSystem();
-			processFortifyIssues(connHelper, filterSet, new AbstractJSONMapProcessor() {	
-				@Override
-				public void process(JSONMap issue) {
-					try {
-						// Get the inputFile for the current issue
-						InputFile inputFile = getInputFile(fs, issue);
-						if ( inputFile != null ) { // Skip issue if filename doesn't belong to current module
-							ActiveRule rule = getActiveRule(context, inputFile, issue);
-							if ( rule != null ) {
-								if ( SpringExpressionUtil.evaluateExpression(issue, defaultMatchExpression, Boolean.class)) {
-									createIssue(context, rule, inputFile, issue);
-								}
-							}
-						}
-					} catch ( RuntimeException e ) {
-						LOG.error("Error creating SonarQube issue for vulnerability id "+issue.get("id", String.class), e);
-					}
-				}
-				
-				private void createIssue(SensorContext context, ActiveRule rule, InputFile inputFile, JSONMap issue) {
-					String friority = StringUtils.lowerCase(issue.get("friority", String.class));
-					NewIssue newIssue = context.newIssue().forRule(rule.ruleKey());
-					addIssueLocation(context, newIssue, inputFile, issue);
-					newIssue.overrideSeverity(FortifyConstants.FRIORITY_TO_SEVERITY(friority));
-					// TODO Low: Add .addFlow(Fortify evidence flow)
-					newIssue.save();
-				}
-
-				private void addIssueLocation(SensorContext context, NewIssue newIssue, InputFile inputFile, JSONMap issue) {
-					int lineNumber = issue.get("lineNumber", Integer.class);
-					NewIssueLocation primaryLocation = newIssue.newLocation()
-							.on(inputFile)
-							.at(inputFile.selectLine(lineNumber))
-							.message(getIssueMessage(context, issue));
-					newIssue.at(primaryLocation);
-				}
-
-				private ActiveRule getActiveRule(SensorContext context, InputFile inputFile, JSONMap issue) {
-					// TODO Map issue category to SonarQube rule 
-					return context.activeRules().find(RuleKey.of(FortifyRulesDefinition.REPOSITORY_KEY, FortifyRulesDefinition.RULE_KEY_OTHER));
-				}
-
-				protected String getIssueMessage(SensorContext sensorContext, JSONMap issue) {
-					return issue.get("issueName", String.class)+" ("+issue.get("deepLink", String.class)+")";
-				}
-				
-				protected final InputFile getInputFile(FileSystem fs, JSONMap issue) {
-					Path fullFileName = Paths.get(issue.get("fullFileName", String.class));
-					Iterable<InputFile> files = fs.inputFiles(fs.predicates().all());
-					for ( InputFile inputFile : files ) {
-						Path path = Paths.get(inputFile.uri());
-						if ( path.endsWith(fullFileName) ) {
-							return inputFile;
-						}
-					}
-					return null;
-				}
-			});
-		}
+	public void _execute(SensorContext context) {
+		getConnHelper().getConnection().api(SSCIssueAPI.class).queryIssues(getConnHelper().getApplicationVersionId())
+			.paramFilterSet(getFilterSetId(context))
+			.paramFields(fortifyFieldNames)
+			.includeHidden(false)
+			.includeRemoved(false)
+			.includeSuppressed(false)
+			.paramFilter("ISSUE[11111111-1111-1111-1111-111111111151]:SCA")
+			.preProcessor(new JSONMapFilterSpEL(MatchMode.INCLUDE, fortifyFields.engineCategory+"=='STATIC'"))
+			.paramQm(QueryMode.issues)
+			.build().processAll(new FortifyIssueProcessor(context));
 	}
 	
 	/**
@@ -174,9 +132,9 @@ public class FortifyIssuesSensor implements Sensor {
 	 * @throws IllegalArgumentException if specified filter set cannot be found
 	 */
 	
-	private JSONMap getSonarQubeFilterSet(SensorContext context) {
+	private String getFilterSetId(SensorContext context) {
 		JSONMap filterSet = null;
-		JSONList filterSets = connHelper.getConnection().api(SSCIssueTemplateAPI.class).queryApplicationVersionFilterSets(connHelper.getApplicationVersionId()).build().getAll();
+		JSONList filterSets = getConnHelper().getConnection().api(SSCIssueTemplateAPI.class).queryApplicationVersionFilterSets(getConnHelper().getApplicationVersionId()).build().getAll();
 		String filterSetGuidOrTitle = context.config().get(PRP_FILTER_SET).orElse(null);
 		if ( StringUtils.isNotBlank(filterSetGuidOrTitle) ) {
 			String matchExpr = MessageFormat.format("guid==''{0}'' || title==''{0}''", new Object[]{filterSetGuidOrTitle});
@@ -185,39 +143,22 @@ public class FortifyIssuesSensor implements Sensor {
 				throw new IllegalArgumentException("Unknown filter set "+filterSetGuidOrTitle);
 			}
 		}
-		return filterSet==null ? getSSCDefaultFilterSet(filterSets) : filterSet;
+		return (filterSet==null ? getSSCDefaultFilterSet(filterSets) : filterSet).get("id", String.class);
 	}
 	
 	private JSONMap getSSCDefaultFilterSet(JSONList filterSets) {
 		return filterSets.find("defaultFilterSet", true, JSONMap.class);
 	}
 
-	/**
-	 * Retrieve vulnerability data from SSC, and process each vulnerability using the given {@link IFortifyIssueProcessor}
-	 * @param conn
-	 * @param processor
-	 */
-	protected void processFortifyIssues(FortifySSCScannerSideConnectionHelper connFactory, JSONMap filterSet, IJSONMapProcessor processor) {
-		connFactory.getConnection().api(SSCIssueAPI.class).queryIssues(connFactory.getApplicationVersionId())
-			.paramFilterSet(filterSet.get("guid",String.class))
-			.includeHidden(false)
-			.includeRemoved(false)
-			.includeSuppressed(false)
-			.paramFilter("ISSUE[11111111-1111-1111-1111-111111111151]:SCA")
-			.paramQm(QueryMode.issues).build().processAll(processor);
-	}
+	
 
 	/**
 	 * @param context
 	 * @return true if SSC connection is available and issue collection is enabled, false otherwise
 	 */
-	private final boolean isActive(SensorContext context) {
-		// Check whether connection is available
-		boolean result = connHelper.isConnectionAvailable();
-		// Check whether issue collection is enabled
-		result &= context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
-		// TODO Check whether there are any active Fortify rules
-		return result;
+	@Override
+	protected final boolean isActive(SensorContext context) {
+		return context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
 	}
 
 	public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
@@ -233,5 +174,79 @@ public class FortifyIssuesSensor implements Sensor {
 				.type(PropertyType.STRING)
 				.onQualifiers(Qualifiers.PROJECT)
 				.build());
+	}
+	
+	private static final class FortifyIssueProcessor extends AbstractJSONMapProcessor {
+		private static final Logger LOG = Loggers.get(FortifyIssueProcessor.class);
+		private final SensorContext context;
+		private final List<InputFile> inputFiles;
+		
+		public FortifyIssueProcessor(SensorContext context) {
+			this.context = context;
+			this.inputFiles = getInputFilesSortedByPathLength(context.fileSystem());
+		}
+
+		@Override
+		public void process(JSONMap issue) {
+			try {
+				// Get the inputFile for the current issue
+				InputFile inputFile = getInputFileForIssue(issue);
+				if ( inputFile != null ) { // Skip issue if filename doesn't belong to current module
+					ActiveRule rule = getActiveRule(context, inputFile, issue);
+					if ( rule != null ) {
+						createIssue(context, rule, inputFile, issue);
+					}
+				}
+			} catch ( RuntimeException e ) {
+				LOG.error("Error creating SonarQube issue for vulnerability id "+issue.get("id", String.class), e);
+			}
+		}
+		
+		private ActiveRule getActiveRule(SensorContext context, InputFile inputFile, JSONMap issue) {
+			// TODO Map issue category to SonarQube rule 
+			return context.activeRules().find(RuleKey.of(FortifyRulesDefinition.REPOSITORY_KEY, FortifyRulesDefinition.RULE_KEY_OTHER));
+		}
+		
+		private void createIssue(SensorContext context, ActiveRule rule, InputFile inputFile, JSONMap issue) {
+			String friority = StringUtils.lowerCase(fortifyFields.friority.get(issue, String.class));
+			NewIssue newIssue = context.newIssue().forRule(rule.ruleKey());
+			addIssueLocation(context, newIssue, inputFile, issue);
+			newIssue.overrideSeverity(FortifyConstants.FRIORITY_TO_SEVERITY(friority));
+			// TODO Low: Add .addFlow(Fortify evidence flow)
+			newIssue.save();
+		}
+
+		private void addIssueLocation(SensorContext context, NewIssue newIssue, InputFile inputFile, JSONMap issue) {
+			int lineNumber = fortifyFields.lineNumber.get(issue, Integer.class);
+			NewIssueLocation primaryLocation = newIssue.newLocation()
+					.on(inputFile)
+					.at(inputFile.selectLine(lineNumber))
+					.message(getIssueMessage(context, issue));
+			newIssue.at(primaryLocation);
+		}
+
+		
+
+		private String getIssueMessage(SensorContext sensorContext, JSONMap issue) {
+			return fortifyFields.issueName.get(issue, String.class)+" ("+fortifyFields.deepLink.get(issue, String.class)+")";
+		}
+		
+		// We sort by path name length, such that shorter paths will be matched first
+		private List<InputFile> getInputFilesSortedByPathLength(FileSystem fs) {
+			List<InputFile> result = StreamSupport.stream(fs.inputFiles(fs.predicates().all()).spliterator(), false).collect(Collectors.toList());
+			result.sort(Comparator.<InputFile>comparingInt(inputFile -> inputFile.path().toString().length()));
+            return result;
+		}
+		
+		private final InputFile getInputFileForIssue(JSONMap issue) {
+			Path fullFileName = Paths.get(fortifyFields.fullFileName.get(issue, String.class));
+			for ( InputFile inputFile : inputFiles ) {
+				Path path = inputFile.path();
+				if ( path.endsWith(fullFileName) ) {
+					return inputFile;
+				}
+			}
+			return null;
+		}
 	}
 }
