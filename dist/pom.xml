@@ -29,17 +29,13 @@
 		<artifactId>fortify-ssc-sonarqube-plugin-root</artifactId>
 		<version>2.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>fortify-ssc-sonarqube-plugin-dist</artifactId>
+	<artifactId>fortify-ssc-sonarqube-dist</artifactId>
 	<packaging>pom</packaging>
-	<name>Micro Focus Fortify SonarQube Plugin - Distribution</name>
+	<name>Micro Focus Fortify SonarQube ${sonarqube.version} Plugin - Distribution</name>
 	<dependencies>
 		<dependency>
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin-6.7</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin-7.6</artifactId>
+			<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>

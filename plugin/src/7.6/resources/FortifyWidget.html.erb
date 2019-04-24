@@ -1,0 +1,313 @@
+<script src="<%= url_for_static(:plugin => 'fortify', :path => 'jquery-3.2.1.min.js') -%>"></script>
+
+<style type="text/css">
+		.square   { display: inline-block;height: 14px;margin-bottom: 1px;margin-right: 5px;padding-left: 3px;vertical-align: bottom;width: 11px;}
+        .style_40 { border: medium solid rgb(254, 214, 52);}
+        .style_44 { font-family: sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 9pt; color: rgb(233, 233, 233); margin: 3pt 0pt 0pt; padding: 1pt; border: medium none black; letter-spacing: normal; word-spacing: normal; text-transform: none; white-space: normal; line-height: normal;}
+        .style_42 { padding-top: 5pt; padding-bottom: 5pt;}
+        .style_43 { font-family: sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 16pt; color: rgb(233, 233, 233); margin: 0pt 0pt 3pt; padding: 1pt; border: medium none black; letter-spacing: normal; word-spacing: normal; text-transform: none; white-space: normal; line-height: normal;}
+        .style_41 { padding-top: 5pt; padding-bottom: 5pt; border-top: 1px solid rgb(255, 255, 255); border-left: 1px solid rgb(255, 255, 255); background-color: rgb(149, 160, 169);}
+        .style_58 { font-family: sans-serif; font-weight: normal; color: black;}
+        .style_57 { font-family: sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 10pt; color: black; margin: 0pt; padding: 1pt; border: medium none black; letter-spacing: normal; word-spacing: normal; text-transform: none; white-space: normal; line-height: normal;}
+        .style_59 { font-weight: bold; color: rgb(255, 255, 255); border: medium solid rgb(128, 128, 128); background-color: red;}
+        .style_54 { font-family: sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 10pt; color: rgb(126, 111, 105); margin: 0pt 0pt 2pt; padding: 1pt; border: medium none black; letter-spacing: normal; word-spacing: normal; text-transform: none; white-space: normal; line-height: normal;}
+        .style_55 { font-family: sans-serif; font-style: normal; font-variant: normal; font-weight: bold; font-size: 8pt; color: rgb(126, 111, 105); margin: 0pt; padding: 0pt 1pt 0pt 0pt; border: medium none black; letter-spacing: normal; word-spacing: normal; text-transform: none; white-space: normal; line-height: normal;}
+        .style_56 { font-weight: bold; color: rgb(255, 255, 255); border: medium solid rgb(128, 128, 128); background-color: rgb(255, 140, 0);}
+        .style_52 { margin-top: 5pt;}
+        .style_64 { font-family: sans-serif; font-style: normal; font-variant: normal; font-weight: bold; font-size: 8pt; color: rgb(126, 111, 105); margin: 0pt; padding: 0pt 1pt; border: medium none black; letter-spacing: normal; word-spacing: normal; text-transform: none; white-space: normal; line-height: normal;}
+        .style_61 { font-family: sans-serif; font-weight: normal; color: black; margin-top: 0pt;}
+        .style_60 { font-weight: bold; color: rgb(255, 255, 255); border: medium solid rgb(128, 128, 128); background-color: rgb(255, 255, 150);}
+        .style_63 { padding-left: 5pt;}
+        .style_62 { font-weight: bold; color: rgb(255, 255, 255); border: medium solid rgb(128, 128, 128); background-color: rgb(255, 200, 0);}
+</style>
+
+
+<h2><a style="text-decoration:underline" href="<%= @snapshot.measure('fortify.sscProjectUrl').typed_value %>" target="_blank"><%= format_measure('fortify.sscAppName') %> - <%= format_measure('fortify.sscVersionName') %></a></h2>
+
+<table width="100%">
+    <tbody>
+        <tr>
+            <td valign="top">
+                <div class="dashbox">
+                    <h3><%= message('fortify.FortifySecurityRating') -%></h3>
+                    <div class="marginbottom10">
+					<%  measure('fortify.ssc.securityRating').nil? ? securityRating = '0.0' : securityRating = measure('fortify.ssc.securityRating').value.to_s					
+						if securityRating == "0.0" 
+							image = "star_rating_0.png"
+						elsif securityRating == "0.5"
+							image = "star_rating_0_5.png"
+						elsif securityRating == "1.0"
+							image = "star_rating_1.png"
+						elsif securityRating == "1.5"
+							image = "star_rating_1_5.png"
+						elsif securityRating == "2.0"
+							image = "star_rating_2.png"
+						elsif securityRating == "2.5"
+							image = "star_rating_2_5.png"
+						elsif securityRating == "3.0" 
+							image = "star_rating_3.png"
+						elsif securityRating == "3.5"
+							image = "star_rating_3_5.png"
+						elsif securityRating == "4.0"
+							image = "star_rating_4.png"
+						elsif securityRating == "4.5" 
+							image = "star_rating_4_5.png"
+						elsif securityRating == "5.0"
+							image = "star_rating_5.png"
+						else 
+							image = "star_rating_0.png"
+						end
+					%>
+                        <img style=" height: 100%;display: block;padding-top:5px;" alt="" src="<%= url_for_static(:plugin => 'fortify', :path => image) -%>">
+                    </div>
+                    <h3><%= message('fortify.TotalRemedationEffort') -%></h3>
+                    <div>
+                        <span class="big">
+                            <%= format_measure('fortify.ssc.remediationEffort') -%>
+                        </span>
+                    </div>
+            </td>
+            <td>  
+                <table style="border-collapse: collapse; empty-cells: show;" class="style_52">
+                	<caption style="text-align:right">SSC Issue Counts</caption>
+                    <colgroup>
+                        <col style=" width: 0.45in;">
+                        <col style=" width: 0.15in;">
+                        <col style=" width: 0.6in;">
+                        <col style=" width: 0.6in;">
+                    </colgroup>
+                    <tbody>
+                        <tr valign="top" style=" height: 0.6in;">
+                            <td valign="middle" rowspan="2">
+                                <div style=" text-align:center;" class="style_55"><%= message('fortify.Impact') -%></div>
+                            </td>
+                            <td valign="middle" rowspan="2">
+                                <div>
+                                    <img style=" height: 100%;display: block;" alt="" src="<%= url_for_static(:plugin => 'fortify', :path => 'skinny_up_arrow.png') -%>">
+                                </div>
+                            </td>
+                            <td align="center" valign="middle" class="style_56">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.ssc.CFPO') -%>
+                                </div>
+                            </td>
+                            <td align="center" valign="middle" class="style_59">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.ssc.HFPO') -%>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr valign="top" style=" height: 0.6in;">
+                            <td align="center" valign="middle" class="style_60">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.ssc.MFPO') -%>
+                                </div>
+                            </td>
+                            <td align="center" valign="middle" class="style_62">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.ssc.LFPO') -%>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr valign="top" style=" height: 0.15in;">
+                            <td></td>
+                            <td valign="middle"></td>
+                            <td align="center" colspan="2" class="style_63">
+                                <div>
+                                    <img style=" width: 100%;display: block;" alt="" src="<%= url_for_static(:plugin => 'fortify', :path => 'skinny_right_arrow.png') -%>">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td></td>
+                            <td valign="middle"></td>
+                            <td colspan="2">
+                                <div style=" text-align:center;" class="style_64"><%= message('fortify.Likelihood') -%></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>  
+                <table style="border-collapse: collapse; empty-cells: show;" class="style_52">
+                	<caption style="text-align:right">SonarQube Issue Counts</caption>
+                    <colgroup>
+                        <col style=" width: 0.45in;">
+                        <col style=" width: 0.15in;">
+                        <col style=" width: 0.6in;">
+                        <col style=" width: 0.6in;">
+                    </colgroup>
+                    <tbody>
+                        <tr valign="top" style=" height: 0.6in;">
+                            <td valign="middle" rowspan="2">
+                                <div style=" text-align:center;" class="style_55"><%= message('fortify.Impact') -%></div>
+                            </td>
+                            <td valign="middle" rowspan="2">
+                                <div>
+                                    <img style=" height: 100%;display: block;" alt="" src="<%= url_for_static(:plugin => 'fortify', :path => 'skinny_up_arrow.png') -%>">
+                                </div>
+                            </td>
+                            <td align="center" valign="middle" class="style_56">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.sonarqube.CFPO') -%>
+                                </div>
+                            </td>
+                            <td align="center" valign="middle" class="style_59">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.sonarqube.HFPO') -%>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr valign="top" style=" height: 0.6in;">
+                            <td align="center" valign="middle" class="style_60">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.sonarqube.MFPO') -%>
+                                </div>
+                            </td>
+                            <td align="center" valign="middle" class="style_62">
+                                <div style=" text-align:center;" class="style_57">
+                                    <%= format_measure('fortify.sonarqube.LFPO') -%>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr valign="top" style=" height: 0.15in;">
+                            <td></td>
+                            <td valign="middle"></td>
+                            <td align="center" colspan="2" class="style_63">
+                                <div>
+                                    <img style=" width: 100%;display: block;" alt="" src="<%= url_for_static(:plugin => 'fortify', :path => 'skinny_right_arrow.png') -%>">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <td></td>
+                            <td valign="middle"></td>
+                            <td colspan="2">
+                                <div style=" text-align:center;" class="style_64"><%= message('fortify.Likelihood') -%></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Filters</h3>
+<table id="filters" width="100%">
+	<tbody>
+		<tr>
+			<td valign="top">SSC Default Filter Set</td>
+			<td valign="top" id="sscDefaultFilterSet"></td>
+		</tr>
+		<tr>
+			<td valign="top">SonarQube Filter Set</td>
+			<td valign="top" id="sonarqubeFilterSet"></td>
+		</tr>
+	</tbody>
+</table>
+<span id="differentFilterSetsMessage" style="display:none">
+Using a non-default filter set for loading SSC issues into SonarQube may result in 
+inconsistencies in issue counts and other metrics between SSC and SonarQube.</span>
+
+<span id="languageFiltersMessage" style="display:none">
+Using language-specific filters for loading SSC issues into SonarQube may result in 
+inconsistencies in issue counts and other metrics between SSC and SonarQube.</span>
+
+<span id="unresolvedIssuesSection" style="display:none">
+<h3>Unresolved Files</h3>
+The following Fortify issues have not been reported as SonarQube issues,
+either because they are filtered by the language-specific filters listed above,
+or because the source files for these vulnerabilities could not located in any
+of the modules in the current SonarQube scan.
+<table id="unresolvedIssues" width="100%">
+</table>
+</span>
+
+<h3>Scan details</h3>
+<table width="100%">
+	<tbody>
+		<tr>
+			<td>Scan file name:</td>
+			<td><%= format_measure('fortify.artifact.originalFileName') -%></td>
+		</tr>
+		<tr>
+			<td>Last Scan Date:</td>
+			<td><%= format_measure('fortify.artifact.lastScanDate') -%></td>
+		</tr>
+		<tr>
+			<td>Upload Date:</td>
+			<td><%= format_measure('fortify.artifact.uploadDate') -%></td>
+		</tr>
+		<tr>
+			<td>Approval Date:</td>
+			<td><%= format_measure('fortify.artifact.approvalDate') -%></td>
+		</tr>
+		<tr>
+			<td>Upload Status:</td>
+			<td><%= format_measure('fortify.artifact.status') -%></td>
+		</tr>
+		<tr>
+            <td valign="top">Number of files:</td>
+            <td valign="top" align="left"><%= format_measure('fortify.ssc.FILES') -%></td>
+        </tr>
+        <tr>
+            <td valign="top">Lines of Code:</td>
+            <td valign="top" align="left"><%= format_measure('fortify.ssc.LOC') -%></td>
+        </tr>
+        <tr>
+            <td valign="top">Executable Lines of Code:</td>
+            <td valign="top" align="left"><%= format_measure('fortify.ssc.ExecutableLOC') -%></td>
+        </tr>
+        <tr id="scanMessagesRow"><!-- TODO: Hide if no contents -->
+        	<td span="2" valign="top">
+        		<details>
+					<summary>Scan messages</summary>
+					<table width="100%">
+						<tbody>
+							<tr>
+								<td><%= format_measure('fortify.artifact.messages') -%></td>
+							</tr>
+						</tbody>
+					</table>
+				</details>	
+        	</td>
+	</tbody>
+</table>
+
+<img style="position: absolute; bottom: 5px; right: 5px;  width: 100px;" alt="" src="<%= url_for_static(:plugin => 'fortify', :path => 'hpe_logo.svg') -%>">
+
+
+<script language="JavaScript">
+	filterSets = <%= @snapshot.measure('fortify.json.filterSets').data %>;
+	effectiveLanguageFilters = <%= @snapshot.measure('fortify.json.effectiveLanguageFilters').data %>;
+	$('#sscDefaultFilterSet').text(filterSets.ssc.title);
+	$('#sonarqubeFilterSet').text(filterSets.sonarqube.title);
+	$.each( effectiveLanguageFilters, function( key, value ) {
+  		$('#filters tbody').append('<tr><td valign="top">Filter Expression for '+key+'</td><td valign="top">'+value+'</td></tr>');
+	});
+	if ( !$.isEmptyObject(effectiveLanguageFilters) ) {
+		$('#languageFiltersMessage').css("display", "block");	
+	}
+	if ( filterSets.ssc.title!=filterSets.sonarqube.title ) {
+		$('#differentFilterSetsMessage').css("display", "block");	
+	}
+	
+	// For some reason the snapshot measure is not properly inserted if there are any unresolved issues;
+	// maybe snapshow.measure has a maximum length for metric data?
+	// In my tests, if there are no unresolved issues, the line below is correctly generated as:
+	// unresolvedIssues = [];
+	// However if there are unresolved issues, the line is generated as, so the array with data is simply missing:
+	// unresolvedIssues = ;
+	// So for now this functionality has been disabled
+	unresolvedIssues = <%= @snapshot.measure('fortify.json.unresolvedIssues').data %>;
+	$.each( unresolvedIssues, function( idx, issue ) {
+  		$('#unresolvedIssues').append('<a href="'+issue.deepLink+'">'+issue.path+'('+issue.lineNumber+')</a>');
+  		//$('#unresolvedIssues').append('<br/>'+issue.issueName);
+  		$('#unresolvedIssues').append('<br/>');
+	});
+	if ( !$.isEmptyObject(unresolvedIssues) ) {
+		$('#unresolvedIssuesSection').css("display", "block");	
+	}
+	
+</script>
