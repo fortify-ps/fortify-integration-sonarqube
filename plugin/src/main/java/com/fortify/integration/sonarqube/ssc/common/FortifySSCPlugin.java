@@ -32,6 +32,8 @@ import java.util.List;
 
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.integration.sonarqube.ssc.common.language.FortifyLanguage;
 import com.fortify.integration.sonarqube.ssc.common.profile.FortifyProfile;
@@ -42,7 +44,9 @@ import com.fortify.integration.sonarqube.ssc.common.rule.FortifyRulesDefinition;
  * up this Fortify integration.
  */
 public class FortifySSCPlugin implements Plugin {
-	private static final String EXTENSION_PROVIDER_CLASS_NAME_TEMPLATE = "com.fortify.integration.sonarqube.ssc.sq<version>.FortifySQ<version>ExtensionProvider";
+	private static final Logger LOG = Loggers.get(FortifySSCPlugin.class);
+	private static final String EXTENSION_PROVIDER_CLASS_NAME_67 = "com.fortify.integration.sonarqube.ssc.sq67.FortifySQ67ExtensionProvider";
+	private static final String EXTENSION_PROVIDER_CLASS_NAME_76 = "com.fortify.integration.sonarqube.ssc.sq76.FortifySQ76ExtensionProvider";
 	private static Class<?>[] COMMON_EXTENSIONS = {
 			// Rules, language and quality profile
 			FortifyRulesDefinition.class, 
@@ -68,7 +72,9 @@ public class FortifySSCPlugin implements Plugin {
 	private IFortifyExtensionProvider getExtensionProvider(Context context) {
 		int major = context.getSonarQubeVersion().major();
 		int minor = context.getSonarQubeVersion().minor();
-		String extensionProviderClassName = EXTENSION_PROVIDER_CLASS_NAME_TEMPLATE.replace("<version>", ""+major+minor);
+		String extensionProviderClassName = 
+				(major==7 && minor>= 6) || major>7 ? EXTENSION_PROVIDER_CLASS_NAME_76 : EXTENSION_PROVIDER_CLASS_NAME_67;
+		LOG.info("Using extension provider "+extensionProviderClassName);
 		try {
 			return (IFortifyExtensionProvider)Class.forName(extensionProviderClassName).newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
