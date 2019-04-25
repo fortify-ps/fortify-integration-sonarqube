@@ -213,7 +213,7 @@ public class FortifyIssueSensorHelper {
 		}
 
 		protected void addIssueLocation(NewIssue newIssue, InputFile inputFile, JSONMap issue) {
-			int lineNumber = FORTIFY_FIELDS.lineNumber.get(issue, Integer.class);
+			int lineNumber = Math.max(1, FORTIFY_FIELDS.lineNumber.get(issue, Integer.class));
 			NewIssueLocation primaryLocation = newIssue.newLocation()
 					.on(inputFile)
 					.at(inputFile.selectLine(lineNumber))
