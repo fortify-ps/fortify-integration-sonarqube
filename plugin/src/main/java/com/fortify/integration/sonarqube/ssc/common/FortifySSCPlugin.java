@@ -78,9 +78,12 @@ public class FortifySSCPlugin implements Plugin {
 
 	private static final void invokePropertyDefinitionsMethod(Class<?> type, List<PropertyDefinition> propertyDefinitions) {
 		try {
-			Method method = type.getDeclaredMethod("addPropertyDefinitions", List.class);
-			if ((method.getModifiers() & Modifier.STATIC) != 0) {
-				method.invoke(null, propertyDefinitions);
+			while ( !type.equals(Object.class) ) {
+				Method method = type.getDeclaredMethod("addPropertyDefinitions", List.class);
+				if ((method.getModifiers() & Modifier.STATIC) != 0) {
+					method.invoke(null, propertyDefinitions);
+				}
+				type = type.getSuperclass();
 			}
 		} catch (NoSuchMethodException e) {
 			// Expected exception, as not all extension classes define the addPropertyDefinitions method

@@ -24,24 +24,22 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.ssc.sq67.ce;
 
-import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext;
 
-import com.fortify.integration.sonarqube.ssc.common.IFortifyConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.common.ce.AbstractFortifyComputeEngineSideConnectionHelper;
+import com.fortify.integration.sonarqube.ssc.common.scanner.IFortifyScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.ssc.sq67.scanner.FortifySQ67AbstractSensor;
 
 public class FortifySQ67ComputeEngineSideConnectionHelper extends AbstractFortifyComputeEngineSideConnectionHelper {
 	public FortifySQ67ComputeEngineSideConnectionHelper(MeasureComputerContext measureComputerContext) {
 		super(measureComputerContext);
 	}
 	
-	public static final class SensorImpl implements Sensor {
-		private final IFortifyConnectionHelper connHelper;
-		
-		public SensorImpl(IFortifyConnectionHelper connHelper) {
-			this.connHelper = connHelper;
+	public static final class SensorImpl extends FortifySQ67AbstractSensor {
+		public SensorImpl(IFortifyScannerSideConnectionHelper connHelper) {
+			super(connHelper);
 		}
 		
 		@Override
@@ -50,14 +48,14 @@ public class FortifySQ67ComputeEngineSideConnectionHelper extends AbstractFortif
 		}
 	
 		@Override
-		public void execute(SensorContext context) {
+		public void _execute(SensorContext context) {
 			// TODO Verify whether this hidden measure can be retrieved in any way by users
 			// that should not be able to see the SSC connection credentials. If so,
 			// probably best to have the configuration utility generate a Yaml file with
 			// a random shared secret to encrypt the URL/credentials here, and decrypt
 			// this in the FortifySSCComputeEngineSideConnectionHelper.getSscUrl() method above.
-			context.newMeasure().forMetric(METRIC_SSC_URL).on(context.module()).withValue(connHelper.getSSCUrl()).save();
-			context.newMeasure().forMetric(METRIC_SSC_APP_VERSION_ID).on(context.module()).withValue(connHelper.getApplicationVersionId()).save();
+			context.newMeasure().forMetric(METRIC_SSC_URL).on(context.module()).withValue(getConnHelper().getSSCUrl()).save();
+			context.newMeasure().forMetric(METRIC_SSC_APP_VERSION_ID).on(context.module()).withValue(getConnHelper().getApplicationVersionId()).save();
 		}
 	}
 }

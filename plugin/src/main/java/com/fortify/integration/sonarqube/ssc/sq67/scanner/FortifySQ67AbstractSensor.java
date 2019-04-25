@@ -22,17 +22,21 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.sq76.scanner;
+package com.fortify.integration.sonarqube.ssc.sq67.scanner;
 
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.scanner.sensor.ProjectSensor;
 
 import com.fortify.integration.sonarqube.ssc.common.scanner.IFortifyScannerSideConnectionHelper;
 
-public abstract class FortifySQ76AbstractProjectSensor implements ProjectSensor {
+@ScannerSide
+@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+public abstract class FortifySQ67AbstractSensor implements Sensor {
 	private final IFortifyScannerSideConnectionHelper connHelper;
 	
-	public FortifySQ76AbstractProjectSensor(IFortifyScannerSideConnectionHelper connHelper) {
+	public FortifySQ67AbstractSensor(IFortifyScannerSideConnectionHelper connHelper) {
 		this.connHelper = connHelper;
 	}
 	

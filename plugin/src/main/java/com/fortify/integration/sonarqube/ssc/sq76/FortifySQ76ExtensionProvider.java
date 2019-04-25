@@ -29,7 +29,7 @@ import org.sonar.api.Plugin.Context;
 import com.fortify.integration.sonarqube.ssc.common.IFortifyExtensionProvider;
 import com.fortify.integration.sonarqube.ssc.sq76.ce.FortifySQ76ComputeEngineSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.sq76.ce.FortifySQ76ConfigurableMeasureComputer;
-import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76IssuesSensor;
+import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76IssueSensor;
 import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76ScannerSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76UploadFPRStartable;
 
@@ -48,7 +48,8 @@ public class FortifySQ76ExtensionProvider implements IFortifyExtensionProvider {
 			
 			// Scanner-side extensions
 			FortifySQ76UploadFPRStartable.class,
-			FortifySQ76IssuesSensor.class,
+			FortifySQ76IssueSensor.SensorProperties.class,
+			FortifySQ76IssueSensor.class,
 			
 			// ComputeEngine-side extensions
 			FortifySQ76ConfigurableMeasureComputer.MetricsImpl.class,

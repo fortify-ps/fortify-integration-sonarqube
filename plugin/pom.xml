@@ -75,6 +75,10 @@
 			<artifactId>commons-logging</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+		</dependency>
 	</dependencies>
 	
 	<build>
