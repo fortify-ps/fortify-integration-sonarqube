@@ -53,7 +53,7 @@
 			<outputDirectory>/</outputDirectory>
 			<directory>${project.build.directory}/../../plugin/target</directory>
 			<includes>
-				<include>fortify-ssc-sonarqube-${sonarqube.version}-plugin-${project.version}.jar</include>
+				<include>fortify-ssc-sonarqube-plugin-${project.version}.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>

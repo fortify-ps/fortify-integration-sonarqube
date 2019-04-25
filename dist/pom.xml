@@ -31,7 +31,7 @@
 	</parent>
 	<artifactId>fortify-ssc-sonarqube-dist</artifactId>
 	<packaging>pom</packaging>
-	<name>Micro Focus Fortify SonarQube ${sonarqube.version} Plugin - Distribution</name>
+	<name>Micro Focus Fortify SonarQube Plugin - Distribution</name>
 	<dependencies>
 		<dependency>
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>

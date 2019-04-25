@@ -56,26 +56,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-	<profiles>
-		<profile>
-			<id>SonarQube6.7</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<sonarqube.version>6.7</sonarqube.version>
-			</properties>
-		</profile>
-		<profile>
-			<id>SonarQube7.6</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<sonarqube.version>7.6</sonarqube.version>
-			</properties>
-		</profile>
-	</profiles>
 	<repositories>
 		<repository>
 			<id>FortifyMavenRepo</id>
@@ -86,33 +66,60 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	<modules>
-		<module>config-common</module>
-		<module>plugin-common</module>
-		<module>plugin</module>
-		<module>configure</module>
-		<module>dist</module>
-	</modules>
+	
+	
+		<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<sonarqube.version>7.6</sonarqube.version>
+			</properties>
+			<modules>
+				<module>common</module>
+				<module>plugin</module>
+				<module>configure</module>
+				<module>dist</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>checkSQ6.7Compatibility</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<sonarqube.version>6.7</sonarqube.version>
+			</properties>
+			<modules>
+				<module>common</module>
+				<module>plugin</module>
+			</modules>
+			<build>
+	            <plugins>
+	                <plugin>
+	                    <groupId>org.apache.maven.plugins</groupId>
+	                    <artifactId>maven-compiler-plugin</artifactId>
+	                    <configuration>
+	                        <excludes>
+	                            <exclude>**/sq76/**</exclude>
+	                        </excludes>
+	                    </configuration>
+	                </plugin>
+	            </plugins>
+        	</build>
+		</profile>
+	</profiles>
+	
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.sonarsource.sonarqube</groupId>
-				<artifactId>sonar-plugin-api</artifactId>
-				<version>${sonarqube.version}</version>
-				<scope>provided</scope>
-			</dependency>
 			<dependency>
 				<groupId>com.fortify.client.api</groupId>
 				<artifactId>client-api-root</artifactId>
 				<version>5.2-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-				<artifactId>fortify-ssc-sonarqube-plugin-config-common</artifactId>
-				<version>${project.version}</version>
-				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.fortify.integration.sonarqube.ssc</groupId>

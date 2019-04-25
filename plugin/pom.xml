@@ -31,21 +31,53 @@
 	</parent>
 	<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
 	<packaging>sonar-plugin</packaging>
-	<name>Micro Focus Fortify SonarQube Plugin - SonarQube ${sonarqube.version}+ Plugin</name>
+	<name>Micro Focus Fortify SonarQube Plugin - SonarQube Plugin</name>
 	
 	<dependencies>
 		<dependency>
 			<groupId>org.sonarsource.sonarqube</groupId>
 			<artifactId>sonar-plugin-api</artifactId>
+			<version>${sonarqube.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
 			<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.fortify.client.api</groupId>
+			<artifactId>client-api-ssc</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jul</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jcl</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	
 	<build>
-		<sourceDirectory>${project.basedir}/src/${sonarqube.version}/java</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
@@ -54,11 +86,11 @@
 				<extensions>true</extensions>
 				<configuration>
 					<pluginKey>fortify</pluginKey>
-					<pluginClass>com.fortify.integration.sonarqube.ssc.FortifySSCPlugin</pluginClass>
+					<pluginClass>com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin</pluginClass>
 					<pluginName>Fortify</pluginName>
 					<pluginDescription>Gathers and displays information from Fortify SSC</pluginDescription>
 					<useChildFirstClassLoader>true</useChildFirstClassLoader>
-					<finalName>fortify-ssc-sonarqube-${sonarqube.version}-plugin-${project.version}</finalName>
+					<sonarQubeMinVersion>6.7</sonarQubeMinVersion>
 				</configuration>
 			</plugin>
 		</plugins>

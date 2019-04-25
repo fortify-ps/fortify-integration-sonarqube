@@ -40,7 +40,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin-config-common</artifactId>
+			<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>com.miglayout</groupId>
