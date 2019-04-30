@@ -159,13 +159,13 @@ public abstract class AbstractFortifyConfigurableMeasureComputer extends Abstrac
 		String applicationVersionId = connHelper.getApplicationVersionId();
 		JSONMap applicationVersion = connHelper.getConnection().api(SSCApplicationVersionAPI.class).queryApplicationVersions()
 				.id(applicationVersionId)
-				.onDemandFilterSets()
-				.onDemandPerformanceIndicatorHistories()
-				.onDemandVariableHistories()
+				.onDemandFilterSets(MetricsConfig.ExpressionField.filterSets.name())
+				.onDemandPerformanceIndicatorHistories(MetricsConfig.ExpressionField.performanceIndicatorHistories.name())
+				.onDemandVariableHistories(MetricsConfig.ExpressionField.variableHistories.name())
 				// Add convenience properties for defining custom metrics
-				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("var", "variableHistories", "name", "value", true))
-				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList("pi", "performanceIndicatorHistories", "name", "value", true))
-				.preProcessor(new JSONMapEnrichWithOnDemandProperty("scaArtifact", new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
+				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList(MetricsConfig.ExpressionField.var.name(), MetricsConfig.ExpressionField.variableHistories.name(), "name", "value", true))
+				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList(MetricsConfig.ExpressionField.pi.name(), MetricsConfig.ExpressionField.performanceIndicatorHistories.name(), "name", "value", true))
+				.preProcessor(new JSONMapEnrichWithOnDemandProperty(MetricsConfig.ExpressionField.scaArtifact.name(), new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
 				.build().getUnique();
 		if ( applicationVersion==null ) {
 			throw new IllegalArgumentException("SSC application version "+applicationVersionId+" not found");

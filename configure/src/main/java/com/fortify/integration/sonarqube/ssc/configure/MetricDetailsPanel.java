@@ -42,9 +42,14 @@ import org.jdesktop.beansbinding.BeanProperty;
 import org.jdesktop.beansbinding.BindingGroup;
 import org.jdesktop.beansbinding.Bindings;
 
+import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.Direction;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
 import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricValueType;
+import javax.swing.ImageIcon;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.FlowLayout;
 
 public class MetricDetailsPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -61,6 +66,8 @@ public class MetricDetailsPanel extends JPanel {
 	private JComboBox directionJComboBox;
 	private JLabel keyLabel;
 	private JTextField keyJTextField;
+	private JPanel panel;
+	private JLabel lblExprHelp;
 
 	public MetricDetailsPanel(com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig newMetricConfig) {
 		this();
@@ -69,10 +76,10 @@ public class MetricDetailsPanel extends JPanel {
 
 	public MetricDetailsPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0, 0 };
+		gridBagLayout.columnWidths = new int[] {0, 0, 30};
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 1.0E-4 };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0E-4 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0 };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 		setLayout(gridBagLayout);
 		
 		keyLabel = new JLabel("Key");
@@ -85,7 +92,7 @@ public class MetricDetailsPanel extends JPanel {
 		
 		keyJTextField = new JTextField();
 		GridBagConstraints gbc_keyJTextField = new GridBagConstraints();
-		gbc_keyJTextField.insets = new Insets(5, 0, 5, 0);
+		gbc_keyJTextField.insets = new Insets(5, 0, 5, 5);
 		gbc_keyJTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_keyJTextField.gridx = 1;
 		gbc_keyJTextField.gridy = 0;
@@ -101,7 +108,7 @@ public class MetricDetailsPanel extends JPanel {
 
 		nameJTextField = new JTextField();
 		GridBagConstraints componentGbc_0 = new GridBagConstraints();
-		componentGbc_0.insets = new Insets(5, 0, 5, 0);
+		componentGbc_0.insets = new Insets(5, 0, 5, 5);
 		componentGbc_0.fill = GridBagConstraints.HORIZONTAL;
 		componentGbc_0.gridx = 1;
 		componentGbc_0.gridy = 1;
@@ -118,7 +125,7 @@ public class MetricDetailsPanel extends JPanel {
 		typeJComboBox = new JComboBox();
 		typeJComboBox.setModel(new DefaultComboBoxModel(MetricValueType.values()));
 		GridBagConstraints gbc_typeJComboBox = new GridBagConstraints();
-		gbc_typeJComboBox.insets = new Insets(0, 0, 5, 0);
+		gbc_typeJComboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_typeJComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_typeJComboBox.gridx = 1;
 		gbc_typeJComboBox.gridy = 2;
@@ -134,7 +141,7 @@ public class MetricDetailsPanel extends JPanel {
 
 		domainJTextField = new JTextField();
 		GridBagConstraints componentGbc_1 = new GridBagConstraints();
-		componentGbc_1.insets = new Insets(5, 0, 5, 0);
+		componentGbc_1.insets = new Insets(5, 0, 5, 5);
 		componentGbc_1.fill = GridBagConstraints.HORIZONTAL;
 		componentGbc_1.gridx = 1;
 		componentGbc_1.gridy = 3;
@@ -150,11 +157,31 @@ public class MetricDetailsPanel extends JPanel {
 		
 				exprJTextField = new JTextField();
 				GridBagConstraints componentGbc_3 = new GridBagConstraints();
-				componentGbc_3.insets = new Insets(5, 0, 5, 0);
+				componentGbc_3.insets = new Insets(5, 0, 5, 5);
 				componentGbc_3.fill = GridBagConstraints.HORIZONTAL;
 				componentGbc_3.gridx = 1;
 				componentGbc_3.gridy = 4;
 				add(exprJTextField, componentGbc_3);
+		
+		panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.gridx = 2;
+		gbc_panel.gridy = 4;
+		add(panel, gbc_panel);
+		
+		lblExprHelp = new JLabel("");
+		lblExprHelp.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				new ExpressionHelpDialog();
+			}
+		});
+		ImageIcon lblExprHelpIcon = new ImageIcon(MetricDetailsPanel.class.getResource("/javax/swing/plaf/metal/icons/ocean/question.png")); 
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		lblExprHelp.setIcon(lblExprHelpIcon);
+		panel.add(lblExprHelp);
+		
+		
 
 		JLabel qualitativeLabel = new JLabel("Qualitative:");
 		GridBagConstraints labelGbc_2 = new GridBagConstraints();
@@ -166,7 +193,7 @@ public class MetricDetailsPanel extends JPanel {
 
 		qualitativeJCheckBox = new JCheckBox();
 		GridBagConstraints componentGbc_2 = new GridBagConstraints();
-		componentGbc_2.insets = new Insets(5, 0, 5, 0);
+		componentGbc_2.insets = new Insets(5, 0, 5, 5);
 		componentGbc_2.fill = GridBagConstraints.HORIZONTAL;
 		componentGbc_2.gridx = 1;
 		componentGbc_2.gridy = 5;
@@ -183,7 +210,7 @@ public class MetricDetailsPanel extends JPanel {
 		directionJComboBox = new JComboBox();
 		directionJComboBox.setModel(new DefaultComboBoxModel(Direction.values()));
 		GridBagConstraints gbc_directionJComboBox = new GridBagConstraints();
-		gbc_directionJComboBox.insets = new Insets(0, 0, 5, 0);
+		gbc_directionJComboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_directionJComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_directionJComboBox.gridx = 1;
 		gbc_directionJComboBox.gridy = 6;
@@ -200,7 +227,7 @@ public class MetricDetailsPanel extends JPanel {
 		descriptionJTextArea = new JTextArea();
 		descriptionJTextArea.setRows(5);
 		GridBagConstraints componentGbc_4 = new GridBagConstraints();
-		componentGbc_4.insets = new Insets(5, 0, 0, 0);
+		componentGbc_4.insets = new Insets(5, 0, 0, 5);
 		componentGbc_4.fill = GridBagConstraints.HORIZONTAL;
 		componentGbc_4.gridx = 1;
 		componentGbc_4.gridy = 7;

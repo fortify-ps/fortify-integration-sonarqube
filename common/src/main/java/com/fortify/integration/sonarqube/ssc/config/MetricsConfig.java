@@ -86,6 +86,26 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 		}
 	}
 	
+	public static enum ExpressionField {
+		filterSets("All fields returned by the /api/v1/projectVersions/${id}/filterSets endpoint"),
+		performanceIndicatorHistories("All fields returned by the /api/v1/projectVersions/${id}/performanceIndicatorHistories endpoint"),
+		variableHistories("All fields returned by the /api/v1/projectVersions/${id}/variableHistories endpoint"),
+		var("Variable value by name, i.e. var['variableName']"),
+		pi("Performance indicator value by name, i.e. pi['performanceIndicatorName']"),
+		scaArtifact("For the most recent artifact that has not yet been processed, or most recent SCA artifact, all fields returned by the /api/v1/projectVersions/${id}/artifacts endpoint");
+		
+		
+		private final String description;
+		
+		ExpressionField(String description) {
+			this.description = description;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+	}
+	
 	
 	private List<MetricConfig> metrics = new ArrayList<>();
 	
