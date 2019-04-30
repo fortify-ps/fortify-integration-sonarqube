@@ -209,6 +209,7 @@ public class FortifySQ67IssueSensor extends FortifySQ67AbstractSensor implements
 		private synchronized IndexTreeList<JSONMap> getAllIssues() {
 			return cacheHelper.getIssuesByCategory().computeIfAbsent("all", key -> {
 				IndexTreeList<JSONMap> result = (IndexTreeList<JSONMap>)cacheHelper.getDB().<JSONMap>indexTreeList(key, Serializer.JAVA).create();
+				// TODO With SQ 6.7 we can only process static analysis results (we can't report project-level issues), so we should add corresponding filters to the base issue query.
 				getIssuesBaseQuery().build().processAll(new AbstractJSONMapProcessor() {
 					@Override
 					public void process(JSONMap json) {
