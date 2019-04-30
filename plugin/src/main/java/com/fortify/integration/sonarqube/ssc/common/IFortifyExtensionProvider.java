@@ -26,6 +26,16 @@ package com.fortify.integration.sonarqube.ssc.common;
 
 import org.sonar.api.Plugin.Context;
 
+/**
+ * This interface is used to get version-specific SonarQube extensions.
+ * 
+ * @author Ruud Senden
+ *
+ */
 public interface IFortifyExtensionProvider {
+	/** 
+	 * @param context
+	 * @return A {@link Class} array containing version-specific SonarQube extensions.
+	 */
 	public Class<?>[] getExtensions(Context context); 
 }

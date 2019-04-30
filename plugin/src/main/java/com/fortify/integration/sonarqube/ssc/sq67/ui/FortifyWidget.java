@@ -31,10 +31,10 @@ import org.sonar.api.web.UserRole;
 import org.sonar.api.web.WidgetCategory;
 
 /**
- * This {@link RubyRailsWidget} implementation defines some metadata and the
- * location of the ERB template for the SonarQube Fortify dashboard.
- * 
- * @author Ruud Senden
+ * TODO Widgets are no longer supported; this class is currently not used.
+ *      The Fortify widget functionality should be reviewed to see what 
+ *      functionality is still relevant for either SonarQube 6.7, 7.6 or both,
+ *      and rewritten as custom plugin pages.
  */
 @UserRole(UserRole.USER)
 @Description("Retrieves Security Metrics from Fortify SSC")

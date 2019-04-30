@@ -24,7 +24,22 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.ssc.common;
 
+/**
+ * This interface provides access SSC connection properties, like
+ * SSC URL (including credentials) and application version name or
+ * id.
+ * 
+ * @author Ruud Senden
+ *
+ */
 public interface IFortifyConnectionProperties {
-	String getSSCUrl();
-	String getApplicationVersionNameOrId();
+	/**
+	 * @return SSC URL (including credentials), or null if not available/configured
+	 */
+	public String getSSCUrl();
+	
+	/**
+	 * @return SSC application version name or id, or null if not available/configured
+	 */
+	public String getApplicationVersionNameOrId();
 }

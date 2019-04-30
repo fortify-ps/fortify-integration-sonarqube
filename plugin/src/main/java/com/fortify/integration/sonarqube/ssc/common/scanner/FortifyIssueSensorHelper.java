@@ -55,6 +55,15 @@ import com.fortify.integration.sonarqube.ssc.common.rule.FortifyRulesDefinition;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
 
+/**
+ * This helper class provides functionality for loading Fortify issues from
+ * SSC, and reporting those issues on SonarQube source files.
+ * 
+ * TODO Add more JavaDoc
+ *  
+ * @author Ruud Senden
+ *
+ */
 public class FortifyIssueSensorHelper {
 	public static enum FORTIFY_FIELDS {
 		id, deepLink, engineCategory, issueName, friority, lineNumber, fullFileName;

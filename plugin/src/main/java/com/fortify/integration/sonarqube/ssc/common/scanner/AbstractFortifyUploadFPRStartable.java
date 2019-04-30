@@ -46,8 +46,9 @@ import com.fortify.util.rest.json.JSONMap;
 /**
  * This abstract {@link Startable} implementation allows for uploading an FPR file to 
  * SSC if the corresponding configuration properties have been set.
- * This abstract class provides all relevant functionality, but concrete implementations 
- * must add the appropriate SonarQube scanner-side extension point annotations.
+ * This abstract class provides all relevant functionality, but version-specific 
+ * implementations must add the appropriate SonarQube scanner-side extension point 
+ * annotations.
  * 
  * @author Ruud Senden
  *
@@ -66,7 +67,7 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 	private final IFortifyConnectionHelper connHelper;
 	
 	/**
-	 * Constructor that initializes the connection instance
+	 * Constructor for injecting dependencies
 	 * @param config
 	 */
 	public AbstractFortifyUploadFPRStartable(Configuration config, IFortifyScannerSideConnectionHelper connHelper) {
@@ -74,6 +75,11 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 		this.connHelper = connHelper;
 	}
 	
+	/**
+	 * If the SSC connection is enabled and FPR upload settings have been configured,
+	 * this method uploads the FPR file to SSC, waits for SSC to finish processing the
+	 * uploaded FPR, and then checks the artifact status.
+	 */
 	@Override
 	public void start() {
 		String fprFileName = config.get(PRP_UPLOAD_FPR).orElse(null);
@@ -82,11 +88,20 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 		}
 	}
 	
+	/**
+	 * This method does nothing.
+	 */
 	@Override
 	public void stop() {
 		// Nothing to do
 	}
 	
+	/**
+	 * This method uploads the FPR file corresponding to the given FPR file name,
+	 * and waits for processing to complete up to the configured time-out.
+	 * @param fprFileName
+	 * @return The artifact id of the uploaded FPR file
+	 */
 	private String uploadFPRAndWaitForProcessingToComplete(String fprFileName) {
 		int timeout = config.getInt(PRP_SSC_MAX_PROCESSING_TIMEOUT).orElse(DEFAULT_PROCESSING_TIMEOUT);
 		File file = new File(fprFileName);
@@ -98,7 +113,14 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 		}
 	}
 
-	private void checkArtifactStatus(String artifactId) {
+	/**
+	 * This method checks the status of the artifact identified by the given artifact id.
+	 * If the status matches any of the configured failure states, this method throws an
+	 * {@link IllegalStateException}.
+	 * 
+	 * @param artifactId
+	 */
+	private void checkArtifactStatus(String artifactId) throws IllegalStateException {
 		Set<String> failOnArtifactStates = new HashSet<>(Arrays.asList(config.getStringArray(PRP_SSC_FAIL_ON_ARTIFACT_STATES)));
 		if ( !failOnArtifactStates.isEmpty() && artifactId!=null ) {
 			JSONMap artifact = connHelper.getConnection().api(SSCArtifactAPI.class).getArtifactById(artifactId, false);
@@ -109,6 +131,11 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 		}
 	}
 	
+	/**
+	 * Add configuration properties that allow for specifying FPR upload settings.
+	 * 
+	 * @param propertyDefinitions
+	 */
 	public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_MAX_PROCESSING_TIMEOUT)
 				.name("Maximum processing time-out (seconds)")

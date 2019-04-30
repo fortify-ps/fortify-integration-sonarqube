@@ -22,23 +22,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.sq76.scanner;
-
-import org.sonar.api.scanner.ScannerSide;
-
-import com.fortify.integration.sonarqube.ssc.common.IFortifyConnectionProperties;
-import com.fortify.integration.sonarqube.ssc.common.scanner.AbstractFortifyScannerSideConnectionHelper;
 
 /**
- * This {@link AbstractFortifyScannerSideConnectionHelper} implementation just adds the
- * 7.6-specific {@link ScannerSide} annotation.
+ * <p>This package contains SonarQube plugin code specific to SonarQube 6.7
+ * up to SonarQube 7.5.x. For later versions, the plugin code is provided
+ * in the {@link com.fortify.integration.sonarqube.ssc.sq76} package.</p>
  * 
- * @author Ruud Senden
- *
+ * <p>Most of the classes provided in this package simply extend from a common 
+ * implementation provided in the {@link com.fortify.integration.sonarqube.ssc.common} 
+ * package, and add the SonarQube 6.7-specific {@link org.sonar.api.batch.ScannerSide} 
+ * and {@link org.sonar.api.batch.InstantiationStrategy} annotations. The notable
+ * exception are sensor implementations, which require a more complete 6.7-specific 
+ * implementation due to some major API changes between SonarQube 6.7 and 7.6.</p>
+ * 
  */
-@ScannerSide
-public class FortifySQ76ScannerSideConnectionHelper extends AbstractFortifyScannerSideConnectionHelper {
-	public FortifySQ76ScannerSideConnectionHelper(IFortifyConnectionProperties connectionProperties) {
-		super(connectionProperties);
-	}
-}
+
+package com.fortify.integration.sonarqube.ssc.sq67;

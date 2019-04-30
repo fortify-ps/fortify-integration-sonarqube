@@ -30,19 +30,45 @@ import java.util.stream.Stream;
 import org.sonar.api.ce.measure.Component;
 import org.sonar.api.ce.measure.MeasureComputer;
 
-import com.fortify.integration.sonarqube.ssc.sq67.ce.FortifySQ67ComputeEngineSideConnectionHelper;
-
+/**
+ * This abstract {@link MeasureComputer} base class provides the following functionality:
+ * <ul>
+ *   <li>Define input metrics, combining the metrics from {@link AbstractFortifyComputeEngineSideConnectionHelper}
+ *       and any additional input metrics returned by the {@link #getInputMetricKeys()} method.</li>
+ *   <li>Define output metrics based on the {@link #getOutputMetricKeys()} method.</li>
+ *   <li>Call the abstract {@link #getComputeEngineSideConnectionHelper(org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext)}
+ *       method to get a version-specific {@link IFortifyComputeEngineSideConnectionHelper} instance.</li>
+ *   <li>Call the abstract {@link #compute(org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext, IFortifyComputeEngineSideConnectionHelper)}
+ *       method if the current component type is supported (as defined by the {@link #getSupportedComponentTypes()} method),
+ *       and if a connection is available.
+ * </ul>
+ * @author Ruud Senden
+ *
+ */
 public abstract class AbstractFortifyMeasureComputerWithConnectionHelper implements MeasureComputer {
 	private static final String[] EMPTY_STRING_ARRAY = new String[] {};
 	
+	/**
+	 * Define this {@link MeasureComputer}, combining the metrics from {@link AbstractFortifyComputeEngineSideConnectionHelper}
+	 * and the {@link #getInputMetricKeys()} to define the input metrics, and
+	 * the metric keys returned by {@link #getOutputMetricKeys()} as the output
+	 * metrics.
+	 */
 	@Override
 	public final MeasureComputerDefinition define(MeasureComputerDefinitionContext defContext) {
 		return defContext.newDefinitionBuilder()
-			.setInputMetrics(Stream.of(FortifySQ67ComputeEngineSideConnectionHelper.getInputMetricKeys(), getInputMetricKeys()).flatMap(Stream::of).toArray(String[]::new))
+			.setInputMetrics(Stream.of(AbstractFortifyComputeEngineSideConnectionHelper.getInputMetricKeys(), getInputMetricKeys()).flatMap(Stream::of).toArray(String[]::new))
 			.setOutputMetrics(getOutputMetricKeys())
 			.build();
 	}
 	
+	/**
+	 * This method checks whether the current {@link Component} is supported by
+	 * the concrete implementation (based on the {@link #getSupportedComponentTypes()} 
+	 * return value), and whether the connection to SSC is available. If so, the
+	 * {@link #compute(org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext, IFortifyComputeEngineSideConnectionHelper)}
+	 * method is called to allow the concrete implementation to compute the measures.
+	 */
 	@Override
 	public final void compute(MeasureComputerContext context) {
 		Set<Component.Type> supportedComponentTypes = getSupportedComponentTypes();
@@ -54,6 +80,13 @@ public abstract class AbstractFortifyMeasureComputerWithConnectionHelper impleme
 		}
 	}
 	
+	/**
+	 * Version-specific implementations must return a version-specific {@link IFortifyComputeEngineSideConnectionHelper}
+	 * instance. Implementations should never return null.
+	 * 
+	 * @param context
+	 * @return
+	 */
 	protected abstract IFortifyComputeEngineSideConnectionHelper getComputeEngineSideConnectionHelper(MeasureComputerContext context);
 
 	/**

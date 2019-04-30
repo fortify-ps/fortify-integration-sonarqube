@@ -39,7 +39,6 @@ import org.sonar.api.batch.InstantiationStrategy;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.ActiveRule;
-import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.PropertyDefinition;
@@ -52,22 +51,17 @@ import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
 
 /**
- * This SonarQube {@link Sensor} implementation retrieves vulnerability data from SSC and
- * reports these vulnerabilities as SonarQube violations.
+ * This {@link FortifySQ67AbstractSensor} implementation retrieves vulnerability data from SSC and
+ * reports these vulnerabilities as SonarQube issues.
+ * 
+ * TODO Add more JavaDoc
  * 
  * @author Ruud Senden
  *
  */
 
 /*
- * TODO
- * Add list of issues for which the corresponding language rule has not be activated, to be displayed on dashboard
- * Add list of issues for which the match expression is false
- * Retrieve list of vulnerabilities only once
- * Retrieve only relevant issue fields from SSC
- * Use SSC search string (see FortifyBugTrackerUtility) instead of SpEL to filter issues to be reported?
- * Configure SSC search string in plugin configuration instead of rule configuration?
- * Report all issues on generic Fortify rule? Disables language-based filtering in SQ UI, but makes configuration of plugin easier (no need to activate rules) 
+ * TODO Add plugin page that shows any Fortify issues that could not be matched to a SonarQube source file
  */
 public class FortifySQ67IssueSensor extends FortifySQ67AbstractSensor implements Startable {
 	private final SensorProperties sensorProperties;

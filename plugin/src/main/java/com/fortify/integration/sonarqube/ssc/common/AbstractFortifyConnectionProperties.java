@@ -33,8 +33,8 @@ import org.sonar.api.resources.Qualifiers;
 
 /**
  * This class provides configuration settings for, and access to, SSC connection properties.
- * This abstract class provides all relevant functionality, but concrete implementations must 
- * add the appropriate SonarQube extension point annotations.
+ * This abstract class provides all relevant functionality, but concrete version-specific 
+ * implementations must add the appropriate SonarQube extension point annotations.
  * 
  * @author Ruud Senden
  *
@@ -48,23 +48,35 @@ public abstract class AbstractFortifyConnectionProperties implements IFortifyCon
 	private final Configuration config;
 	
 	/**
-	 * Constructor for injecting configuration
+	 * Constructor for injecting dependencies
 	 * @param config
 	 */
 	public AbstractFortifyConnectionProperties(Configuration config) {
 		this.config = config;
 	}
 	
+	/**
+	 * Get the configured SSC URL
+	 */
 	@Override
 	public String getSSCUrl() {
 		return config.get(PRP_SSC_URL).orElse(null);
 	}
 	
+	/**
+	 * Get the configured application version name or id
+	 */
 	@Override
 	public String getApplicationVersionNameOrId() {
 		return config.get(PRP_SSC_APP_VERSION).orElse(null);
 	}
 	
+	/**
+	 * Add configuration properties that allow for specifying the SSC URL 
+	 * (including credentials) and application version name or id.
+	 * 
+	 * @param propertyDefinitions
+	 */
 	public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_URL)
 				.name("SSC URL")

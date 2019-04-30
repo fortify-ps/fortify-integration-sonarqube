@@ -33,6 +33,8 @@ import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 
 import com.fortify.integration.sonarqube.ssc.common.FortifyConstants;
+import com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin;
+import com.fortify.integration.sonarqube.ssc.common.profile.FortifyProfile;
 import com.fortify.integration.sonarqube.ssc.config.RulesConfig;
 import com.fortify.integration.sonarqube.ssc.externalmetadata.ExternalCategory;
 import com.fortify.integration.sonarqube.ssc.externalmetadata.ExternalList;
@@ -40,7 +42,13 @@ import com.fortify.integration.sonarqube.ssc.externalmetadata.FortifyExternalMet
 
 /**
  * <p>This {@link RulesDefinition} implementation will generate Fortify-related
- * SonarQube rules.</p>
+ * SonarQube rules. Based on {@link RulesConfig} and {@link FortifyExternalMetadata},
+ * this implementation will add a default 'Other' rule, and optionally rules
+ * corresponding to external list categories for the configured external list
+ * name.</p>
+ * 
+ * <p>This SonarQube extension is registered for all supported SonarQube 
+ * versions by {@link FortifySSCPlugin}.</p>
  */
 public class FortifyRulesDefinition implements RulesDefinition {
 	public static final String REPOSITORY_KEY = "fortify";
@@ -48,16 +56,32 @@ public class FortifyRulesDefinition implements RulesDefinition {
 	private static final FortifyExternalMetadata externalMetadata = FortifyExternalMetadata.parse(); 
 	private static final ExternalList externalList = _getExternalList();
 	
+	/**
+	 * If the configured rules source name equals {@link RulesConfig#SINGLE_RULE_SOURCE_NAME},
+	 * this method returns null. Otherwise, it returns the {@link ExternalList} instance
+	 * corresponding to the configured rules source name.
+	 * @return
+	 */
 	private static ExternalList _getExternalList() {
 		String rulesSourceName = RulesConfig.load().getRulesSourceName();
 		return externalMetadata==null || StringUtils.isBlank(rulesSourceName) || RulesConfig.SINGLE_RULE_SOURCE_NAME.equals(rulesSourceName) 
 				? null : externalMetadata.getExternalListByName(rulesSourceName);
 	}
 	
+	/**
+	 * @return The external list id if configured, otherwise null.
+	 */
 	public static final String getExternalListId() {
 		return externalList==null ? null : externalList.getId();
 	}
 	
+	/**
+	 * This method defines a new 'Fortify' rules repository. If an external
+	 * list has been configured, each external list category is added as a
+	 * SonarQube rule to this repository. In addition, independent of whether
+	 * an external list has been configured or not, a default 'Other' rule is
+	 * added to the repository.
+	 */
 	@Override
 	public void define(Context context) {
 		NewRepository repo = context.createRepository(REPOSITORY_KEY, FortifyConstants.FTFY_LANGUAGE_KEY);
@@ -83,6 +107,12 @@ public class FortifyRulesDefinition implements RulesDefinition {
 		repo.done();
 	}
 	
+	/**
+	 * Get the rule keys defined by this {@link RulesDefinition} implementation.
+	 * This is used by {@link FortifyProfile} to create a 'Fortify' profile with
+	 * all Fortify-related rules enabled by default.
+	 * @return
+	 */
 	public Collection<String> getRuleKeys() {
 		List<String> result = new ArrayList<>();
 		if ( externalList != null ) {

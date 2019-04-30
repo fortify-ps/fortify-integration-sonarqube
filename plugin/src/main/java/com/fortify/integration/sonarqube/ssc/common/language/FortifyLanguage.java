@@ -31,10 +31,14 @@ import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.AbstractLanguage;
 
 import com.fortify.integration.sonarqube.ssc.common.FortifyConstants;
+import com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin;
 
 /**
- * <p>This class defines a generic SonarQube language for all file suffixes
- * listed in the {@link FortifyConstants#PRP_FILE_SUFFIXES} property.</p>
+ * <p>This class defines a generic SonarQube language against which
+ * all Fortify vulnerabilities are being reported, independent of the 
+ * actual source code language. In addition, this language implementation
+ * allows for for configuring additional file extensions that should be
+ * processed by SonarQube.</p>
 
  * <p>Depending on which language plugins have been installed in SonarQube,
  * SonarQube only processes files with the file suffixes supported by
@@ -47,6 +51,9 @@ import com.fortify.integration.sonarqube.ssc.common.FortifyConstants;
  * {@link FortifyConstants#PRP_FILE_SUFFIXES} property allows for
  * including these file types in the SonarQube results, such that the
  * corresponding Fortify vulnerabilities can be reported in SonarQube.</p>
+ * 
+ * <p>This SonarQube extension is registered for all supported SonarQube 
+ * versions by {@link FortifySSCPlugin}.</p>
  * 
  * @author Ruud Senden
  *
@@ -83,6 +90,7 @@ public class FortifyLanguage extends AbstractLanguage {
 				//           on the plugin configuration page
 				.description("Additional file types to be included in the SonarQube scan to allow vulnerabilities"
 						+ " to be reported on those file types. Multiple file suffixes can be separated by a comma."
+						// TODO Check whether the following warning is still applicable for current SQ versions
 						+ " DO NOT define any file suffixes that overlap with an existing SonarQube "
 						+ " language plugin, as this will result in SonarQube errors.")
 				.multiValues(true)

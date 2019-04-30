@@ -30,6 +30,13 @@ import org.sonar.api.scanner.ScannerSide;
 import com.fortify.integration.sonarqube.ssc.common.scanner.AbstractFortifyUploadFPRStartable;
 import com.fortify.integration.sonarqube.ssc.common.scanner.IFortifyScannerSideConnectionHelper;
 
+/**
+ * This {@link AbstractFortifyUploadFPRStartable} implementation just adds the
+ * 7.6-specific {@link ScannerSide} annotation.
+ * 
+ * @author Ruud Senden
+ *
+ */
 @ScannerSide
 public class FortifySQ76UploadFPRStartable extends AbstractFortifyUploadFPRStartable {
 	public FortifySQ76UploadFPRStartable(Configuration config, IFortifyScannerSideConnectionHelper connHelper) {

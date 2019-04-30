@@ -40,8 +40,9 @@ import com.fortify.util.rest.json.JSONMap;
 
 /**
  * This class provides configuration settings for, and access to, issue sensor properties.
- * This abstract class provides all relevant functionality, but concrete implementations must 
- * add the appropriate SonarQube extension point annotations.
+ * This abstract class provides all relevant functionality, but concrete version-specific 
+ * implementations must add the appropriate SonarQube extension point annotations. Where 
+ * necessary, such concrete implementations may add support for additional properties.
  * 
  * @author Ruud Senden
  *
@@ -60,10 +61,18 @@ public abstract class AbstractFortifyIssueSensorProperties {
 		this.connHelper = connHelper;
 	}
 	
+	/**
+	 * @param context {@link SensorContext}
+	 * @return True if issue collection is enabled or not configured, false otherwise
+	 */
 	public final boolean isIssueCollectionEnabled(SensorContext context) {
 		return context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
 	}
 	
+	/**
+	 * @param context {@link SensorContext}
+	 * @return The configured filter set name or id, or null if not configured
+	 */
 	public final String getFilterSetNameOrId(SensorContext context) {
 		return context.config().get(PRP_FILTER_SET).orElse(null);
 	}
@@ -89,10 +98,21 @@ public abstract class AbstractFortifyIssueSensorProperties {
 		return (filterSet==null ? getSSCDefaultFilterSet(filterSets) : filterSet).get("guid", String.class);
 	}
 	
+	/**
+	 * Find the SSC default filterset in the given {@link JSONList} 
+	 * @param filterSets
+	 * @return
+	 */
 	private final JSONMap getSSCDefaultFilterSet(JSONList filterSets) {
 		return filterSets.find("defaultFilterSet", true, JSONMap.class);
 	}
 	
+	/**
+	 * Add configuration properties that allow for specifying whether issue collection
+	 * is enabled, and which filter set to use for issue collection.
+	 * 
+	 * @param propertyDefinitions
+	 */
 	public static void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_ENABLE_ISSUES)
 				.name("Enable issues collection")

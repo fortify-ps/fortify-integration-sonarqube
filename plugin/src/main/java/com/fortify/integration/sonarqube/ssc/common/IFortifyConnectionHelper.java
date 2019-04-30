@@ -26,17 +26,35 @@ package com.fortify.integration.sonarqube.ssc.common;
 
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
 
+/**
+ * This interface provides access to the SSC URL (including credentials), the
+ * corresponding {@link SSCAuthenticatingRestConnection} instance, and the
+ * SSC application version id. It also provides a utility method for checking 
+ * whether SSC connection and application version id are available.
+ * 
+ * @author Ruud Senden
+ *
+ */
 public interface IFortifyConnectionHelper {
 
-	SSCAuthenticatingRestConnection getConnection();
-
-	String getApplicationVersionId();
+	/**
+	 * @return {@link SSCAuthenticatingRestConnection} instance, or null if not available/configured
+	 */
+	public SSCAuthenticatingRestConnection getConnection();
 
 	/**
-	 * @return true if the SSC connection is available, false otherwise
+	 * @return SSC application version id, or null if not available/configured
 	 */
-	boolean isConnectionAvailable();
+	public String getApplicationVersionId();
 
-	String getSSCUrl();
+	/**
+	 * @return true if the SSC connection and application version id is available, false otherwise
+	 */
+	public boolean isConnectionAvailable();
+
+	/**
+	 * @return SSC URL (including credentials), or null if not available/configured
+	 */
+	public String getSSCUrl();
 
 }

@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.ActiveRule;
-import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
@@ -43,8 +42,10 @@ import com.fortify.util.rest.json.JSONMap;
 
 
 /**
- * This SonarQube {@link Sensor} implementation retrieves vulnerability data from SSC and
- * reports these vulnerabilities as SonarQube violations.
+ * This {@link FortifySQ76AbstractProjectSensor} implementation retrieves vulnerability data from SSC and
+ * reports these vulnerabilities as SonarQube issues.
+ * 
+ * TODO Add more JavaDoc
  * 
  * @author Ruud Senden
  *

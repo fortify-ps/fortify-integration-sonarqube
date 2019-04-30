@@ -26,6 +26,7 @@ package com.fortify.integration.sonarqube.ssc.sq67;
 
 import org.sonar.api.Plugin.Context;
 
+import com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin;
 import com.fortify.integration.sonarqube.ssc.common.IFortifyExtensionProvider;
 import com.fortify.integration.sonarqube.ssc.sq67.ce.FortifySQ67ComputeEngineSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.sq67.ce.FortifySQ67ConfigurableMeasureComputer;
@@ -34,8 +35,9 @@ import com.fortify.integration.sonarqube.ssc.sq67.scanner.FortifySQ67ScannerSide
 import com.fortify.integration.sonarqube.ssc.sq67.scanner.FortifySQ67UploadFPRStartable;
 
 /**
- * This main plugin class adds all relevant SonarQube extension points that make
- * up this Fortify integration.
+ * This {@link IFortifyExtensionProvider} implementation provides the
+ * 6.7-specific SonarQube extensions. This class, and the corresponding
+ * extensions, are loaded by {@link FortifySSCPlugin}. 
  */
 public class FortifySQ67ExtensionProvider implements IFortifyExtensionProvider {
 	private static Class<?>[] SQ67_EXTENSIONS = {

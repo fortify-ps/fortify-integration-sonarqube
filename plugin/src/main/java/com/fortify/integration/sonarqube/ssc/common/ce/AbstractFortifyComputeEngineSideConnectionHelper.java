@@ -33,12 +33,27 @@ import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metrics;
 
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
+import com.fortify.integration.sonarqube.ssc.common.IFortifyConnectionProperties;
 
 /**
- * SSC connection helper for ComputeEngine-side to get SSC connection instance and
+ * <p>SSC connection helper for ComputeEngine-side to get SSC connection instance and
  * application version id. This abstract class provides all relevant functionality,
- * but concrete implementations must provide a concrete SensorImpl class for adding
- * measures for a specific SonarQube version.
+ * but version-specific implementations must provide a Sensor implementation that 
+ * adds the relevant measures.</p>
+ * 
+ * <p>Instead of depending on {@link IFortifyConnectionProperties} implementations
+ * (i.e. getting the connection properties from the SonarQube configuration), we
+ * have a sensor on the scanner side provide the relevant properties as SonarQube
+ * measures for the following two reasons:</p>
+ * <ul>
+ *   <li>Connection properties like SSC URL and application version name or id may
+ *       not have been configured on the SonarQube server, but instead being provided
+ *       on the scanner command line.</li>
+ *   <li>Even if connection properties have been configured on the SonarQube server,
+ *       these could have been overridden on the scanner command line; we want the
+ *       compute engine to use the same connection properties as used on the scanner
+ *       command line.</li>
+ * </ul> 
  * 
  * @author Ruud Senden
  *
@@ -57,22 +72,41 @@ public abstract class AbstractFortifyComputeEngineSideConnectionHelper implement
 	private final MeasureComputerContext measureComputerContext;
 	private SSCAuthenticatingRestConnection connection = null;
 	
+	/**
+	 * Constructor for injecting dependencies
+	 * @param measureComputerContext
+	 */
 	public AbstractFortifyComputeEngineSideConnectionHelper(MeasureComputerContext measureComputerContext) {
 		this.measureComputerContext = measureComputerContext;
 	}
 	
+	/**
+	 * Get the input metric keys, containing the SSC URL and application version id
+	 * @return
+	 */
 	public static final String[] getInputMetricKeys() {
 		return new String[] {PRP_SSC_URL, PRP_APP_VERSION_ID};
 	}
 	
+	/**
+	 * Get the SSC URL including credentials from the measure saved on the scanner side
+	 */
 	public final String getSSCUrl() {
 		return measureComputerContext.getMeasure(AbstractFortifyComputeEngineSideConnectionHelper.PRP_SSC_URL).getStringValue();
 	}
 	
+	/**
+	 * Get the application version id from the measure saved on the scanner side
+	 */
 	public final String getApplicationVersionId() {
 		return measureComputerContext.getMeasure(AbstractFortifyComputeEngineSideConnectionHelper.PRP_APP_VERSION_ID).getStringValue();
 	}
 	
+	/**
+	 * Get the {@link SSCAuthenticatingRestConnection} based on the URL returned by {@link #getSSCUrl()}.
+	 * The connection instance is cached for this {@link AbstractFortifyComputeEngineSideConnectionHelper}
+	 * instance. If the connection is not available, this method returns null.
+	 */
 	public final synchronized SSCAuthenticatingRestConnection getConnection() {
 		String sscUrl = getSSCUrl();
 		if ( connection==null && StringUtils.isNotBlank(sscUrl) ) {
@@ -81,10 +115,18 @@ public abstract class AbstractFortifyComputeEngineSideConnectionHelper implement
 		return connection;
 	}
 	
+	/**
+	 * This method indicates whether SSC connection and application version id 
+	 * are available. 
+	 */
 	public final boolean isConnectionAvailable() {
 		return getConnection()!=null && getApplicationVersionId()!=null; 
 	}
 
+	/**
+	 * {@link Metrics} implementation providing the metrics used to
+	 * hold SSC connection properties.
+	 */
 	public static final class MetricsImpl implements Metrics {
 		@Override
 		public List<Metric> getMetrics() {

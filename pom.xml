@@ -67,9 +67,13 @@
 		</repository>
 	</repositories>
 	
-	
-		<profiles>
+	<profiles>
 		<profile>
+			<!--
+				The default profile is used to perform a regular build of the Fortify SonarQube 
+				plugin, and builds against the latest available SonarQube API version that is
+				supported by the current plugin implementation, which is currently 7.6. 
+		 	-->
 			<id>default</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -85,6 +89,14 @@
 			</modules>
 		</profile>
 		<profile>
+			<!--
+				This profile can be used to verify compatibility with the earliest SonarQube
+				version supported by the plugin, which is currently 6.7. It only builds the
+				common and plugin modules, sets the SonarQube API version to the earliest
+				supported version, and excludes any folders/packages that are specific for
+				later versions (as these are not expected to compile without errors against
+				the earlier SonarQube API version).
+		 	-->
 			<id>checkSQ6.7Compatibility</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>

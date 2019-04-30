@@ -29,6 +29,17 @@ import org.sonar.api.scanner.sensor.ProjectSensor;
 
 import com.fortify.integration.sonarqube.ssc.common.scanner.IFortifyScannerSideConnectionHelper;
 
+/**
+ * This 7.6-specific abstract {@link ProjectSensor} base class provides functionality 
+ * for storing the scanner-side connection helper, and executing concrete sensor 
+ * implementations only if an SSC connection is available and the sensor is active.
+ * Contrary to the 6.7-specific implementation, implementations extending from this
+ * based class are executed only once per project, instead of being executed separately
+ * for every module.
+ * 
+ * @author Ruud Senden
+ *
+ */
 public abstract class FortifySQ76AbstractProjectSensor implements ProjectSensor {
 	private final IFortifyScannerSideConnectionHelper connHelper;
 	

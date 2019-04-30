@@ -26,6 +26,7 @@ package com.fortify.integration.sonarqube.ssc.sq76;
 
 import org.sonar.api.Plugin.Context;
 
+import com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin;
 import com.fortify.integration.sonarqube.ssc.common.IFortifyExtensionProvider;
 import com.fortify.integration.sonarqube.ssc.sq76.ce.FortifySQ76ComputeEngineSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.sq76.ce.FortifySQ76ConfigurableMeasureComputer;
@@ -33,6 +34,11 @@ import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76IssueSensor
 import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76ScannerSideConnectionHelper;
 import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76UploadFPRStartable;
 
+/**
+ * This {@link IFortifyExtensionProvider} implementation provides the
+ * 7.6-specific SonarQube extensions. This class, and the corresponding
+ * extensions, are loaded by {@link FortifySSCPlugin}. 
+ */
 public class FortifySQ76ExtensionProvider implements IFortifyExtensionProvider {
 	private static Class<?>[] SQ76_EXTENSIONS = {
 			// Scanner-side extensions for handling SSC connection

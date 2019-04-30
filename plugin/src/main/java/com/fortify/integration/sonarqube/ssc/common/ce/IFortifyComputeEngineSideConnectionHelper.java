@@ -27,7 +27,9 @@ package com.fortify.integration.sonarqube.ssc.common.ce;
 import com.fortify.integration.sonarqube.ssc.common.IFortifyConnectionHelper;
 
 /**
- * This is just a marker interface for scanner-side connection helpers
+ * This is just a marker interface for ComputeEngine-side {@link IFortifyConnectionHelper}
+ * implementations.
+ * 
  * @author Ruud Senden
  *
  */

@@ -32,6 +32,14 @@ import com.fortify.integration.sonarqube.ssc.common.ce.AbstractFortifyComputeEng
 import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76AbstractProjectSensor;
 import com.fortify.integration.sonarqube.ssc.sq76.scanner.FortifySQ76ScannerSideConnectionHelper;
 
+/**
+ * This {@link AbstractFortifyComputeEngineSideConnectionHelper} implementation adds
+ * a 7.6-specific sensor implementation for storing the SSC connection properties as 
+ * SonarQube metrics. 
+ * 
+ * @author Ruud Senden
+ *
+ */
 public class FortifySQ76ComputeEngineSideConnectionHelper extends AbstractFortifyComputeEngineSideConnectionHelper {
 	public FortifySQ76ComputeEngineSideConnectionHelper(MeasureComputerContext measureComputerContext) {
 		super(measureComputerContext);

@@ -32,10 +32,10 @@ import com.fortify.integration.sonarqube.ssc.common.IFortifyConnectionProperties
 import com.fortify.util.rest.json.JSONMap;
 
 /**
- * SSC connection helper for scanner-side to get SSC connection instance and
+ * <p>SSC connection helper for scanner-side to get SSC connection instance and
  * application version id. This abstract class provides all relevant functionality,
  * but concrete implementations must add the appropriate SonarQube extension point
- * annotations.
+ * annotations.</p>
  * 
  * @author Ruud Senden
  *
@@ -46,13 +46,18 @@ public abstract class AbstractFortifyScannerSideConnectionHelper implements IFor
 	private String applicationVersionId;
 	
 	/**
-	 * Constructor that initializes the connection instance
+	 * Constructor for injecting dependencies
 	 * @param config
 	 */
 	public AbstractFortifyScannerSideConnectionHelper(IFortifyConnectionProperties connectionProperties) {
 		this.connectionProperties = connectionProperties;
 	}
 	
+	/**
+	 * Get the {@link SSCAuthenticatingRestConnection} based on the URL returned by {@link #getSSCUrl()}.
+	 * The connection instance is cached for this {@link AbstractFortifyScannerSideConnectionHelper}
+	 * instance. If the connection is not available, this method returns null.
+	 */
 	@Override
 	public final synchronized SSCAuthenticatingRestConnection getConnection() {
 		String sscUrl = getSSCUrl();
@@ -62,6 +67,11 @@ public abstract class AbstractFortifyScannerSideConnectionHelper implements IFor
 		return connection;
 	}
 	
+	/**
+	 * Get the application version id for the configured application version name or id.
+	 * If the SSC connection is not available, or no application version name or id has 
+	 * been configured, this method returns null. 
+	 */
 	@Override
 	public final synchronized String getApplicationVersionId() {
 		String applicationVersionNameOrId = getApplicationVersionNameOrId();
@@ -79,16 +89,26 @@ public abstract class AbstractFortifyScannerSideConnectionHelper implements IFor
 		return applicationVersionId;
 	}
 	
+	/**
+	 * This method indicates whether SSC connection and application version id 
+	 * are available. 
+	 */
 	@Override
 	public final boolean isConnectionAvailable() {
 		return getConnection()!=null && getApplicationVersionId()!=null; 
 	}
 	
+	/**
+	 * Get the SSC URL including credentials from the {@link IFortifyConnectionProperties} instance
+	 */
 	@Override
 	public String getSSCUrl() {
 		return connectionProperties.getSSCUrl();
 	}
 
+	/**
+	 * Get the SSC application version name or id from the {@link IFortifyConnectionProperties} instance
+	 */
 	public String getApplicationVersionNameOrId() {
 		return connectionProperties.getApplicationVersionNameOrId();
 	}

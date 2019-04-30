@@ -27,6 +27,15 @@ package com.fortify.integration.sonarqube.ssc.sq76.ce;
 import com.fortify.integration.sonarqube.ssc.common.ce.AbstractFortifyConfigurableMeasureComputer;
 import com.fortify.integration.sonarqube.ssc.common.ce.IFortifyComputeEngineSideConnectionHelper;
 
+/**
+ * This {@link AbstractFortifyConfigurableMeasureComputer} implementation just adds the
+ * {@link #getComputeEngineSideConnectionHelper(org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext)}
+ * method to return a 7.6-specific {@link FortifySQ76ComputeEngineSideConnectionHelper}
+ * instance.
+ * 
+ * @author Ruud Senden
+ *
+ */
 public class FortifySQ76ConfigurableMeasureComputer extends AbstractFortifyConfigurableMeasureComputer {
 	@Override
 	protected IFortifyComputeEngineSideConnectionHelper getComputeEngineSideConnectionHelper(MeasureComputerContext context) {

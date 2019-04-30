@@ -27,12 +27,16 @@ package com.fortify.integration.sonarqube.ssc.common.profile;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
 import com.fortify.integration.sonarqube.ssc.common.FortifyConstants;
+import com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin;
 import com.fortify.integration.sonarqube.ssc.common.language.FortifyLanguage;
 import com.fortify.integration.sonarqube.ssc.common.rule.FortifyRulesDefinition;
 
 /**
- * This class defines a default quality profile for the generic Fortify language 
- * (see {@link FortifyLanguage}) with all available rules activated by default.
+ * <p>This class defines a default quality profile for the generic Fortify language 
+ * (see {@link FortifyLanguage}) with all available rules activated by default.</p>
+ * 
+ * <p>This SonarQube extension is registered for all supported SonarQube 
+ * versions by {@link FortifySSCPlugin}.</p>
  * 
  * @author Ruud Senden
  *

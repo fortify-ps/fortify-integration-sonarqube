@@ -32,6 +32,14 @@ import org.sonar.api.server.ServerSide;
 
 import com.fortify.integration.sonarqube.ssc.common.AbstractFortifyConnectionProperties;
 
+/**
+ * This {@link AbstractFortifyConnectionProperties} implementation just adds the
+ * 6.7-specific {@link ScannerSide} and {@link InstantiationStrategy} annotations,
+ * and the common {@link ServerSide} and {@link ComputeEngineSide} annotations.
+ * 
+ * @author Ruud Senden
+ *
+ */
 @ScannerSide
 @InstantiationStrategy(InstantiationStrategy.PER_BATCH)
 @ServerSide

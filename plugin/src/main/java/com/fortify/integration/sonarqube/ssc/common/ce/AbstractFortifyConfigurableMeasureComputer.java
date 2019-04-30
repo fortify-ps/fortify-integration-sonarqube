@@ -51,27 +51,71 @@ import com.fortify.util.rest.json.preprocessor.filter.AbstractJSONMapFilter.Matc
 import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
 import com.fortify.util.spring.SpringExpressionUtil;
 
+/**
+ * This {@link AbstractFortifyMeasureComputerWithConnectionHelper} implementation provides
+ * the following functionality:
+ * <ul>
+ *   <li>Load configurable metric definitions using {@link MetricsConfig}</li>
+ *   <li>Defines the corresponding SonarQube metrics using the {@link MetricsImpl} class</li>
+ *   <li>Load the application version data used as input for the metric value calculations</li>
+ *   <li>Calculates the metric value for each configured metric definition, and reports this
+ *       as a SonarQube measure</li> 
+ * </ul>
+ * 
+ * Concrete version-specific implementations must provide an implementation for the 
+ * {@link #getComputeEngineSideConnectionHelper(org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext)}
+ * method to return a version-specific {@link IFortifyComputeEngineSideConnectionHelper}
+ * instance.
+ * 
+ * TODO Describe available on-demand properties
+ * TODO Add additional on-demand properties, for example issue group counts
+ * 
+ * @author Ruud Senden
+ *
+ */
 @SuppressWarnings("rawtypes")
 public abstract class AbstractFortifyConfigurableMeasureComputer extends AbstractFortifyMeasureComputerWithConnectionHelper {
 	private static final Logger LOG = Loggers.get(AbstractFortifyConfigurableMeasureComputer.class);
 	private static final MetricsConfig METRICS_CONFIG = MetricsConfig.load();
 	private static final List<Metric> METRICS = _getMetrics();
 	
+	/**
+	 * Define the metric keys for which SonarQube measures are calculated by this
+	 * measure computer, based on the configurable metrics provided by {@link MetricsConfig}.
+	 */
 	@Override
 	protected String[] getOutputMetricKeys() {
 		return METRICS.stream().map(Metric::getKey).collect(Collectors.toList()).toArray(new String[] {});
 	}
 	
+	/**
+	 * This method returns {@link Component.Type.PROJECT} to indicate that this
+	 * measure computer should only run at project level.
+	 */
 	@Override
 	protected Set<Component.Type> getSupportedComponentTypes() {
 		return Collections.singleton(Component.Type.PROJECT);
 	}
 	
+	/**
+	 * This method simply gets the SSC applition version data using
+	 * {@link #getApplicationVersionData(IFortifyComputeEngineSideConnectionHelper)},
+	 * and then calls {@link #addMeasures(org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext, JSONMap)}
+	 * to calculate the measures.
+	 */
 	@Override
 	public void compute(MeasureComputerContext context, IFortifyComputeEngineSideConnectionHelper connHelper) {
 		addMeasures(context, getApplicationVersionData(connHelper));
 	}
 
+	/**
+	 * For every configurable metric defined through {@link MetricsConfig}, this method
+	 * evaluates the corresponding metric expression and adds the expression return
+	 * value as a SonarQube measure.
+	 *  
+	 * @param context
+	 * @param applicationVersion
+	 */
 	private void addMeasures(MeasureComputerContext context, JSONMap applicationVersion) {
 		for ( MetricConfig mc : METRICS_CONFIG.getMetrics() ) {
 			// TODO Any better way for implementing this?
@@ -102,6 +146,14 @@ public abstract class AbstractFortifyConfigurableMeasureComputer extends Abstrac
 		}
 	}
 
+	/**
+	 * This method retrieves application version data from SSC. This data includes
+	 * the standard application version JSON fields, as well as various on-demand
+	 * fields that provide additional data that can be used in metric calculations.
+	 *  
+	 * @param connHelper
+	 * @return
+	 */
 	private JSONMap getApplicationVersionData(IFortifyComputeEngineSideConnectionHelper connHelper) {
 		SSCAuthenticatingRestConnection conn = connHelper.getConnection();
 		String applicationVersionId = connHelper.getApplicationVersionId();
@@ -121,6 +173,11 @@ public abstract class AbstractFortifyConfigurableMeasureComputer extends Abstrac
 		return applicationVersion;
 	}
 	
+	/**
+	 * This method generates a list of {@link Metric} instances based on the
+	 * configurable metrics provided through {@link MetricsConfig}.
+	 * @return
+	 */
 	private static final List<Metric> _getMetrics() {
 		List<Metric> result = new ArrayList<>();
 		for ( MetricConfig mc : METRICS_CONFIG.getMetrics() ) {
@@ -132,6 +189,14 @@ public abstract class AbstractFortifyConfigurableMeasureComputer extends Abstrac
 		return result;
 	}
 	
+	/**
+	 * This {@link Metrics} implementation simply returns the cached
+	 * output of the {@link AbstractFortifyConfigurableMeasureComputer#_getMetrics()}
+	 * method.
+	 * 
+	 * @author Ruud Senden
+	 *
+	 */
 	public static final class MetricsImpl implements Metrics {
 		
 		@Override
@@ -140,6 +205,15 @@ public abstract class AbstractFortifyConfigurableMeasureComputer extends Abstrac
 		}
 	}
 	
+	/**
+	 * This {@link AbstractJSONMapOnDemandLoaderWithConnection} implementation provides
+	 * either the most recently processed SCA artifact, or the most recent artifact that
+	 * has not yet been successfully processed (which may be an SCA or other artifact; we
+	 * can't tell until SSC has processed the artifact), as an on-demand property.
+	 *   
+	 * @author Ruud Senden
+	 *
+	 */
 	private static final class JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact extends AbstractJSONMapOnDemandLoaderWithConnection<SSCAuthenticatingRestConnection> {
 		private static final long serialVersionUID = 1L;
 

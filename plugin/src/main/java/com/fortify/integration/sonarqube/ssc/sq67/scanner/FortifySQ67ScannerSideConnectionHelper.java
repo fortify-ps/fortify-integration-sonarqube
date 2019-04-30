@@ -31,8 +31,8 @@ import com.fortify.integration.sonarqube.ssc.common.IFortifyConnectionProperties
 import com.fortify.integration.sonarqube.ssc.common.scanner.AbstractFortifyScannerSideConnectionHelper;
 
 /**
- * SSC connection helper for scanner-side to get SSC connection instance and
- * application version id. 
+ * This {@link AbstractFortifyScannerSideConnectionHelper} implementation just adds the
+ * 6.7-specific {@link ScannerSide} and {@link InstantiationStrategy} annotations.
  * 
  * @author Ruud Senden
  *

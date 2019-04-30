@@ -41,3 +41,4 @@ Tests:
 - Multi-module project/Single-module project
 - Sonar Scanner/Maven scanner
 - Different SonarQube versions
+- No exceptions if SSC URL/application version have not been configured

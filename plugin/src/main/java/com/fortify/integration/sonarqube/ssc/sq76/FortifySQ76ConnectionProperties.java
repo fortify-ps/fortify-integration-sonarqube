@@ -31,6 +31,14 @@ import org.sonar.api.server.ServerSide;
 
 import com.fortify.integration.sonarqube.ssc.common.AbstractFortifyConnectionProperties;
 
+/**
+ * This {@link AbstractFortifyConnectionProperties} implementation just adds the
+ * 7.6-specific {@link ScannerSide} annotation, and the common {@link ServerSide} 
+ * and {@link ComputeEngineSide} annotations.
+ * 
+ * @author Ruud Senden
+ *
+ */
 @ScannerSide
 @ServerSide
 @ComputeEngineSide
