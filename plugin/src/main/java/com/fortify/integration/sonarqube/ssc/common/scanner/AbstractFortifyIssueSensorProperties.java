@@ -116,13 +116,13 @@ public abstract class AbstractFortifyIssueSensorProperties {
 	public static void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_ENABLE_ISSUES)
 				.name("Enable issues collection")
-				.description("Enable collecting Fortify issues")
+				.description("(Optional) Enable collecting Fortify issues")
 				.type(PropertyType.BOOLEAN)
 				.defaultValue("true")
 				.build());
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FILTER_SET)
 				.name("Filter set name/id")
-				.description("Filter set name or id used to retrieve issue data from SSC (optional)")
+				.description("(Optional) Filter set name or id used to retrieve issue data from SSC")
 				.type(PropertyType.STRING)
 				.onQualifiers(Qualifiers.PROJECT)
 				.build());

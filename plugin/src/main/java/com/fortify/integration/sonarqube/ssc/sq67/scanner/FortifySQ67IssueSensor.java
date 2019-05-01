@@ -125,7 +125,7 @@ public class FortifySQ67IssueSensor extends FortifySQ67AbstractSensor implements
 		public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 			propertyDefinitions.add(PropertyDefinition.builder(PRP_REPORT_ISSUES_ONCE)
 					.name("Report issues only once")
-					.description("Fortify issues are mapped to source files based on relative paths. As such, a single"
+					.description("(Optional) Fortify issues are mapped to source files based on relative paths. As such, a single"
 							+ " Fortify issue could be incorrectly mapped to similarly named source files in different modules."
 							+ " If this property is set to false (default), the Fortify issue will be reported on"
 							+ " every matching source file. If this property is set to true, the Fortify issue will"

@@ -139,21 +139,21 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 	public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_MAX_PROCESSING_TIMEOUT)
 				.name("Maximum processing time-out (seconds)")
-				.description("Maximum amount of time SonarQube will wait for SSC to finish processing scan results")
+				.description("(Optional) Maximum amount of time SonarQube will wait for SSC to finish processing scan results")
 				.type(PropertyType.INTEGER)
 				.defaultValue("120")
 				.build());
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_FAIL_ON_ARTIFACT_STATES)
 				.name("Fail scan on artifact states")
-				.description("Fail the SonarQube scan if the SSC artifact state matches one of these comma-separated values."+
+				.description("(Optional) Fail the SonarQube scan if the SSC artifact state matches one of these comma-separated values."+
 						" Valid states are PROCESS_COMPLETE, REQUIRE_AUTH, ERROR_PROCESSING")
 				.type(PropertyType.STRING)
 				.defaultValue("")
 				.multiValues(true)
 				.build());
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_UPLOAD_FPR)
-				.name("FPR file to upload to SSC (optional)")
-				.description("FPR file to upload to SSC")
+				.name("FPR file to upload to SSC")
+				.description("(Optional) FPR file to upload to SSC")
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
 				.build());

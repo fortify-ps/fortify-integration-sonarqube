@@ -88,7 +88,7 @@ public class FortifyLanguage extends AbstractLanguage {
 				.name("Additional file suffixes")
 				// TODO Med: Reformat this description for better formatting
 				//           on the plugin configuration page
-				.description("Additional file types to be included in the SonarQube scan to allow vulnerabilities"
+				.description("(Optional) Additional file types to be included in the SonarQube scan to allow vulnerabilities"
 						+ " to be reported on those file types. Multiple file suffixes can be separated by a comma."
 						// TODO Check whether the following warning is still applicable for current SQ versions
 						+ " DO NOT define any file suffixes that overlap with an existing SonarQube "

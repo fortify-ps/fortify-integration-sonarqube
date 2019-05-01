@@ -80,13 +80,13 @@ public abstract class AbstractFortifyConnectionProperties implements IFortifyCon
 	public static final void addPropertyDefinitions(List<PropertyDefinition> propertyDefinitions) {
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_URL)
 				.name("SSC URL")
-				.description("URL used to connect to SSC (http[s]://<user>:<password>@<host>[:port]/ssc or http[s]://authToken:token@<host>[:port]/ssc)")
+				.description("(Required) URL used to connect to SSC (http[s]://user:password@host[:port]/ssc or http[s]://authToken:token@host[:port]/ssc)")
 				.type(PropertyType.PASSWORD)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_APP_VERSION)
 				.name("SSC Application Version")
-				.description("SSC Application Version Id or Name (<application>:<version>).")
+				.description("(Required) SSC Application Version Id or Name (application:version).")
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
 				.build());
