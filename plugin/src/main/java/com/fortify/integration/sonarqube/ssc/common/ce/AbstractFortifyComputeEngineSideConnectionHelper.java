@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.sonar.api.ce.measure.Measure;
 import org.sonar.api.ce.measure.MeasureComputer.MeasureComputerContext;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.Metrics;
@@ -92,14 +93,16 @@ public abstract class AbstractFortifyComputeEngineSideConnectionHelper implement
 	 * Get the SSC URL including credentials from the measure saved on the scanner side
 	 */
 	public final String getSSCUrl() {
-		return measureComputerContext.getMeasure(AbstractFortifyComputeEngineSideConnectionHelper.PRP_SSC_URL).getStringValue();
+		Measure measure = measureComputerContext.getMeasure(AbstractFortifyComputeEngineSideConnectionHelper.PRP_SSC_URL);
+		return measure == null ? null : measure.getStringValue();
 	}
 	
 	/**
 	 * Get the application version id from the measure saved on the scanner side
 	 */
 	public final String getApplicationVersionId() {
-		return measureComputerContext.getMeasure(AbstractFortifyComputeEngineSideConnectionHelper.PRP_APP_VERSION_ID).getStringValue();
+		Measure measure = measureComputerContext.getMeasure(AbstractFortifyComputeEngineSideConnectionHelper.PRP_APP_VERSION_ID);
+		return measure == null ? null : measure.getStringValue();
 	}
 	
 	/**
