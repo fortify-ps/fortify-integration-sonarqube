@@ -83,7 +83,11 @@ public abstract class AbstractFortifyUploadFPRStartable implements Startable {
 	@Override
 	public void start() {
 		String fprFileName = config.get(PRP_UPLOAD_FPR).orElse(null);
-		if ( connHelper.isConnectionAvailable() && StringUtils.isNotBlank(fprFileName) ) {
+		if ( !connHelper.isConnectionAvailable() ) {
+			LOG.info("Skipping FPR file upload; SSC connection has not been configured");
+		} else if ( StringUtils.isBlank(fprFileName) ) {
+			LOG.info("Skipping FPR file upload; no FPR file specified to be uploaded to SSC");
+		} else {
 			checkArtifactStatus(uploadFPRAndWaitForProcessingToComplete(fprFileName));
 		}
 	}

@@ -26,6 +26,8 @@ package com.fortify.integration.sonarqube.ssc.sq76.scanner;
 
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.scanner.sensor.ProjectSensor;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.integration.sonarqube.ssc.common.scanner.IFortifyScannerSideConnectionHelper;
 
@@ -41,6 +43,7 @@ import com.fortify.integration.sonarqube.ssc.common.scanner.IFortifyScannerSideC
  *
  */
 public abstract class FortifySQ76AbstractProjectSensor implements ProjectSensor {
+	private static final Logger LOG = Loggers.get(FortifySQ76AbstractProjectSensor.class);
 	private final IFortifyScannerSideConnectionHelper connHelper;
 	
 	public FortifySQ76AbstractProjectSensor(IFortifyScannerSideConnectionHelper connHelper) {
@@ -49,7 +52,11 @@ public abstract class FortifySQ76AbstractProjectSensor implements ProjectSensor 
 	
 	@Override
 	public final void execute(SensorContext context) {
-		if ( connHelper.isConnectionAvailable() && isActive(context) ) {
+		if ( !connHelper.isConnectionAvailable() ) {
+			LOG.info("Skipping sensor execution; SSC connection has not been configured");
+		} else if ( !isActive(context) ) {
+			LOG.info("Skipping sensor execution; sensor is not active");
+		} else {
 			_execute(context);
 		}
 	}

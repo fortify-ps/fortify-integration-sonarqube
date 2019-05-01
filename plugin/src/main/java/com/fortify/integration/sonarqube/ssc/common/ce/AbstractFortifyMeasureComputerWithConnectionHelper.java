@@ -29,6 +29,10 @@ import java.util.stream.Stream;
 
 import org.sonar.api.ce.measure.Component;
 import org.sonar.api.ce.measure.MeasureComputer;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+
+import com.fortify.integration.sonarqube.ssc.sq67.ce.FortifySQ67ComputeEngineSideConnectionHelper;
 
 /**
  * This abstract {@link MeasureComputer} base class provides the following functionality:
@@ -46,6 +50,7 @@ import org.sonar.api.ce.measure.MeasureComputer;
  *
  */
 public abstract class AbstractFortifyMeasureComputerWithConnectionHelper implements MeasureComputer {
+	private static final Logger LOG = Loggers.get(AbstractFortifyMeasureComputerWithConnectionHelper.class);
 	private static final String[] EMPTY_STRING_ARRAY = new String[] {};
 	
 	/**
@@ -74,7 +79,9 @@ public abstract class AbstractFortifyMeasureComputerWithConnectionHelper impleme
 		Set<Component.Type> supportedComponentTypes = getSupportedComponentTypes();
 		if ( supportedComponentTypes==null || supportedComponentTypes.contains(context.getComponent().getType()) ) {
 			IFortifyComputeEngineSideConnectionHelper connHelper = getComputeEngineSideConnectionHelper(context);
-			if ( connHelper.isConnectionAvailable() ) {
+			if ( !connHelper.isConnectionAvailable() ) {
+				LOG.info("Skipping measure computation; SSC connection has not been configured");
+			} else {
 				compute(context, connHelper);
 			}
 		}
