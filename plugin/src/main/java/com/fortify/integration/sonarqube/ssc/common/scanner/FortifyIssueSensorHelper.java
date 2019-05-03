@@ -109,7 +109,7 @@ public class FortifyIssueSensorHelper {
 		}
 
 		private HashSet<String> getAvailableGroupIds(IFortifyScannerSideConnectionHelper connHelper, String externalListId) {
-			return new HashSet<>(getIssueGroupsBaseQuery().build().getAll().getValues("id", String.class));
+			return new HashSet<>(getIssueGroupsBaseQuery().paramGroupingType(externalListId).build().getAll().getValues("id", String.class));
 		}
 		
 		// We sort by path name length, such that shorter paths will be matched first
