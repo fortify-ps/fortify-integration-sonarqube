@@ -25,7 +25,6 @@
 package com.fortify.integration.sonarqube.ssc.configure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -38,7 +37,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.DefaultComboBoxModel;
@@ -51,9 +52,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.stream.XMLStreamException;
 
@@ -61,16 +59,14 @@ import org.jdesktop.beansbinding.AutoBinding;
 import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
 import org.jdesktop.beansbinding.BeanProperty;
 import org.jdesktop.beansbinding.Bindings;
-import org.jdesktop.swingbinding.JListBinding;
-import org.jdesktop.swingbinding.SwingBindings;
 
 import com.fortify.client.ssc.api.SSCRulepackAPI;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
-import com.fortify.integration.sonarqube.ssc.config.AbstractYmlRootConfig;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
-import com.fortify.integration.sonarqube.ssc.config.RulesConfig;
-import com.fortify.integration.sonarqube.ssc.externalmetadata.FortifyExternalMetadata;
+import com.fortify.integration.sonarqube.common.SourceSystem;
+import com.fortify.integration.sonarqube.common.config.AbstractYmlRootConfig;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig;
+import com.fortify.integration.sonarqube.common.config.RulesConfig;
+import com.fortify.integration.sonarqube.common.externalmetadata.FortifyExternalMetadata;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.preprocessor.filter.AbstractJSONMapFilter.MatchMode;
 import com.fortify.util.rest.json.preprocessor.filter.JSONMapFilterSpEL;
@@ -85,9 +81,9 @@ public class PluginConfiguration {
 	private Path pluginJarPath;
 	private Path externalMetadataTempPath;
 	private Path rulesYmlTempPath;
-	private Path metricsYmlTempPath;
 	private RulesConfig rulesConfig;
-	private MetricsConfig metricsConfig;
+	private Map<SourceSystem, MetricsConfig> metricsConfigs = new LinkedHashMap<>();
+	private Map<SourceSystem, Path> metricsConfigsTempPaths = new LinkedHashMap<>();
 	private JComboBox comboBoxRulesSource;
 	private JList listMetrics;
 	private MetricDetailsPanel metricDetailsPanel;
@@ -120,10 +116,14 @@ public class PluginConfiguration {
 		this.pluginJarPath = getPluginJarPath(frame);
 		this.externalMetadataTempPath = getTempPath("externalmetadata", "xml");
 		this.rulesYmlTempPath = getTempPath("rules", "yml");
-		this.metricsYmlTempPath = getTempPath("metrics", "yml");
+		for ( SourceSystem sourceSystem : SourceSystem.values() ) {
+			metricsConfigsTempPaths.put(sourceSystem, getTempPath("metrics-"+sourceSystem.id(), "yml"));
+		}
 		copyTempFilesFromJar(frame);
 		this.rulesConfig = loadConfig(frame, this.rulesYmlTempPath, RulesConfig.class);
-		this.metricsConfig = loadConfig(frame, this.metricsYmlTempPath, MetricsConfig.class);
+		for ( SourceSystem sourceSystem : SourceSystem.values() ) {
+			metricsConfigs.put(sourceSystem, loadConfig(frame, metricsConfigsTempPaths.get(sourceSystem), MetricsConfig.class));
+		}
 	}
 	
 	private void withPluginJarFS(Consumer<FileSystem> consumer) {
@@ -156,17 +156,22 @@ public class PluginConfiguration {
 		withPluginJarFS(fs->{
 			copyFile(frame, fs.getPath("/externalmetadata.xml"), externalMetadataTempPath);
 			copyFile(frame, fs.getPath("/rules.yml"), rulesYmlTempPath);
-			copyFile(frame, fs.getPath("/metrics.yml"), metricsYmlTempPath);
+			for ( SourceSystem sourceSystem : SourceSystem.values() ) {
+				copyFile(frame, fs.getPath(MetricsConfig.getMetricsConfigYmlPath(sourceSystem)), metricsConfigsTempPaths.get(sourceSystem));
+			}
 		});
 	}
 	
 	private void saveConfiguration(JFrame frame) {
 		withPluginJarFS(fs->{
-			rulesConfig.save(rulesYmlTempPath);
-			metricsConfig.save(metricsYmlTempPath);
 			copyFile(frame, externalMetadataTempPath, fs.getPath("/externalmetadata.xml"));
+			rulesConfig.save(rulesYmlTempPath);
 			copyFile(frame, rulesYmlTempPath, fs.getPath("/rules.yml"));
-			copyFile(frame, metricsYmlTempPath, fs.getPath("/metrics.yml"));
+			for ( SourceSystem sourceSystem : SourceSystem.values() ) {
+				Path tempPath = metricsConfigsTempPaths.get(sourceSystem);
+				metricsConfigs.get(sourceSystem).save(tempPath);
+				copyFile(frame, tempPath, fs.getPath(MetricsConfig.getMetricsConfigYmlPath(sourceSystem)));
+			}
 		});
 	}
 	
@@ -261,44 +266,10 @@ public class PluginConfiguration {
 		});
 		panelRules.add(btnUpdateFromSsc, "cell 2 0,alignx left,aligny center");
 		
-		JPanel panelMetrics = new JPanel();
-		tabbedPane.addTab("Metrics", null, panelMetrics, null);
-		panelMetrics.setLayout(new MigLayout("", "[150px:n,grow 20][grow]", "[][]"));
-		
-		JPanel panelMetricAddRemoveButtons = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panelMetricAddRemoveButtons.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		panelMetrics.add(panelMetricAddRemoveButtons, "cell 0 0,alignx right,aligny top");
-		
-		JButton btnMetricAdd = new JButton("Add");
-		btnMetricAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metricsConfig.addMetricConfig(new MetricConfig());
-				listMetrics.setSelectedIndex(listMetrics.getModel().getSize()-1);
-				listMetrics.repaint();
-			}
-		});
-		btnMetricAdd.setHorizontalAlignment(SwingConstants.LEFT);
-		panelMetricAddRemoveButtons.add(btnMetricAdd);
-		
-		JButton btnRemove = new JButton("Remove");
-		btnRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metricsConfig.removeMetricConfig(metricsConfig.getMetrics().get(listMetrics.getSelectedIndex()));
-				listMetrics.repaint();
-			}
-		});
-		btnRemove.setHorizontalAlignment(SwingConstants.LEFT);
-		panelMetricAddRemoveButtons.add(btnRemove);
-		
-		listMetrics = new JList();
-		listMetrics.setSelectedIndex(0);
-		listMetrics.setBorder(new LineBorder(new Color(0, 0, 0)));
-		listMetrics.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		panelMetrics.add(listMetrics, "cell 0 1,grow");
-		
-		metricDetailsPanel = new MetricDetailsPanel();
-		panelMetrics.add(metricDetailsPanel, "cell 1 1,grow");
+		for ( SourceSystem sourceSystem : SourceSystem.values() ) {
+			JPanel panelMetrics = new MetricsPanel(sourceSystem, metricsConfigs.get(sourceSystem));
+			tabbedPane.addTab("Metrics ("+sourceSystem.name()+")", null, panelMetrics, null);
+		}
 		
 		JPanel panelButtons = new JPanel();
 		frmFortifySscSonarqube.getContentPane().add(panelButtons, BorderLayout.SOUTH);
@@ -341,18 +312,5 @@ public class PluginConfiguration {
 		BeanProperty<JComboBox, Object> jComboBoxBeanProperty = BeanProperty.create("selectedItem");
 		AutoBinding<RulesConfig, String, JComboBox, Object> autoBinding = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, rulesConfig, rulesConfigBeanProperty, comboBoxRulesSource, jComboBoxBeanProperty, "rulesSourceName");
 		autoBinding.bind();
-		//
-		BeanProperty<MetricsConfig, List<MetricConfig>> metricsConfigBeanProperty = BeanProperty.create("metrics");
-		JListBinding<MetricConfig, MetricsConfig, JList> jListBinding = SwingBindings.createJListBinding(UpdateStrategy.READ, metricsConfig, metricsConfigBeanProperty, listMetrics);
-		//
-		BeanProperty<MetricConfig, String> metricConfigBeanProperty = BeanProperty.create("name");
-		jListBinding.setDetailBinding(metricConfigBeanProperty);
-		//
-		jListBinding.bind();
-		//
-		BeanProperty<JList, Object> jListBeanProperty = BeanProperty.create("selectedElement");
-		BeanProperty<MetricDetailsPanel, MetricConfig> metricDetailsPanelBeanProperty = BeanProperty.create("metricConfig");
-		AutoBinding<JList, Object, MetricDetailsPanel, MetricConfig> autoBinding_1 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, listMetrics, jListBeanProperty, metricDetailsPanel, metricDetailsPanelBeanProperty);
-		autoBinding_1.bind();
 	}
 }

@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.config;
+package com.fortify.integration.sonarqube.common.config;
 
 import java.io.File;
 import java.io.IOException;

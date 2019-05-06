@@ -1,0 +1,9 @@
+metrics:
+- key: "test"
+  name: "Test"
+  domain: "Fortify - FoD"
+  description: "Test"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "'Test'"

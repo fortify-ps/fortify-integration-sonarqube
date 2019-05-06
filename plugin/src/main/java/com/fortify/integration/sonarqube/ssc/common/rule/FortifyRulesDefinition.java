@@ -32,13 +32,13 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 
+import com.fortify.integration.sonarqube.common.config.RulesConfig;
+import com.fortify.integration.sonarqube.common.externalmetadata.ExternalCategory;
+import com.fortify.integration.sonarqube.common.externalmetadata.ExternalList;
+import com.fortify.integration.sonarqube.common.externalmetadata.FortifyExternalMetadata;
 import com.fortify.integration.sonarqube.ssc.common.FortifyConstants;
 import com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin;
 import com.fortify.integration.sonarqube.ssc.common.profile.FortifyProfile;
-import com.fortify.integration.sonarqube.ssc.config.RulesConfig;
-import com.fortify.integration.sonarqube.ssc.externalmetadata.ExternalCategory;
-import com.fortify.integration.sonarqube.ssc.externalmetadata.ExternalList;
-import com.fortify.integration.sonarqube.ssc.externalmetadata.FortifyExternalMetadata;
 
 /**
  * <p>This {@link RulesDefinition} implementation will generate Fortify-related

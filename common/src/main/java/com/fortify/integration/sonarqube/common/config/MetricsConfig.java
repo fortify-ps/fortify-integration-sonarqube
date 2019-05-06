@@ -22,10 +22,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.config;
+package com.fortify.integration.sonarqube.common.config;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fortify.integration.sonarqube.common.SourceSystem;
 
 public class MetricsConfig extends AbstractYmlRootConfig {
 	public static enum MetricValueType {
@@ -86,31 +88,14 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 		}
 	}
 	
-	public static enum ExpressionField {
-		filterSets("All fields returned by the /api/v1/projectVersions/${id}/filterSets endpoint"),
-		performanceIndicatorHistories("All fields returned by the /api/v1/projectVersions/${id}/performanceIndicatorHistories endpoint"),
-		variableHistories("All fields returned by the /api/v1/projectVersions/${id}/variableHistories endpoint"),
-		var("Variable value by name, i.e. var['variableName']"),
-		pi("Performance indicator value by name, i.e. pi['performanceIndicatorName']"),
-		scaArtifact("For the most recent artifact that has not yet been processed, or most recent SCA artifact, all fields returned by the /api/v1/projectVersions/${id}/artifacts endpoint");
-		
-		
-		private final String description;
-		
-		ExpressionField(String description) {
-			this.description = description;
-		}
-		
-		public String getDescription() {
-			return description;
-		}
-	}
-	
-	
 	private List<MetricConfig> metrics = new ArrayList<>();
 	
-	public static final MetricsConfig load() {
-		return load("metrics.yml", MetricsConfig.class);
+	public static final MetricsConfig load(SourceSystem sourceSystem) {
+		return load(getMetricsConfigYmlPath(sourceSystem), MetricsConfig.class);
+	}
+	
+	public static final String getMetricsConfigYmlPath(SourceSystem sourceSystem) {
+		return "/metrics-"+sourceSystem.id()+".yml";
 	}
 
 	public List<MetricConfig> getMetrics() {

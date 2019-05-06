@@ -41,8 +41,10 @@ import com.fortify.client.ssc.api.SSCApplicationVersionAPI;
 import com.fortify.client.ssc.api.SSCArtifactAPI;
 import com.fortify.client.ssc.api.query.builder.SSCOrderByDirection;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
+import com.fortify.integration.sonarqube.common.SourceSystem;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig.MetricConfig;
+import com.fortify.integration.sonarqube.common.ssc.SSCMetricsExpressionField;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.ondemand.AbstractJSONMapOnDemandLoaderWithConnection;
 import com.fortify.util.rest.json.preprocessor.enrich.JSONMapEnrichWithOnDemandJSONMapFromJSONList;
@@ -76,7 +78,7 @@ import com.fortify.util.spring.SpringExpressionUtil;
 @SuppressWarnings("rawtypes")
 public abstract class AbstractFortifyConfigurableMeasureComputer extends AbstractFortifyMeasureComputerWithConnectionHelper {
 	private static final Logger LOG = Loggers.get(AbstractFortifyConfigurableMeasureComputer.class);
-	private static final MetricsConfig METRICS_CONFIG = MetricsConfig.load();
+	private static final MetricsConfig METRICS_CONFIG = MetricsConfig.load(SourceSystem.SSC);
 	private static final List<Metric> METRICS = _getMetrics();
 	
 	/**
@@ -159,13 +161,13 @@ public abstract class AbstractFortifyConfigurableMeasureComputer extends Abstrac
 		String applicationVersionId = connHelper.getApplicationVersionId();
 		JSONMap applicationVersion = connHelper.getConnection().api(SSCApplicationVersionAPI.class).queryApplicationVersions()
 				.id(applicationVersionId)
-				.onDemandFilterSets(MetricsConfig.ExpressionField.filterSets.name())
-				.onDemandPerformanceIndicatorHistories(MetricsConfig.ExpressionField.performanceIndicatorHistories.name())
-				.onDemandVariableHistories(MetricsConfig.ExpressionField.variableHistories.name())
+				.onDemandFilterSets(SSCMetricsExpressionField.filterSets.name())
+				.onDemandPerformanceIndicatorHistories(SSCMetricsExpressionField.performanceIndicatorHistories.name())
+				.onDemandVariableHistories(SSCMetricsExpressionField.variableHistories.name())
 				// Add convenience properties for defining custom metrics
-				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList(MetricsConfig.ExpressionField.var.name(), MetricsConfig.ExpressionField.variableHistories.name(), "name", "value", true))
-				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList(MetricsConfig.ExpressionField.pi.name(), MetricsConfig.ExpressionField.performanceIndicatorHistories.name(), "name", "value", true))
-				.preProcessor(new JSONMapEnrichWithOnDemandProperty(MetricsConfig.ExpressionField.scaArtifact.name(), new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
+				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList(SSCMetricsExpressionField.var.name(), SSCMetricsExpressionField.variableHistories.name(), "name", "value", true))
+				.preProcessor(new JSONMapEnrichWithOnDemandJSONMapFromJSONList(SSCMetricsExpressionField.pi.name(), SSCMetricsExpressionField.performanceIndicatorHistories.name(), "name", "value", true))
+				.preProcessor(new JSONMapEnrichWithOnDemandProperty(SSCMetricsExpressionField.scaArtifact.name(), new JSONMapOnDemandLoaderMostRecentSuccessfulSCAOrNotCompletedArtifact(conn)))
 				.build().getUnique();
 		if ( applicationVersion==null ) {
 			throw new IllegalArgumentException("SSC application version "+applicationVersionId+" not found");

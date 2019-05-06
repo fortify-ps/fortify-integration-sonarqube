@@ -22,33 +22,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.config;
+package com.fortify.integration.sonarqube.common;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
-public class AbstractPropertyChangeSupport {
-	protected final PropertyChangeSupport propertyChangeSupport;
-	
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(listener);
-	}
-
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	public AbstractPropertyChangeSupport() {
-		this.propertyChangeSupport = new PropertyChangeSupport(this);
-	}
-	
-	
+public interface IMetricsExpressionField {
+	public String name();
+	public String description();
 }

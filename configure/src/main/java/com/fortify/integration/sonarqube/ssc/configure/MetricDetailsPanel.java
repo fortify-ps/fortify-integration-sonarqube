@@ -24,11 +24,15 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.ssc.configure;
 
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -42,19 +46,17 @@ import org.jdesktop.beansbinding.BeanProperty;
 import org.jdesktop.beansbinding.BindingGroup;
 import org.jdesktop.beansbinding.Bindings;
 
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.Direction;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig;
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricValueType;
-import javax.swing.ImageIcon;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.FlowLayout;
+import com.fortify.integration.sonarqube.common.SourceSystem;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig.Direction;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig.MetricConfig;
+import com.fortify.integration.sonarqube.common.config.MetricsConfig.MetricValueType;
 
 public class MetricDetailsPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private BindingGroup m_bindingGroup;
-	private com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig metricConfig = new com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig();
+	private final SourceSystem sourceSystem;
+	private MetricsConfig.MetricConfig metricConfig = new MetricsConfig.MetricConfig();
 	private JTextField nameJTextField;
 	private JTextField domainJTextField;
 	private JCheckBox qualitativeJCheckBox;
@@ -69,12 +71,15 @@ public class MetricDetailsPanel extends JPanel {
 	private JPanel panel;
 	private JLabel lblExprHelp;
 
-	public MetricDetailsPanel(com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig newMetricConfig) {
-		this();
-		setMetricConfig(newMetricConfig);
+	public MetricDetailsPanel(SourceSystem sourceSystem, MetricsConfig.MetricConfig newMetricConfig) {
+		this(sourceSystem);
 	}
 
-	public MetricDetailsPanel() {
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public MetricDetailsPanel(SourceSystem sourceSystem) {
+		this.sourceSystem = sourceSystem;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {0, 0, 30};
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -173,7 +178,9 @@ public class MetricDetailsPanel extends JPanel {
 		lblExprHelp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				new ExpressionHelpDialog();
+				if ( sourceSystem != null ) {
+					new ExpressionHelpDialog("Help - Metric Expression", sourceSystem.getMetricsExpressionFieldsHTMLDescription());
+				}
 			}
 		});
 		ImageIcon lblExprHelpIcon = new ImageIcon(MetricDetailsPanel.class.getResource("/javax/swing/plaf/metal/icons/ocean/question.png")); 
@@ -238,17 +245,15 @@ public class MetricDetailsPanel extends JPanel {
 		}
 	}
 
-	public com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig getMetricConfig() {
+	public MetricsConfig.MetricConfig getMetricConfig() {
 		return metricConfig;
 	}
 
-	public void setMetricConfig(
-			com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig newMetricConfig) {
+	public void setMetricConfig(MetricsConfig.MetricConfig newMetricConfig) {
 		setMetricConfig(newMetricConfig, true);
 	}
-
-	public void setMetricConfig(com.fortify.integration.sonarqube.ssc.config.MetricsConfig.MetricConfig newMetricConfig,
-			boolean update) {
+	
+	public void setMetricConfig(MetricsConfig.MetricConfig newMetricConfig, boolean update) {
 		metricConfig = newMetricConfig;
 		if (update) {
 			if (m_bindingGroup != null) {

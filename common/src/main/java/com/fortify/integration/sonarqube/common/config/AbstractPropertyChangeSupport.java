@@ -22,23 +22,33 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.config;
+package com.fortify.integration.sonarqube.common.config;
 
-public class RulesConfig extends AbstractYmlRootConfig {
-	public static final String SINGLE_RULE_SOURCE_NAME = "Single Fortify Rule";
-	private String rulesSourceName = SINGLE_RULE_SOURCE_NAME;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+public class AbstractPropertyChangeSupport {
+	protected final PropertyChangeSupport propertyChangeSupport;
 	
-	public static final RulesConfig load() {
-		return load("rules.yml", RulesConfig.class);
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(listener);
 	}
 
-	public String getRulesSourceName() {
-		return rulesSourceName;
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(listener);
 	}
 
-	public void setRulesSourceName(String newValue) {
-		String oldValue = this.rulesSourceName;
-		this.rulesSourceName = newValue;
-		propertyChangeSupport.firePropertyChange("key", oldValue, newValue);
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
+
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
+
+	public AbstractPropertyChangeSupport() {
+		this.propertyChangeSupport = new PropertyChangeSupport(this);
+	}
+	
+	
 }

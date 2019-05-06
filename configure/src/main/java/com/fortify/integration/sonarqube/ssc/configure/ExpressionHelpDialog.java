@@ -34,21 +34,20 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.border.EmptyBorder;
-
-import com.fortify.integration.sonarqube.ssc.config.MetricsConfig;
-import java.awt.Color;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 public class ExpressionHelpDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	private final String htmlContents;
 
 	/**
 	 * Create the dialog.
 	 */
-	public ExpressionHelpDialog() {
-		setTitle("Help - Metric Expressions");
+	public ExpressionHelpDialog(String title, String htmlContents) {
+		this.htmlContents = htmlContents;
+		setTitle(title);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 400);
 		getContentPane().setLayout(new BorderLayout());
@@ -60,7 +59,7 @@ public class ExpressionHelpDialog extends JDialog {
 			txtpnDescription.setBackground(UIManager.getColor("Label.background"));
 			txtpnDescription.setEnabled(true);
 			txtpnDescription.setContentType("text/html");
-			txtpnDescription.setText(getExpressionsDescription());
+			txtpnDescription.setText(htmlContents);
 			txtpnDescription.setEditable(false);
 			JScrollPane scrollPane = new JScrollPane(txtpnDescription);
 			contentPanel.add(scrollPane);
@@ -83,32 +82,4 @@ public class ExpressionHelpDialog extends JDialog {
 		}
 		setVisible(true);
 	}
-	
-	private String getExpressionsDescription() {
-		StringBuffer sb = new StringBuffer("<html>");
-		sb.append("<p>Expressions define how to calculate the metric values."
-				+ " For general information about these expressions, see the"
-				+ " Spring Expression Language (SpEL) reference at"
-				+ " https://docs.spring.io/spring/docs/4.3.22.RELEASE/spring-framework-reference/html/expressions.html."
-				+ "</p>"
-				+ "<p>The following fields can be used in these expressions:</p>"
-				+ "<ul>"
-				+ "<li>All fields returned by the /api/v1/projectVersions endpoint</li>");
-		for ( MetricsConfig.ExpressionField field : MetricsConfig.ExpressionField.values() ) {
-			sb.append("<li>").append(field.name()).append(" - ").append(field.getDescription()).append("</li>");
-		}
-		sb.append("</ul>");
-		sb.append("<p>Following are some example expressions: </p><ul>");
-		sb.append("<li>name - Application version name</li>");
-		sb.append("<li>project.name - Application name</li>");
-		sb.append("<li>deepLink - Deep link to application version</li>");
-		sb.append("<li>pi['Fortify Security Rating'] - Performance Indicator 'Fortify Security Rating' value</li>");
-		sb.append("<li>var['CFPO'] - Variable 'CFPO' value</li>");
-		sb.append("<li>var['CFPO']+var['HFPO'] - Sum of variable values 'CFPO' and 'HFPO'</li>");
-		sb.append("</ul>");
-		
-		sb.append("</html>");
-		return sb.toString();
-	}
-
 }

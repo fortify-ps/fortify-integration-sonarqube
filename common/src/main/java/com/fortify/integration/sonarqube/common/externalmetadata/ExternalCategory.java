@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.externalmetadata;
+package com.fortify.integration.sonarqube.common.externalmetadata;
 
 import javax.xml.stream.XMLStreamException;
 

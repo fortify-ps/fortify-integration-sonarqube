@@ -22,21 +22,23 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.config;
+package com.fortify.integration.sonarqube.common.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-public class AbstractYmlConfig extends AbstractPropertyChangeSupport {
-	protected static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
+public class RulesConfig extends AbstractYmlRootConfig {
+	public static final String SINGLE_RULE_SOURCE_NAME = "Single Fortify Rule";
+	private String rulesSourceName = SINGLE_RULE_SOURCE_NAME;
 	
-	@Override
-	public String toString() {
-		try {
-			return MAPPER.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			return super.toString();
-		}
+	public static final RulesConfig load() {
+		return load("rules.yml", RulesConfig.class);
+	}
+
+	public String getRulesSourceName() {
+		return rulesSourceName;
+	}
+
+	public void setRulesSourceName(String newValue) {
+		String oldValue = this.rulesSourceName;
+		this.rulesSourceName = newValue;
+		propertyChangeSupport.firePropertyChange("key", oldValue, newValue);
 	}
 }
