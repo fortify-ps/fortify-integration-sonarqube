@@ -76,6 +76,13 @@ public class FortifyRulesDefinition implements RulesDefinition {
 	}
 	
 	/**
+	 * @return The external list name if configured, otherwise null.
+	 */
+	public static final String getExternalListName() {
+		return externalList==null ? null : externalList.getName();
+	}
+	
+	/**
 	 * This method defines a new 'Fortify' rules repository. If an external
 	 * list has been configured, each external list category is added as a
 	 * SonarQube rule to this repository. In addition, independent of whether

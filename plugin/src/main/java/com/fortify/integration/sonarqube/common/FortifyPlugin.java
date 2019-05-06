@@ -28,16 +28,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.integration.sonarqube.common.language.FortifyLanguage;
-import com.fortify.integration.sonarqube.common.profile.FortifyProfile;
-import com.fortify.integration.sonarqube.common.rule.FortifyRulesDefinition;
+import com.fortify.integration.sonarqube.common.source.fod.FortifyCommonFoDExtensionProvider;
+import com.fortify.integration.sonarqube.common.source.ssc.FortifyCommonSSCExtensionProvider;
 
 /**
  * This main plugin class provides the following functionality:
@@ -54,13 +55,18 @@ import com.fortify.integration.sonarqube.common.rule.FortifyRulesDefinition;
  */
 public class FortifyPlugin implements Plugin {
 	private static final Logger LOG = Loggers.get(FortifyPlugin.class);
-	private static final String EXTENSION_PROVIDER_CLASS_NAME_67 = "com.fortify.integration.sonarqube.sq67.FortifySQ67ExtensionProvider";
-	private static final String EXTENSION_PROVIDER_CLASS_NAME_76 = "com.fortify.integration.sonarqube.sq76.FortifySQ76ExtensionProvider";
-	private static Class<?>[] COMMON_EXTENSIONS = {
-			// Rules, language and quality profile
-			FortifyRulesDefinition.class, 
-			FortifyLanguage.class,
-			FortifyProfile.class
+	private static final IFortifyExtensionProvider[] EXTENSION_PROVIDERS_COMMON = {
+		new FortifyCommonExtensionProvider(),
+		new FortifyCommonSSCExtensionProvider(),
+		new FortifyCommonFoDExtensionProvider()
+	};
+	private static final String[] EXTENSION_PROVIDER_CLASS_NAMES_67 = {
+		"com.fortify.integration.sonarqube.sq67.source.ssc.FortifySSCSQ67ExtensionProvider",
+		//"com.fortify.integration.sonarqube.sq76.source.fod.FortifyFoDSQ76ExtensionProvider"
+	};
+	private static final String[] EXTENSION_PROVIDER_CLASS_NAMES_76 = {
+		"com.fortify.integration.sonarqube.sq76.source.ssc.FortifySSCSQ76ExtensionProvider",
+		"com.fortify.integration.sonarqube.sq76.source.fod.FortifyFoDSQ76ExtensionProvider"
 	};
 
 	/**
@@ -70,8 +76,12 @@ public class FortifyPlugin implements Plugin {
 	 */
 	@Override
 	public void define(Context context) {
-		addExtensions(context, getExtensionProvider(context).getExtensions(context));
-		addExtensions(context, COMMON_EXTENSIONS);
+		for ( IFortifyExtensionProvider extensionProvider : EXTENSION_PROVIDERS_COMMON ) {
+			addExtensions(context, extensionProvider.getExtensions(context));
+		}
+		for ( IFortifyExtensionProvider extensionProvider : getVersionSpecificExtensionProviders(context) ) {
+			addExtensions(context, extensionProvider.getExtensions(context));
+		}
 	}
 
 	/**
@@ -84,6 +94,7 @@ public class FortifyPlugin implements Plugin {
 	private void addExtensions(Context context, Class<?>[] extensions) {
 		List<PropertyDefinition> propertyDefinitions = new ArrayList<>();
 		for (Class<?> extension : extensions) {
+			LOG.info("Loading extension "+extension.getName());
 			context.addExtension(extension);
 			invokePropertyDefinitionsMethod(extension, propertyDefinitions);
 		}
@@ -96,17 +107,21 @@ public class FortifyPlugin implements Plugin {
 	 * @param context
 	 * @return
 	 */
-	private IFortifyExtensionProvider getExtensionProvider(Context context) {
+	private Set<IFortifyExtensionProvider> getVersionSpecificExtensionProviders(Context context) {
 		int major = context.getSonarQubeVersion().major();
 		int minor = context.getSonarQubeVersion().minor();
-		String extensionProviderClassName = 
-				(major==7 && minor>= 6) || major>7 ? EXTENSION_PROVIDER_CLASS_NAME_76 : EXTENSION_PROVIDER_CLASS_NAME_67;
-		LOG.info("Using extension provider "+extensionProviderClassName);
-		try {
-			return (IFortifyExtensionProvider)Class.forName(extensionProviderClassName).newInstance();
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			throw new RuntimeException("Error instantiating "+extensionProviderClassName, e);
+		String[] extensionProviderClassNames = 
+				(major==7 && minor>= 6) || major>7 ? EXTENSION_PROVIDER_CLASS_NAMES_76 : EXTENSION_PROVIDER_CLASS_NAMES_67;
+		
+		Set<IFortifyExtensionProvider> result = new LinkedHashSet<>();
+		for ( String extensionProviderClassName : extensionProviderClassNames ) {
+			try {
+				result.add((IFortifyExtensionProvider)Class.forName(extensionProviderClassName).newInstance());
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				throw new RuntimeException("Error instantiating "+extensionProviderClassName, e);
+			}
 		}
+		return result;
 	}
 
 	/**

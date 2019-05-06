@@ -26,10 +26,10 @@
 /**
  * <p>This package contains SonarQube plugin code specific to SonarQube 7.6
  * and up. For earlier versions, the plugin code is provided
- * in the {@link com.fortify.integration.sonarqube.sq76.ssc} package.</p>
+ * in the {@link com.fortify.integration.sonarqube.sq76.source.ssc} package.</p>
  * 
  * <p>Most of the classes provided in this package simply extend from a common 
- * implementation provided in the {@link com.fortify.integration.sonarqube.common.ssc} 
+ * implementation provided in the {@link com.fortify.integration.sonarqube.common.source.ssc} 
  * package, and add the SonarQube 7.6-specific {@link org.sonar.api.scanner.ScannerSide} 
  * annotation. The notable exception are sensor implementations, which require a 
  * more complete 7.6-specific implementations due to some major API changes between

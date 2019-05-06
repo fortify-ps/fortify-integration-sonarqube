@@ -1,9 +1,36 @@
 metrics:
-- key: "test"
-  name: "Test"
-  domain: "Fortify - FoD"
-  description: "Test"
+- key: "fortify.fod.releaseUrl"
+  name: "FoD Release URL"
+  domain: "Fortify FoD - Project"
+  description: "FoD Release URL"
   type: "STRING"
   qualitative: false
   direction: "NONE"
-  expr: "'Test'"
+  expr: "deepLink"
+  
+- key: "fortify.fod.applicationName"
+  name: "FoD Application Name"
+  domain: "Fortify FoD - Project"
+  description: "FoD Application Name"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "applicationName"
+  
+- key: "fortify.fod.releaseName"
+  name: "FoD Release Name"
+  domain: "Fortify FoD - Project"
+  description: "FoD Release Name"
+  type: "STRING"
+  qualitative: false
+  direction: "NONE"
+  expr: "releaseName"
+  
+- key: "fortify.fod.rating"
+  name: "FoD Rating"
+  domain: "Fortify FoD - Metrics"
+  description: "FoD Rating"
+  type: "INT"
+  qualitative: true
+  direction: "BETTER"
+  expr: "rating"

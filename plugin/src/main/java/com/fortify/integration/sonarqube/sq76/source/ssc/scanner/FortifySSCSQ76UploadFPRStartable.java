@@ -22,19 +22,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
+package com.fortify.integration.sonarqube.sq76.source.ssc.scanner;
+
+import org.sonar.api.config.Configuration;
+import org.sonar.api.scanner.ScannerSide;
+
+import com.fortify.integration.sonarqube.common.source.ssc.scanner.AbstractFortifySSCUploadFPRStartable;
+import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
 
 /**
- * <p>This package contains SonarQube plugin code specific to SonarQube 6.7
- * up to SonarQube 7.5.x. For later versions, the plugin code is provided
- * in the {@link com.fortify.integration.sonarqube.sq76.source.ssc} package.</p>
+ * This {@link AbstractFortifySSCUploadFPRStartable} implementation just adds the
+ * 7.6-specific {@link ScannerSide} annotation.
  * 
- * <p>Most of the classes provided in this package simply extend from a common 
- * implementation provided in the {@link com.fortify.integration.sonarqube.common.source.ssc} 
- * package, and add the SonarQube 6.7-specific {@link org.sonar.api.batch.ScannerSide} 
- * and {@link org.sonar.api.batch.InstantiationStrategy} annotations. The notable
- * exception are sensor implementations, which require a more complete 6.7-specific 
- * implementation due to some major API changes between SonarQube 6.7 and 7.6.</p>
- * 
+ * @author Ruud Senden
+ *
  */
-
-package com.fortify.integration.sonarqube.sq67;
+@ScannerSide
+public class FortifySSCSQ76UploadFPRStartable extends AbstractFortifySSCUploadFPRStartable {
+	public FortifySSCSQ76UploadFPRStartable(Configuration config, IFortifySSCScannerSideConnectionHelper connHelper) {
+		super(config, connHelper);
+	}
+}

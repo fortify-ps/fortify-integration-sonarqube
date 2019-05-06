@@ -22,19 +22,41 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
+package com.fortify.integration.sonarqube.sq67.source.ssc.ui;
+
+import org.sonar.api.web.AbstractRubyTemplate;
+import org.sonar.api.web.Description;
+import org.sonar.api.web.RubyRailsWidget;
+import org.sonar.api.web.UserRole;
+import org.sonar.api.web.WidgetCategory;
 
 /**
- * <p>This package contains SonarQube plugin code specific to SonarQube 6.7
- * up to SonarQube 7.5.x. For later versions, the plugin code is provided
- * in the {@link com.fortify.integration.sonarqube.sq76.source.ssc} package.</p>
- * 
- * <p>Most of the classes provided in this package simply extend from a common 
- * implementation provided in the {@link com.fortify.integration.sonarqube.common.source.ssc} 
- * package, and add the SonarQube 6.7-specific {@link org.sonar.api.batch.ScannerSide} 
- * and {@link org.sonar.api.batch.InstantiationStrategy} annotations. The notable
- * exception are sensor implementations, which require a more complete 6.7-specific 
- * implementation due to some major API changes between SonarQube 6.7 and 7.6.</p>
- * 
+ * TODO Widgets are no longer supported; this class is currently not used.
+ *      The Fortify widget functionality should be reviewed to see what 
+ *      functionality is still relevant for either SonarQube 6.7, 7.6 or both,
+ *      and rewritten as custom plugin pages.
  */
+@UserRole(UserRole.USER)
+@Description("Retrieves Security Metrics from Fortify SSC")
+@WidgetCategory("fortify-sonarqube")
+public class FortifySSCWidget extends AbstractRubyTemplate implements RubyRailsWidget {
 
-package com.fortify.integration.sonarqube.sq67;
+  public String getId() {
+    return "fortify_ssc_widget";
+  }
+
+  public String getTitle() {
+    return "Fortify SSC";
+  }
+
+  @Override
+  protected String getTemplatePath() {
+    return "/FortifyWidget.html.erb";
+  }
+  
+  /* USEFUL METHODS FOR THE JRUBY SIDE */
+  
+  public void test() {
+  }
+
+}

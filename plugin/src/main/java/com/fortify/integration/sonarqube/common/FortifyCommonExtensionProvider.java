@@ -1,6 +1,6 @@
 /*******************************************************************************
- * (c) Copyright 2017 EntIT Software LLC, a Micro Focus company
- * 
+ * (c) Copyright 2017 EntIT Software LLC
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a 
  * copy of this software and associated documentation files (the 
  * "Software"), to deal in the Software without restriction, including without 
@@ -22,19 +22,26 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
+package com.fortify.integration.sonarqube.common;
 
-/**
- * <p>This package contains SonarQube plugin code specific to SonarQube 6.7
- * up to SonarQube 7.5.x. For later versions, the plugin code is provided
- * in the {@link com.fortify.integration.sonarqube.sq76.source.ssc} package.</p>
- * 
- * <p>Most of the classes provided in this package simply extend from a common 
- * implementation provided in the {@link com.fortify.integration.sonarqube.common.source.ssc} 
- * package, and add the SonarQube 6.7-specific {@link org.sonar.api.batch.ScannerSide} 
- * and {@link org.sonar.api.batch.InstantiationStrategy} annotations. The notable
- * exception are sensor implementations, which require a more complete 6.7-specific 
- * implementation due to some major API changes between SonarQube 6.7 and 7.6.</p>
- * 
- */
+import org.sonar.api.Plugin.Context;
+import org.springframework.stereotype.Component;
 
-package com.fortify.integration.sonarqube.sq67;
+import com.fortify.integration.sonarqube.common.language.FortifyLanguage;
+import com.fortify.integration.sonarqube.common.profile.FortifyProfile;
+import com.fortify.integration.sonarqube.common.rule.FortifyRulesDefinition;
+
+@Component
+public class FortifyCommonExtensionProvider implements IFortifyExtensionProvider {
+
+	@Override
+	public Class<?>[] getExtensions(Context context) {
+		return new Class<?>[] {
+				// Rules, language and quality profile
+				FortifyRulesDefinition.class, 
+				FortifyLanguage.class,
+				FortifyProfile.class
+		};
+	}
+
+}
