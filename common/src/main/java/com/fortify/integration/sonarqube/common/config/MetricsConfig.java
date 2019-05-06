@@ -91,11 +91,11 @@ public class MetricsConfig extends AbstractYmlRootConfig {
 	private List<MetricConfig> metrics = new ArrayList<>();
 	
 	public static final MetricsConfig load(SourceSystem sourceSystem) {
-		return load(getMetricsConfigYmlPath(sourceSystem), MetricsConfig.class);
+		return load(getMetricsConfigYmlName(sourceSystem), MetricsConfig.class);
 	}
 	
-	public static final String getMetricsConfigYmlPath(SourceSystem sourceSystem) {
-		return "/metrics-"+sourceSystem.id()+".yml";
+	public static final String getMetricsConfigYmlName(SourceSystem sourceSystem) {
+		return "metrics-"+sourceSystem.id()+".yml";
 	}
 
 	public List<MetricConfig> getMetrics() {

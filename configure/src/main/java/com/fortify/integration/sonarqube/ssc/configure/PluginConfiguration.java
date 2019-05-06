@@ -157,7 +157,7 @@ public class PluginConfiguration {
 			copyFile(frame, fs.getPath("/externalmetadata.xml"), externalMetadataTempPath);
 			copyFile(frame, fs.getPath("/rules.yml"), rulesYmlTempPath);
 			for ( SourceSystem sourceSystem : SourceSystem.values() ) {
-				copyFile(frame, fs.getPath(MetricsConfig.getMetricsConfigYmlPath(sourceSystem)), metricsConfigsTempPaths.get(sourceSystem));
+				copyFile(frame, fs.getPath("/"+MetricsConfig.getMetricsConfigYmlName(sourceSystem)), metricsConfigsTempPaths.get(sourceSystem));
 			}
 		});
 	}
@@ -170,7 +170,7 @@ public class PluginConfiguration {
 			for ( SourceSystem sourceSystem : SourceSystem.values() ) {
 				Path tempPath = metricsConfigsTempPaths.get(sourceSystem);
 				metricsConfigs.get(sourceSystem).save(tempPath);
-				copyFile(frame, tempPath, fs.getPath(MetricsConfig.getMetricsConfigYmlPath(sourceSystem)));
+				copyFile(frame, tempPath, fs.getPath("/"+MetricsConfig.getMetricsConfigYmlName(sourceSystem)));
 			}
 		});
 	}

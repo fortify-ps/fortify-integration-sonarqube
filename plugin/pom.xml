@@ -90,9 +90,9 @@
 				<extensions>true</extensions>
 				<configuration>
 					<pluginKey>fortify</pluginKey>
-					<pluginClass>com.fortify.integration.sonarqube.ssc.common.FortifySSCPlugin</pluginClass>
+					<pluginClass>com.fortify.integration.sonarqube.common.FortifyPlugin</pluginClass>
 					<pluginName>Fortify</pluginName>
-					<pluginDescription>Gathers and displays information from Fortify SSC</pluginDescription>
+					<pluginDescription>Gathers and displays information from Fortify SSC and FoD</pluginDescription>
 					<useChildFirstClassLoader>true</useChildFirstClassLoader>
 					<sonarQubeMinVersion>6.7</sonarQubeMinVersion>
 				</configuration>
