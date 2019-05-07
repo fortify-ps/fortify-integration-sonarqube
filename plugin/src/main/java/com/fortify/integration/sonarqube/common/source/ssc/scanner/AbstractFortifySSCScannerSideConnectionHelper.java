@@ -24,6 +24,7 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.source.ssc.scanner;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +34,9 @@ import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 
 import com.fortify.client.ssc.api.SSCApplicationVersionAPI;
+import com.fortify.client.ssc.api.SSCIssueTemplateAPI;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
+import com.fortify.util.rest.json.JSONList;
 import com.fortify.util.rest.json.JSONMap;
 
 /**
@@ -50,10 +53,13 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 	private static final String PRP_SSC_URL = "sonar.fortify.ssc.url";
 	/** SonarQube property holding the SSC application version id or name */
 	private static final String PRP_SSC_APP_VERSION = "sonar.fortify.ssc.appversion";
+	/** SonarQube property holding the SSC filter set id or name */
+	private static final String PRP_FILTER_SET = "sonar.fortify.ssc.filterset";
 	
 	private final Configuration config;
 	private SSCAuthenticatingRestConnection connection;
 	private String applicationVersionId;
+	private String filterSetGuid;
 	
 	/**
 	 * Constructor for injecting dependencies
@@ -100,6 +106,35 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 	}
 	
 	/**
+	 * Get the filter set id for the configured filter set name or id.
+	 * If the SSC connection is not available, this method returns null. 
+	 * Otherwise, this method returns the filter set id for the configured
+	 * filter set name or id, or if not configured, the SSC default filter
+	 * set id. 
+	 * @return JSONObject representing the specified filter set, the default filter set if not specified, or null if no connection available
+	 * @throws IllegalArgumentException if specified filter set cannot be found
+	 */
+	public final synchronized String getFilterSetGuid() {
+		if ( filterSetGuid==null && isConnectionAvailable() ) {
+			JSONList filterSets = getConnection().api(SSCIssueTemplateAPI.class).queryApplicationVersionFilterSets(getApplicationVersionId()).build().getAll();
+			String filterSetGuidOrTitle = config.get(PRP_FILTER_SET).orElse(null);
+			if ( StringUtils.isBlank(filterSetGuidOrTitle) ) {
+				filterSetGuid = filterSets.mapValue("defaultFilterSet", true, "guid", String.class);
+				if ( filterSetGuid==null ) {
+					throw new IllegalStateException("No default filter set found on SSC");
+				}
+			} else {
+				String matchExpr = MessageFormat.format("guid==''{0}'' || title==''{0}''", new Object[]{filterSetGuidOrTitle});
+				filterSetGuid = filterSets.mapValue(matchExpr, true, "guid", String.class);
+				if ( filterSetGuid==null ) {
+					throw new IllegalArgumentException("Unknown filter set "+filterSetGuidOrTitle);
+				}
+			}
+		}
+		return filterSetGuid;
+	}
+	
+	/**
 	 * This method indicates whether SSC connection and application version id 
 	 * are available. 
 	 */
@@ -109,7 +144,7 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 	}
 	
 	/**
-	 * Get the configured SSC URL
+	 * Get the configured SSC URL, or null if not configured
 	 */
 	@Override
 	public String getSSCUrl() {
@@ -117,11 +152,18 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 	}
 	
 	/**
-	 * Get the configured application version name or id
+	 * Get the configured application version name or id, or null if not configured
 	 */
 	@Override
 	public String getApplicationVersionNameOrId() {
 		return config.get(PRP_SSC_APP_VERSION).orElse(null);
+	}
+	
+	/**
+	 * @return The configured filter set name or id, or null if not configured
+	 */
+	public final String getFilterSetNameOrGuid() {
+		return config.get(PRP_FILTER_SET).orElse(null);
 	}
 	
 	/**
@@ -142,6 +184,13 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 				.description("(Required) SSC Application Version Id or Name (application:version).")
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
+				.build());
+		
+		propertyDefinitions.add(PropertyDefinition.builder(PRP_FILTER_SET)
+				.name("SSC Filter Set")
+				.description("(Optional) Filter set name or guid used to retrieve issue data from SSC")
+				.type(PropertyType.STRING)
+				.onQualifiers(Qualifiers.PROJECT)
 				.build());
 	}
 }

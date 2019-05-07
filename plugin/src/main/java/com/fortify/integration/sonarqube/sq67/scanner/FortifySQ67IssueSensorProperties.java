@@ -22,11 +22,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.fod.scanner;
+package com.fortify.integration.sonarqube.sq67.scanner;
 
 import java.util.List;
 
 import org.sonar.api.PropertyType;
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.config.PropertyDefinition;
 
@@ -39,8 +41,11 @@ import org.sonar.api.config.PropertyDefinition;
  * @author Ruud Senden
  *
  */
-public abstract class AbstractFortifyFoDIssueSensorProperties {
-	private static final String PRP_ENABLE_ISSUES = "sonar.fortify.fod.issues.enable";
+@ScannerSide
+@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+public final class FortifySQ67IssueSensorProperties {
+	private static final String PRP_ENABLE_ISSUES = "sonar.fortify.issues.enable";
+	private static final String PRP_REPORT_ISSUES_ONCE = "sonar.fortify.issues.reportOnce";
 	
 	/**
 	 * @param context {@link SensorContext}
@@ -50,9 +55,13 @@ public abstract class AbstractFortifyFoDIssueSensorProperties {
 		return context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
 	}
 	
+	public final boolean isReportIssuesOnce(SensorContext context) {
+		return context.config().getBoolean(PRP_REPORT_ISSUES_ONCE).orElse(true);
+	}
+	
 	/**
-	 * Add configuration properties that allow for specifying whether issue collection
-	 * is enabled.
+	 * Add configuration properties that allow for specifying whether issue collection is enabled,
+	 * and whether issues should be reported only once.
 	 * 
 	 * @param propertyDefinitions
 	 */
@@ -63,5 +72,17 @@ public abstract class AbstractFortifyFoDIssueSensorProperties {
 				.type(PropertyType.BOOLEAN)
 				.defaultValue("true")
 				.build());
+		propertyDefinitions.add(PropertyDefinition.builder(PRP_REPORT_ISSUES_ONCE)
+				.name("Report issues only once")
+				.description("(Optional) Fortify issues are mapped to source files based on relative paths. As such, a single"
+						+ " Fortify issue could be incorrectly mapped to similarly named source files in different modules."
+						+ " If this property is set to false (default), the Fortify issue will be reported on"
+						+ " every matching source file. If this property is set to true, the Fortify issue will"
+						+ " be reported at most once. In either case, the Fortify issue may be reported on"
+						+ " incorrect file(s)")
+				.type(PropertyType.BOOLEAN)
+				.defaultValue("false")
+				.build());
+		// TODO Add property to specify whether non-SCA results should be loaded into SonarQube
 	}
 }

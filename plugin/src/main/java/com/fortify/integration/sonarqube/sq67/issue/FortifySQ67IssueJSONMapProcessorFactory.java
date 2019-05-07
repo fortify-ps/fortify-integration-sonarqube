@@ -22,26 +22,30 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.sq76.source.fod;
+package com.fortify.integration.sonarqube.sq67.issue;
 
-import org.sonar.api.Plugin.Context;
-import org.springframework.stereotype.Component;
+import org.sonar.api.batch.rule.ActiveRule;
+import org.sonar.api.batch.sensor.SensorContext;
 
-import com.fortify.integration.sonarqube.common.IFortifyExtensionProvider;
-import com.fortify.integration.sonarqube.sq76.source.fod.scanner.FortifyFoDSQ76ConnectionPropertiesMetricsSensor;
-import com.fortify.integration.sonarqube.sq76.source.fod.scanner.FortifyFoDSQ76IssueSensor;
-import com.fortify.integration.sonarqube.sq76.source.fod.scanner.FortifyFoDSQ76ScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.common.issue.AbstractFortifyIssueJSONMapProcessorFactory;
+import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
+import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
+import com.fortify.util.rest.json.processor.IJSONMapProcessor;
 
-@Component
-public class FortifyFoDSQ76ExtensionProvider implements IFortifyExtensionProvider {
+public class FortifySQ67IssueJSONMapProcessorFactory extends AbstractFortifyIssueJSONMapProcessorFactory {
+	public FortifySQ67IssueJSONMapProcessorFactory(IFortifySourceSystemIssueFieldRetriever issueFieldRetriever) {
+		super(issueFieldRetriever);
+	}
 
 	@Override
-	public Class<?>[] getExtensions(Context context) {
-		return new Class<?>[] {
-			FortifyFoDSQ76ScannerSideConnectionHelper.class,
-			FortifyFoDSQ76ConnectionPropertiesMetricsSensor.class,
-			FortifyFoDSQ76IssueSensor.class
-		};
+	public IJSONMapProcessor getProcessor(SensorContext context, ActiveRule activeRule, CacheHelper cacheHelper) {
+		return new FortifySQ67IssueJSONMapProcessor(context, activeRule, getIssueFieldRetriever(), cacheHelper);
+	}
+	
+	private static final class FortifySQ67IssueJSONMapProcessor extends AbstractFortifyIssueJSONMapProcessor {
+		public FortifySQ67IssueJSONMapProcessor(SensorContext context, ActiveRule activeRule, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, CacheHelper cacheHelper) {
+			super(context, activeRule, issueFieldRetriever, cacheHelper);
+		}
 	}
 
 }

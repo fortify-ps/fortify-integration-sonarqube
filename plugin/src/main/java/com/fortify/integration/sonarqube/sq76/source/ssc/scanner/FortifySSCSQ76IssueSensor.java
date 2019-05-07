@@ -24,21 +24,16 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.sq76.source.ssc.scanner;
 
-import java.util.List;
-
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.batch.sensor.issue.NewIssue;
-import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.scanner.ScannerSide;
-import org.sonar.api.scanner.fs.InputProject;
 
-import com.fortify.integration.sonarqube.common.source.ssc.scanner.AbstractFortifySSCIssueSensorProperties;
-import com.fortify.integration.sonarqube.common.source.ssc.scanner.FortifySSCIssueSensorHelper;
+import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor;
+import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssueFieldsRetriever;
+import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssueQueryHelper;
 import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
-import com.fortify.util.rest.json.JSONMap;
+import com.fortify.integration.sonarqube.sq76.issue.FortifySQ76IssueJSONMapProcessorFactory;
+import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76IssueSensorProperties;
 
 
 /**
@@ -52,20 +47,24 @@ import com.fortify.util.rest.json.JSONMap;
  */
 @ScannerSide
 public class FortifySSCSQ76IssueSensor extends FortifySSCSQ76AbstractProjectSensor {
-	private final SensorProperties sensorProperties;
+	private final FortifySQ76IssueSensorProperties sensorProperties;
+	private final FortifyIssuesProcessor issuesProcessor;
 	
 	/**
 	 * Constructor for injecting dependencies
 	 * @param connFactory
 	 */
-	public FortifySSCSQ76IssueSensor(IFortifySSCScannerSideConnectionHelper connHelper, SensorProperties sensorProperties) {
+	public FortifySSCSQ76IssueSensor(IFortifySSCScannerSideConnectionHelper connHelper, FortifySQ76IssueSensorProperties sensorProperties) {
 		super(connHelper);
 		this.sensorProperties = sensorProperties;
+		this.issuesProcessor = new FortifyIssuesProcessor(
+				new FortifySSCIssueQueryHelper(getConnHelper()), 
+				new FortifySQ76IssueJSONMapProcessorFactory(new FortifySSCIssueFieldsRetriever()), false);
 	}
 	
 	@Override
 	public void describe(SensorDescriptor descriptor) {
-		descriptor.name("Fortify issue collection");
+		descriptor.name("Fortify SSC issue collection");
 	}
 	
 	/**
@@ -73,7 +72,7 @@ public class FortifySSCSQ76IssueSensor extends FortifySSCSQ76AbstractProjectSens
 	 */
 	@Override
 	public void _execute(SensorContext context) {
-		new FortifyIssuesProcessor(context, getConnHelper(), sensorProperties).processIssues();
+		issuesProcessor.processIssues(context);
 	}
 
 	/**
@@ -83,50 +82,5 @@ public class FortifySSCSQ76IssueSensor extends FortifySSCSQ76AbstractProjectSens
 	@Override
 	protected final boolean isActive(SensorContext context) {
 		return sensorProperties.isIssueCollectionEnabled(context);
-	}
-	
-	@ScannerSide
-	public static final class SensorProperties extends AbstractFortifySSCIssueSensorProperties {
-		public SensorProperties(IFortifySSCScannerSideConnectionHelper connHelper) {
-			super(connHelper);
-		}
-	}
-	
-	private static final class FortifyIssuesProcessor extends FortifySSCIssueSensorHelper.AbstractFortifyIssuesProcessor<SensorProperties> {
-		public FortifyIssuesProcessor(SensorContext context, IFortifySSCScannerSideConnectionHelper connHelper, SensorProperties sensorProperties) {
-			super(context, connHelper, sensorProperties);
-		}
-
-		@Override
-		public void processAllIssues(ActiveRule activeRule) {
-			getIssuesBaseQuery().build()
-				.processAll(new FortifyIssueProcessor(getContext(), activeRule, getInputFiles()));
-		}
-		
-		@Override
-		public void processIssuesForExternalCategory(ActiveRule activeRule, String externalListId, String externalCategory) {
-			getIssuesBaseQuery(externalListId, externalCategory).build()
-				.processAll(new FortifyIssueProcessor(getContext(), activeRule, getInputFiles()));
-		}
-	}
-	
-	private static final class FortifyIssueProcessor extends FortifySSCIssueSensorHelper.AbstractFortifyIssueProcessor {
-		public FortifyIssueProcessor(SensorContext context, ActiveRule activeRule, List<InputFile> inputFiles) {
-			super(context, activeRule, inputFiles);
-		}
-
-		@Override
-		protected void createIssueWithoutInputFile(JSONMap issue) {
-			NewIssue newIssue = createNewIssue(issue);
-			addIssueLocation(newIssue, getContext().project(), issue);
-			newIssue.save();
-		}
-
-		protected void addIssueLocation(NewIssue newIssue, InputProject inputProject, JSONMap issue) {
-			NewIssueLocation primaryLocation = newIssue.newLocation()
-					.on(inputProject)
-					.message(getIssueMessage(issue, true)); //TODO Add Fortify issue location to message
-			newIssue.at(primaryLocation);
-		}
 	}
 }

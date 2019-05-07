@@ -42,7 +42,6 @@ public class FortifySSCSQ76ExtensionProvider implements IFortifyExtensionProvide
 			FortifySSCSQ76ScannerSideConnectionHelper.class,
 			FortifySSCSQ76UploadFPRStartable.class,
 			FortifySSCSQ76ConnectionPropertiesMetricsSensor.class,
-			FortifySSCSQ76IssueSensor.SensorProperties.class,
 			FortifySSCSQ76IssueSensor.class
 		};
 	}

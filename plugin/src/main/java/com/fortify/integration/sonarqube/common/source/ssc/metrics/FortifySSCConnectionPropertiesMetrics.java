@@ -32,15 +32,19 @@ import org.sonar.api.measures.Metrics;
 
 @SuppressWarnings("rawtypes")
 public class FortifySSCConnectionPropertiesMetrics implements Metrics {
-	public static final String PRP_SSC_URL = "fortify.sscUrl";
-	public static final String PRP_APP_VERSION_ID = "fortify.sscApplicationVersionId";
-	public static final Metric METRIC_SSC_URL = new Metric.Builder(PRP_SSC_URL, "SSC URL", Metric.ValueType.STRING)
-			.setDomain("Fortify").setHidden(true).create();
-	public static final Metric METRIC_SSC_APP_VERSION_ID = new Metric.Builder(PRP_APP_VERSION_ID, "SSC Application Version Id", Metric.ValueType.STRING)
-			.setDomain("Fortify").setHidden(true).create();
+	public static final String PRP_SSC_URL = "fortify.ssc.url";
+	public static final String PRP_APP_VERSION_ID = "fortify.ssc.applicationVersionId";
+	public static final String PRP_FILTER_SET_GUID = "fortify.ssc.filterSetGuid";
 	
-	public static final String[] METRICS_KEYS = {PRP_SSC_URL, PRP_APP_VERSION_ID};
-	private static final List<Metric> METRICS = Arrays.asList(new Metric[] {METRIC_SSC_URL, METRIC_SSC_APP_VERSION_ID});
+	public static final Metric METRIC_SSC_URL = new Metric.Builder(PRP_SSC_URL, "SSC URL", Metric.ValueType.STRING)
+			.setDomain("Fortify SSC").setHidden(true).create();
+	public static final Metric METRIC_SSC_APP_VERSION_ID = new Metric.Builder(PRP_APP_VERSION_ID, "SSC Application Version Id", Metric.ValueType.STRING)
+			.setDomain("Fortify SSC").setHidden(true).create();
+	public static final Metric METRIC_SSC_FILTER_SET_GUID = new Metric.Builder(PRP_FILTER_SET_GUID, "SSC Filter Set Guid", Metric.ValueType.STRING)
+			.setDomain("Fortify SSC").setHidden(true).create();
+	
+	public static final String[] METRICS_KEYS = {PRP_SSC_URL, PRP_APP_VERSION_ID, PRP_FILTER_SET_GUID};
+	private static final List<Metric> METRICS = Arrays.asList(new Metric[] {METRIC_SSC_URL, METRIC_SSC_APP_VERSION_ID, METRIC_SSC_FILTER_SET_GUID});
 	
 	@Override
 	public List<Metric> getMetrics() {

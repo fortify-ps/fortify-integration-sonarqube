@@ -31,6 +31,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.integration.sonarqube.common.FortifyConstants;
 import com.fortify.integration.sonarqube.common.FortifyPlugin;
@@ -51,6 +53,7 @@ import com.fortify.integration.sonarqube.common.profile.FortifyProfile;
  * versions by {@link FortifyPlugin}.</p>
  */
 public class FortifyRulesDefinition implements RulesDefinition {
+	private static final Logger LOG = Loggers.get(FortifyRulesDefinition.class);
 	public static final String REPOSITORY_KEY = "fortify";
 	public static final String RULE_KEY_OTHER = "fortify.other";
 	private static final FortifyExternalMetadata externalMetadata = FortifyExternalMetadata.parse(); 
@@ -68,18 +71,8 @@ public class FortifyRulesDefinition implements RulesDefinition {
 				? null : externalMetadata.getExternalListByName(rulesSourceName);
 	}
 	
-	/**
-	 * @return The external list id if configured, otherwise null.
-	 */
-	public static final String getExternalListId() {
-		return externalList==null ? null : externalList.getId();
-	}
-	
-	/**
-	 * @return The external list name if configured, otherwise null.
-	 */
-	public static final String getExternalListName() {
-		return externalList==null ? null : externalList.getName();
+	public static final ExternalList getExternalList() {
+		return externalList;
 	}
 	
 	/**
@@ -95,6 +88,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 		repo.setName("Fortify");
 		if ( externalList != null ) {
 			for ( ExternalCategory category : externalList.getExternalCategories().values() ) {
+				LOG.debug("Defining external category rule (id: {0}, internalKey: {1}", category.getId(), category.getName());
 				repo.createRule(category.getId())
 					.setInternalKey(category.getName())
 					.setName(category.getName())
@@ -104,6 +98,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 					.setActivatedByDefault(true);
 			}
 		}
+		LOG.debug("Defining rule (id: {0}, internalKey: {1}", RULE_KEY_OTHER, externalList==null?null:"[NONE]");
 		repo.createRule(RULE_KEY_OTHER)
 			.setInternalKey(externalList==null?null:"[NONE]")
 			.setName("Other")

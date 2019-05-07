@@ -40,6 +40,7 @@ public final class FortifySSCSQ67ConnectionPropertiesMetricsSensor extends Forti
 		descriptor.name("Set connection properties for compute engine");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void _execute(SensorContext context) {
 		// TODO Verify whether this hidden measure can be retrieved in any way by users

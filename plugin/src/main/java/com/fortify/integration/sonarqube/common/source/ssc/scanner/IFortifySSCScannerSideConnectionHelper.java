@@ -35,4 +35,5 @@ import com.fortify.integration.sonarqube.common.source.ssc.IFortifySSCConnection
  */
 public interface IFortifySSCScannerSideConnectionHelper extends IFortifySSCConnectionHelper {
 	public String getApplicationVersionNameOrId();
+	public String getFilterSetNameOrGuid();
 }

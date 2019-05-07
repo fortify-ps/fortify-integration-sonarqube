@@ -22,34 +22,16 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.ssc;
+package com.fortify.integration.sonarqube.common.issue;
 
-import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
-import com.fortify.integration.sonarqube.common.IFortifyConnectionHelper;
+import java.util.HashSet;
 
-/**
- * This interface provides access to the SSC URL (including credentials), the
- * corresponding {@link SSCAuthenticatingRestConnection} instance, and the
- * SSC application version id. It also provides a utility method for checking 
- * whether SSC connection and application version id are available.
- * 
- * @author Ruud Senden
- *
- */
-public interface IFortifySSCConnectionHelper extends IFortifyConnectionHelper<SSCAuthenticatingRestConnection> {
-	/**
-	 * @return SSC filter set GUID, or null if not available/configured
-	 */
-	public String getFilterSetGuid();
+import com.fortify.integration.sonarqube.common.externalmetadata.ExternalList;
+import com.fortify.util.rest.query.IRestConnectionQuery;
 
-	/**
-	 * @return SSC application version id, or null if not available/configured
-	 */
-	public String getApplicationVersionId();
-
-	/**
-	 * @return SSC URL (including credentials), or null if not available/configured
-	 */
-	public String getSSCUrl();
-
+public interface IFortifySourceSystemIssueQueryHelper {
+	public boolean supportsExternalList(ExternalList externalList);
+	public HashSet<String> getAvailableExternalCategories(ExternalList externalList);
+	public IRestConnectionQuery getAllIssuesQuery();
+	public IRestConnectionQuery getExternalCategoryIssuesQuery(ExternalList externalList, String externalCategory);
 }

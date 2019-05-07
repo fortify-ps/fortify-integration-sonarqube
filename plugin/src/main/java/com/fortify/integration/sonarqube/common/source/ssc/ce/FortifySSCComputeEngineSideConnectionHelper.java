@@ -90,6 +90,14 @@ public final class FortifySSCComputeEngineSideConnectionHelper implements IForti
 	}
 	
 	/**
+	 * Get the filter set guid from the measure saved on the scanner side
+	 */
+	public final String getFilterSetGuid() {
+		Measure measure = measureComputerContext.getMeasure(FortifySSCConnectionPropertiesMetrics.PRP_FILTER_SET_GUID);
+		return measure == null ? null : measure.getStringValue();
+	}
+	
+	/**
 	 * Get the {@link SSCAuthenticatingRestConnection} based on the URL returned by {@link #getSSCUrl()}.
 	 * The connection instance is cached for this {@link FortifySSCComputeEngineSideConnectionHelper}
 	 * instance. If the connection is not available, this method returns null.

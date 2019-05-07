@@ -22,34 +22,22 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.ssc;
+package com.fortify.integration.sonarqube.sq76;
 
-import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
-import com.fortify.integration.sonarqube.common.IFortifyConnectionHelper;
+import org.sonar.api.Plugin.Context;
+import org.springframework.stereotype.Component;
 
-/**
- * This interface provides access to the SSC URL (including credentials), the
- * corresponding {@link SSCAuthenticatingRestConnection} instance, and the
- * SSC application version id. It also provides a utility method for checking 
- * whether SSC connection and application version id are available.
- * 
- * @author Ruud Senden
- *
- */
-public interface IFortifySSCConnectionHelper extends IFortifyConnectionHelper<SSCAuthenticatingRestConnection> {
-	/**
-	 * @return SSC filter set GUID, or null if not available/configured
-	 */
-	public String getFilterSetGuid();
+import com.fortify.integration.sonarqube.common.IFortifyExtensionProvider;
+import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76IssueSensorProperties;
 
-	/**
-	 * @return SSC application version id, or null if not available/configured
-	 */
-	public String getApplicationVersionId();
+@Component
+public class FortifySQ76ExtensionProvider implements IFortifyExtensionProvider {
 
-	/**
-	 * @return SSC URL (including credentials), or null if not available/configured
-	 */
-	public String getSSCUrl();
+	@Override
+	public Class<?>[] getExtensions(Context context) {
+		return new Class<?>[] {
+			FortifySQ76IssueSensorProperties.class
+		};
+	}
 
 }

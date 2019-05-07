@@ -10,6 +10,8 @@ Plugin general:
 - Clean-up/remove FortifyConstants
 - Add/improve error handling
 - Check whether hidden metric to pass SSC URL/credentials is somehow visible (for example through API)
+- Re-implement support for FortifySQ67IssueSensorProperties.PRP_REPORT_ISSUES_ONCE
+- Add support for manual mapping of Fortify category to active rules (to allow FoD implementation to use externalmetadata-based mappings)
 
 Plugin on SQ 6.7:
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
@@ -22,7 +24,7 @@ Plugin on SQ 7.6:
 Metrics:
 - Add support and default metrics for folder counts
 - Add support for default value if no value available from SSC?
-- Fortify security rating -> SonarQube rating (RATING metric type) in metrics.yml
+- Fortify security rating -> SonarQube rating (RATING metric type) in metrics-*.yml
 
 Configuration utility:
 - Hide MetricDetailsPanel if no item selected in listMetrics
@@ -38,7 +40,6 @@ Build:
 - Fix warnings
 
 Tests:
-- Multi-module project/Single-module project
 - Sonar Scanner/Maven scanner
-- Different SonarQube versions
-- No exceptions if SSC URL/application version have not been configured
+- No exceptions if SSC/FoD connection details have not been configured
+- Combinations of FoD/SSC, Single/externallist-based rules, different SonarQube versions , single/multi-module projects
