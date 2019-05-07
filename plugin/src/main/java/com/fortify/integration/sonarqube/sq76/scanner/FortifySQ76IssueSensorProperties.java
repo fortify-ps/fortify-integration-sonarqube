@@ -27,7 +27,7 @@ package com.fortify.integration.sonarqube.sq76.scanner;
 import java.util.List;
 
 import org.sonar.api.PropertyType;
-import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.scanner.ScannerSide;
 
@@ -43,13 +43,17 @@ import org.sonar.api.scanner.ScannerSide;
 @ScannerSide
 public final class FortifySQ76IssueSensorProperties {
 	private static final String PRP_ENABLE_ISSUES = "sonar.fortify.issues.enable";
+	private final Configuration config;
+	
+	public FortifySQ76IssueSensorProperties(Configuration config) {
+		this.config = config;
+	}
 	
 	/**
-	 * @param context {@link SensorContext}
 	 * @return True if issue collection is enabled or not configured, false otherwise
 	 */
-	public final boolean isIssueCollectionEnabled(SensorContext context) {
-		return context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
+	public final boolean isIssueCollectionEnabled() {
+		return config.getBoolean(PRP_ENABLE_ISSUES).orElse(true);
 	}
 	
 	/**

@@ -29,6 +29,8 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
 import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor;
+import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
+import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
 import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssueFieldsRetriever;
 import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssueQueryHelper;
 import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
@@ -50,6 +52,7 @@ import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67IssueSensorProp
  */
 public class FortifySSCSQ67IssueSensor extends FortifySSCSQ67AbstractSensor implements Startable {
 	private final FortifySQ67IssueSensorProperties sensorProperties;
+	private final CacheHelper cacheHelper; 
 	private final FortifyIssuesProcessor issuesProcessor;
 	
 	/**
@@ -59,9 +62,11 @@ public class FortifySSCSQ67IssueSensor extends FortifySSCSQ67AbstractSensor impl
 	public FortifySSCSQ67IssueSensor(IFortifySSCScannerSideConnectionHelper connHelper, FortifySQ67IssueSensorProperties sensorProperties) {
 		super(connHelper);
 		this.sensorProperties = sensorProperties;
+		IFortifySourceSystemIssueFieldRetriever issueFieldRetriever = new FortifySSCIssueFieldsRetriever();
+		this.cacheHelper = new CacheHelper(issueFieldRetriever, sensorProperties.isReportIssuesOnce());
 		this.issuesProcessor = new FortifyIssuesProcessor(
 				new FortifySSCIssueQueryHelper(getConnHelper()), 
-				new FortifySQ67IssueJSONMapProcessorFactory(new FortifySSCIssueFieldsRetriever()), true);
+				new FortifySQ67IssueJSONMapProcessorFactory(issueFieldRetriever), cacheHelper);
 	}
 	
 	@Override
@@ -83,7 +88,7 @@ public class FortifySSCSQ67IssueSensor extends FortifySSCSQ67AbstractSensor impl
 	 */
 	@Override
 	protected final boolean isActive(SensorContext context) {
-		return sensorProperties.isIssueCollectionEnabled(context);
+		return sensorProperties.isIssueCollectionEnabled();
 	}
 	
 	@Override
@@ -93,6 +98,8 @@ public class FortifySSCSQ67IssueSensor extends FortifySSCSQ67AbstractSensor impl
 
 	@Override
 	public void stop() {
-		issuesProcessor.close();
+		if ( cacheHelper != null ) {
+			cacheHelper.close();
+		}
 	}
 }

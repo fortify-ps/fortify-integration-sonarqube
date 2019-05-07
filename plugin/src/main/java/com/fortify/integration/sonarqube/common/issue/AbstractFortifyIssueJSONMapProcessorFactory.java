@@ -93,7 +93,7 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 		}
 		
 		protected boolean ignoreIssue(JSONMap issue) {
-			return cacheHelper!=null && cacheHelper.hasProcessedIssue(activeRule, issue);
+			return cacheHelper!=null && cacheHelper.ignoreIssue(activeRule, issue);
 		}
 		
 		protected void createIssueWithoutInputFile(JSONMap issue) {}

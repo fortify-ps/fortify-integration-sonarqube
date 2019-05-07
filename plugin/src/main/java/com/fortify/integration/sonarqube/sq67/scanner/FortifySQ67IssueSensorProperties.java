@@ -29,7 +29,7 @@ import java.util.List;
 import org.sonar.api.PropertyType;
 import org.sonar.api.batch.InstantiationStrategy;
 import org.sonar.api.batch.ScannerSide;
-import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.PropertyDefinition;
 
 /**
@@ -46,17 +46,21 @@ import org.sonar.api.config.PropertyDefinition;
 public final class FortifySQ67IssueSensorProperties {
 	private static final String PRP_ENABLE_ISSUES = "sonar.fortify.issues.enable";
 	private static final String PRP_REPORT_ISSUES_ONCE = "sonar.fortify.issues.reportOnce";
+	private final Configuration config;
 	
-	/**
-	 * @param context {@link SensorContext}
-	 * @return True if issue collection is enabled or not configured, false otherwise
-	 */
-	public final boolean isIssueCollectionEnabled(SensorContext context) {
-		return context.config().getBoolean(PRP_ENABLE_ISSUES).orElse(true);
+	public FortifySQ67IssueSensorProperties(Configuration config) {
+		this.config = config;
 	}
 	
-	public final boolean isReportIssuesOnce(SensorContext context) {
-		return context.config().getBoolean(PRP_REPORT_ISSUES_ONCE).orElse(true);
+	/**
+	 * @return True if issue collection is enabled or not configured, false otherwise
+	 */
+	public final boolean isIssueCollectionEnabled() {
+		return config.getBoolean(PRP_ENABLE_ISSUES).orElse(true);
+	}
+	
+	public final boolean isReportIssuesOnce() {
+		return config.getBoolean(PRP_REPORT_ISSUES_ONCE).orElse(true);
 	}
 	
 	/**

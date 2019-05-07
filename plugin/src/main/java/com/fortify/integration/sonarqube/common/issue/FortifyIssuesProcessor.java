@@ -46,16 +46,20 @@ import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
 import com.fortify.util.rest.json.processor.IJSONMapProcessor;
 import com.fortify.util.rest.query.IRestConnectionQuery;
 
-public class FortifyIssuesProcessor implements Closeable {
+public class FortifyIssuesProcessor {
 	private static final Logger LOG = Loggers.get(FortifyIssuesProcessor.class);
 	private final IFortifySourceSystemIssueQueryHelper issueQueryHelper;
 	private final IFortifyIssueJSONMapProcessorFactory issueProcessorFactory;
 	private final CacheHelper cacheHelper;
 	
-	public FortifyIssuesProcessor(IFortifySourceSystemIssueQueryHelper issueQueryHelper, IFortifyIssueJSONMapProcessorFactory issueProcessorFactory, boolean useCache) {
+	public FortifyIssuesProcessor(IFortifySourceSystemIssueQueryHelper issueQueryHelper, IFortifyIssueJSONMapProcessorFactory issueProcessorFactory) {
+		this(issueQueryHelper, issueProcessorFactory, null);
+	}
+	
+	public FortifyIssuesProcessor(IFortifySourceSystemIssueQueryHelper issueQueryHelper, IFortifyIssueJSONMapProcessorFactory issueProcessorFactory, CacheHelper cacheHelper) {
 		this.issueQueryHelper = issueQueryHelper;
 		this.issueProcessorFactory = issueProcessorFactory;
-		this.cacheHelper = useCache ? new CacheHelper(issueProcessorFactory.getIssueFieldRetriever()) : null;
+		this.cacheHelper = cacheHelper;
 	}
 	
 	public final void processIssues(SensorContext context) {
@@ -107,24 +111,16 @@ public class FortifyIssuesProcessor implements Closeable {
 		}
 	}
 	
-	/**
-	 * This method must be called to properly close the cache, if constructor was invoked with useCache==true
-	 */
-	@Override
-	public void close() {
-		if ( cacheHelper!=null ) {
-			cacheHelper.close();
-		}
-	}
-	
 	public static final class CacheHelper implements Closeable {
 		private final IFortifySourceSystemIssueFieldRetriever issueFieldRetriever;
+		private final boolean ignorePreviousReportedIssues;
 		private final HashMap<String, IndexTreeList<JSONMap>> issuesByRuleKey = new HashMap<>();
 		private final HashSet<String> reportedIssueIds = new HashSet<>();
 		private DB db = null;
 		
-		public CacheHelper(IFortifySourceSystemIssueFieldRetriever issueFieldRetriever) {
+		public CacheHelper(IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, boolean ignorePreviouslyReportedIssues) {
 			this.issueFieldRetriever = issueFieldRetriever;
+			this.ignorePreviousReportedIssues = ignorePreviouslyReportedIssues;
 		}
 
 		public synchronized DB getDB() {
@@ -158,12 +154,12 @@ public class FortifyIssuesProcessor implements Closeable {
 			});
 		}
 
-		public boolean hasProcessedIssue(ActiveRule activeRule, JSONMap issue) {
-			return reportedIssueIds.contains(getProcessedIssueId(activeRule, issue));
+		public boolean ignoreIssue(ActiveRule activeRule, JSONMap issue) {
+			return ignorePreviousReportedIssues && reportedIssueIds.contains(getProcessedIssueId(activeRule, issue));
 		}
 
 		public void addProcessedIssue(SensorContext context, ActiveRule activeRule, JSONMap issue) {
-			reportedIssueIds.add(getProcessedIssueId(activeRule, issue));
+			if ( ignorePreviousReportedIssues ) { reportedIssueIds.add(getProcessedIssueId(activeRule, issue)); }
 		}
 		
 		private String getProcessedIssueId(ActiveRule activeRule, JSONMap issue) {

@@ -10,12 +10,12 @@ Plugin general:
 - Clean-up/remove FortifyConstants
 - Add/improve error handling
 - Check whether hidden metric to pass SSC URL/credentials is somehow visible (for example through API)
-- Re-implement support for FortifySQ67IssueSensorProperties.PRP_REPORT_ISSUES_ONCE
 - Add support for manual mapping of Fortify category to active rules (to allow FoD implementation to use externalmetadata-based mappings)
 
 Plugin on SQ 6.7:
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
-  - Apparently measures cannot be saved on modules with packaging type pom 
+  - Apparently measures cannot be saved on modules with packaging type pom
+- Add FoD implementation 
 
 Plugin on SQ 7.6:
 - Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
