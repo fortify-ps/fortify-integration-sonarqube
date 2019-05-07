@@ -36,6 +36,7 @@ import org.sonar.api.resources.Qualifiers;
 import com.fortify.client.ssc.api.SSCApplicationVersionAPI;
 import com.fortify.client.ssc.api.SSCIssueTemplateAPI;
 import com.fortify.client.ssc.connection.SSCAuthenticatingRestConnection;
+import com.fortify.integration.sonarqube.common.FortifyConstants;
 import com.fortify.util.rest.json.JSONList;
 import com.fortify.util.rest.json.JSONMap;
 
@@ -177,6 +178,7 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 				.name("SSC URL")
 				.description("(Required) URL used to connect to SSC (http[s]://user:password@host[:port]/ssc or http[s]://authToken:token@host[:port]/ssc)")
 				.type(PropertyType.PASSWORD)
+				.category(FortifyConstants.PROPERTY_CATEGORY_SSC)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_APP_VERSION)
@@ -184,6 +186,7 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 				.description("(Required) SSC Application Version Id or Name (application:version).")
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
+				.category(FortifyConstants.PROPERTY_CATEGORY_SSC)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FILTER_SET)
@@ -191,6 +194,7 @@ public abstract class AbstractFortifySSCScannerSideConnectionHelper implements I
 				.description("(Optional) Filter set name or guid used to retrieve issue data from SSC")
 				.type(PropertyType.STRING)
 				.onQualifiers(Qualifiers.PROJECT)
+				.category(FortifyConstants.PROPERTY_CATEGORY_SSC)
 				.build());
 	}
 }

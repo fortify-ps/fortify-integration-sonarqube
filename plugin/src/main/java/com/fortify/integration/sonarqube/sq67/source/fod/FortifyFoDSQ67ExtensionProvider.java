@@ -22,36 +22,26 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.fod;
+package com.fortify.integration.sonarqube.sq67.source.fod;
 
-import com.fortify.client.fod.connection.FoDAuthenticatingRestConnection;
-import com.fortify.integration.sonarqube.common.IFortifyConnectionHelper;
+import org.sonar.api.Plugin.Context;
+import org.springframework.stereotype.Component;
 
-/**
- * This interface provides access to the SSC URL (including credentials), the
- * corresponding {@link SSCAuthenticatingRestConnection} instance, and the
- * SSC application version id. It also provides a utility method for checking 
- * whether SSC connection and application version id are available.
- * 
- * @author Ruud Senden
- *
- */
-public interface IFortifyFoDConnectionHelper extends IFortifyConnectionHelper<FoDAuthenticatingRestConnection> {
+import com.fortify.integration.sonarqube.common.IFortifyExtensionProvider;
+import com.fortify.integration.sonarqube.sq67.source.fod.scanner.FortifyFoDSQ67ConnectionPropertiesMetricsSensor;
+import com.fortify.integration.sonarqube.sq67.source.fod.scanner.FortifyFoDSQ67IssueSensor;
+import com.fortify.integration.sonarqube.sq67.source.fod.scanner.FortifyFoDSQ67ScannerSideConnectionHelper;
 
-	/**
-	 * @return FoD release id, or null if not available/configured
-	 */
-	public String getReleaseId();
+@Component
+public class FortifyFoDSQ67ExtensionProvider implements IFortifyExtensionProvider {
 
-	/**
-	 * @return FoD URL (including credentials), or null if not available/configured
-	 */
-	public String getFoDUrl();
-
-	public String getFoDTenant();
-
-	public String getFoDUser();
-
-	public String getFoDPassword();
+	@Override
+	public Class<?>[] getExtensions(Context context) {
+		return new Class<?>[] {
+			FortifyFoDSQ67ScannerSideConnectionHelper.class,
+			FortifyFoDSQ67ConnectionPropertiesMetricsSensor.class,
+			FortifyFoDSQ67IssueSensor.class
+		};
+	}
 
 }

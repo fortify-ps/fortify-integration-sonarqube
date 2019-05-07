@@ -22,34 +22,37 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.sq76.source.ssc.scanner;
+package com.fortify.integration.sonarqube.sq67.source.fod.scanner;
 
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
-import com.fortify.integration.sonarqube.common.source.ssc.metrics.FortifySSCConnectionPropertiesMetrics;
-import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
-import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76AbstractProjectSensor;
+import com.fortify.integration.sonarqube.common.source.fod.metrics.FortifyFoDConnectionPropertiesMetrics;
+import com.fortify.integration.sonarqube.common.source.fod.scanner.IFortifyFoDScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67AbstractSensor;
 
-public final class FortifySSCSQ76ConnectionPropertiesMetricsSensor extends FortifySQ76AbstractProjectSensor<IFortifySSCScannerSideConnectionHelper> {
-	public FortifySSCSQ76ConnectionPropertiesMetricsSensor(IFortifySSCScannerSideConnectionHelper connHelper) {
+public final class FortifyFoDSQ67ConnectionPropertiesMetricsSensor extends FortifySQ67AbstractSensor<IFortifyFoDScannerSideConnectionHelper> {
+	public FortifyFoDSQ67ConnectionPropertiesMetricsSensor(IFortifyFoDScannerSideConnectionHelper connHelper) {
 		super(connHelper);
 	}
 	
 	@Override
 	public void describe(SensorDescriptor descriptor) {
-		descriptor.name("Set SSC connection properties for compute engine");
+		descriptor.name("Set FoD connection properties for compute engine");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void _execute(SensorContext context) {
 		// TODO Verify whether this hidden measure can be retrieved in any way by users
-		// that should not be able to see the SSC connection credentials. If so,
+		// that should not be able to see the FoD connection credentials. If so,
 		// probably best to have the configuration utility generate a Yaml file with
 		// a random shared secret to encrypt the URL/credentials here, and decrypt
-		// this in FortifySSCComputeEngineSideConnectionHelper.
-		context.newMeasure().forMetric(FortifySSCConnectionPropertiesMetrics.METRIC_SSC_URL).on(context.project()).withValue(getConnHelper().getSSCUrl()).save();
-		context.newMeasure().forMetric(FortifySSCConnectionPropertiesMetrics.METRIC_SSC_APP_VERSION_ID).on(context.project()).withValue(getConnHelper().getApplicationVersionId()).save();
+		// this in FortifyFoDComputeEngineSideConnectionHelper.
+		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_URL).on(context.module()).withValue(getConnHelper().getFoDUrl()).save();
+		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_TENANT).on(context.module()).withValue(getConnHelper().getFoDTenant()).save();
+		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_USER).on(context.module()).withValue(getConnHelper().getFoDUser()).save();
+		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_PWD).on(context.module()).withValue(getConnHelper().getFoDPassword()).save();
+		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_RELEASE_ID).on(context.module()).withValue(getConnHelper().getReleaseId()).save();
 	}
 }

@@ -35,6 +35,7 @@ import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssue
 import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssueQueryHelper;
 import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
 import com.fortify.integration.sonarqube.sq67.issue.FortifySQ67IssueJSONMapProcessorFactory;
+import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67AbstractSensor;
 import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67IssueSensorProperties;
 
 /**
@@ -50,7 +51,7 @@ import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67IssueSensorProp
 /*
  * TODO Add plugin page that shows any Fortify issues that could not be matched to a SonarQube source file
  */
-public class FortifySSCSQ67IssueSensor extends FortifySSCSQ67AbstractSensor implements Startable {
+public class FortifySSCSQ67IssueSensor extends FortifySQ67AbstractSensor<IFortifySSCScannerSideConnectionHelper> implements Startable {
 	private final FortifySQ67IssueSensorProperties sensorProperties;
 	private final CacheHelper cacheHelper; 
 	private final FortifyIssuesProcessor issuesProcessor;

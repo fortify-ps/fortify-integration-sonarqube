@@ -63,7 +63,7 @@ public class FortifyPlugin implements Plugin {
 	private static final String[] EXTENSION_PROVIDER_CLASS_NAMES_67 = {
 		"com.fortify.integration.sonarqube.sq67.FortifySQ67ExtensionProvider",
 		"com.fortify.integration.sonarqube.sq67.source.ssc.FortifySSCSQ67ExtensionProvider",
-		//"com.fortify.integration.sonarqube.sq76.source.fod.FortifyFoDSQ67ExtensionProvider"
+		"com.fortify.integration.sonarqube.sq67.source.fod.FortifyFoDSQ67ExtensionProvider"
 	};
 	private static final String[] EXTENSION_PROVIDER_CLASS_NAMES_76 = {
 		"com.fortify.integration.sonarqube.sq76.FortifySQ76ExtensionProvider",

@@ -31,6 +31,8 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.scanner.ScannerSide;
 
+import com.fortify.integration.sonarqube.common.FortifyConstants;
+
 /**
  * This class provides configuration settings for, and access to, issue sensor properties.
  * This abstract class provides all relevant functionality, but concrete version-specific 
@@ -67,6 +69,7 @@ public final class FortifySQ76IssueSensorProperties {
 				.description("(Optional) Enable collecting Fortify issues")
 				.type(PropertyType.BOOLEAN)
 				.defaultValue("true")
+				.category(FortifyConstants.PROPERTY_CATEGORY_GENERIC)
 				.build());
 		// TODO Add property to specify whether non-SCA results should be loaded into SonarQube
 	}

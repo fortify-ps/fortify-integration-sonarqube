@@ -28,25 +28,27 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
 import com.fortify.integration.sonarqube.common.source.fod.metrics.FortifyFoDConnectionPropertiesMetrics;
+import com.fortify.integration.sonarqube.common.source.fod.scanner.IFortifyFoDScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76AbstractProjectSensor;
 
-public final class FortifyFoDSQ76ConnectionPropertiesMetricsSensor extends FortifyFoDSQ76AbstractProjectSensor {
-	public FortifyFoDSQ76ConnectionPropertiesMetricsSensor(FortifyFoDSQ76ScannerSideConnectionHelper connHelper) {
+public final class FortifyFoDSQ76ConnectionPropertiesMetricsSensor extends FortifySQ76AbstractProjectSensor<IFortifyFoDScannerSideConnectionHelper> {
+	public FortifyFoDSQ76ConnectionPropertiesMetricsSensor(IFortifyFoDScannerSideConnectionHelper connHelper) {
 		super(connHelper);
 	}
 	
 	@Override
 	public void describe(SensorDescriptor descriptor) {
-		descriptor.name("Set connection properties for compute engine");
+		descriptor.name("Set FoD connection properties for compute engine");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void _execute(SensorContext context) {
 		// TODO Verify whether this hidden measure can be retrieved in any way by users
-		// that should not be able to see the SSC connection credentials. If so,
+		// that should not be able to see the FoD connection credentials. If so,
 		// probably best to have the configuration utility generate a Yaml file with
 		// a random shared secret to encrypt the URL/credentials here, and decrypt
-		// this in the FortifySSCComputeEngineSideConnectionHelper.getSscUrl() method above.
+		// this in FortifyFoDComputeEngineSideConnectionHelper.
 		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_URL).on(context.project()).withValue(getConnHelper().getFoDUrl()).save();
 		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_TENANT).on(context.project()).withValue(getConnHelper().getFoDTenant()).save();
 		context.newMeasure().forMetric(FortifyFoDConnectionPropertiesMetrics.METRIC_FOD_USER).on(context.project()).withValue(getConnHelper().getFoDUser()).save();

@@ -34,6 +34,7 @@ import org.sonar.api.resources.Qualifiers;
 
 import com.fortify.client.fod.api.FoDReleaseAPI;
 import com.fortify.client.fod.connection.FoDAuthenticatingRestConnection;
+import com.fortify.integration.sonarqube.common.FortifyConstants;
 import com.fortify.util.rest.json.JSONMap;
 
 /**
@@ -166,24 +167,28 @@ public abstract class AbstractFortifyFoDScannerSideConnectionHelper implements I
 				.name("FoD URL")
 				.description("(Required) URL used to connect to FoD (https://region.fortify.com/)")
 				.type(PropertyType.STRING)
+				.category(FortifyConstants.PROPERTY_CATEGORY_FOD)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FOD_TENANT)
 				.name("FoD Tenant")
 				.description("(Required) FoD Tentant")
 				.type(PropertyType.STRING)
+				.category(FortifyConstants.PROPERTY_CATEGORY_FOD)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FOD_USER)
 				.name("FoD User")
 				.description("(Required) FoD User")
 				.type(PropertyType.STRING)
+				.category(FortifyConstants.PROPERTY_CATEGORY_FOD)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FOD_PWD)
 				.name("FoD Password")
 				.description("(Required) FoD Password")
 				.type(PropertyType.PASSWORD)
+				.category(FortifyConstants.PROPERTY_CATEGORY_FOD)
 				.build());
 		
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_FOD_RELEASE)
@@ -191,6 +196,7 @@ public abstract class AbstractFortifyFoDScannerSideConnectionHelper implements I
 				.description("(Required) FoD Release Id or Name (application:release).")
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
+				.category(FortifyConstants.PROPERTY_CATEGORY_FOD)
 				.build());
 	}
 }

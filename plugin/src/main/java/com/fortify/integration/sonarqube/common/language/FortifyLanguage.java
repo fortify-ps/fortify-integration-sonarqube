@@ -94,6 +94,7 @@ public class FortifyLanguage extends AbstractLanguage {
 						+ " DO NOT define any file suffixes that overlap with an existing SonarQube "
 						+ " language plugin, as this will result in SonarQube errors.")
 				.multiValues(true)
+				.category(FortifyConstants.PROPERTY_CATEGORY_GENERIC)
 				.build());
 	}
 }

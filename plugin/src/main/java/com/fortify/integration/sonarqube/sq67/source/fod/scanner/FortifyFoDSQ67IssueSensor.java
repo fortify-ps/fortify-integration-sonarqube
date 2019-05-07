@@ -22,23 +22,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.sq76.source.fod.scanner;
+package com.fortify.integration.sonarqube.sq67.source.fod.scanner;
 
+import org.sonar.api.Startable;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.scanner.ScannerSide;
 
 import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor;
+import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
+import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
 import com.fortify.integration.sonarqube.common.source.fod.issue.FortifyFoDIssueFieldsRetriever;
 import com.fortify.integration.sonarqube.common.source.fod.issue.FortifyFoDIssueQueryHelper;
 import com.fortify.integration.sonarqube.common.source.fod.scanner.IFortifyFoDScannerSideConnectionHelper;
-import com.fortify.integration.sonarqube.sq76.issue.FortifySQ76IssueJSONMapProcessorFactory;
-import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76AbstractProjectSensor;
-import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76IssueSensorProperties;
-
+import com.fortify.integration.sonarqube.sq67.issue.FortifySQ67IssueJSONMapProcessorFactory;
+import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67AbstractSensor;
+import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67IssueSensorProperties;
 
 /**
- * This {@link FortifySQ76AbstractProjectSensor} implementation retrieves vulnerability data from FoD and
+ * This {@link FortifySQ67AbstractSensor} implementation retrieves vulnerability data from FoD and
  * reports these vulnerabilities as SonarQube issues.
  * 
  * TODO Add more JavaDoc
@@ -46,21 +47,27 @@ import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76IssueSensorProp
  * @author Ruud Senden
  *
  */
-@ScannerSide
-public class FortifyFoDSQ76IssueSensor extends FortifySQ76AbstractProjectSensor<IFortifyFoDScannerSideConnectionHelper> {
-	private final FortifySQ76IssueSensorProperties sensorProperties;
+
+/*
+ * TODO Add plugin page that shows any Fortify issues that could not be matched to a SonarQube source file
+ */
+public class FortifyFoDSQ67IssueSensor extends FortifySQ67AbstractSensor<IFortifyFoDScannerSideConnectionHelper> implements Startable {
+	private final FortifySQ67IssueSensorProperties sensorProperties;
+	private final CacheHelper cacheHelper; 
 	private final FortifyIssuesProcessor issuesProcessor;
 	
 	/**
 	 * Constructor for injecting dependencies
 	 * @param connFactory
 	 */
-	public FortifyFoDSQ76IssueSensor(IFortifyFoDScannerSideConnectionHelper connHelper, FortifySQ76IssueSensorProperties sensorProperties) {
+	public FortifyFoDSQ67IssueSensor(IFortifyFoDScannerSideConnectionHelper connHelper, FortifySQ67IssueSensorProperties sensorProperties) {
 		super(connHelper);
 		this.sensorProperties = sensorProperties;
+		IFortifySourceSystemIssueFieldRetriever issueFieldRetriever = new FortifyFoDIssueFieldsRetriever();
+		this.cacheHelper = new CacheHelper(issueFieldRetriever, sensorProperties.isReportIssuesOnce());
 		this.issuesProcessor = new FortifyIssuesProcessor(
 				new FortifyFoDIssueQueryHelper(getConnHelper()), 
-				new FortifySQ76IssueJSONMapProcessorFactory(new FortifyFoDIssueFieldsRetriever()));
+				new FortifySQ67IssueJSONMapProcessorFactory(issueFieldRetriever), cacheHelper);
 	}
 	
 	@Override
@@ -83,5 +90,17 @@ public class FortifyFoDSQ76IssueSensor extends FortifySQ76AbstractProjectSensor<
 	@Override
 	protected final boolean isActive(SensorContext context) {
 		return sensorProperties.isIssueCollectionEnabled();
+	}
+	
+	@Override
+	public void start() {
+		// Nothing to do
+	}
+
+	@Override
+	public void stop() {
+		if ( cacheHelper != null ) {
+			cacheHelper.close();
+		}
 	}
 }

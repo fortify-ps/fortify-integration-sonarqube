@@ -33,6 +33,7 @@ import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssue
 import com.fortify.integration.sonarqube.common.source.ssc.issue.FortifySSCIssueQueryHelper;
 import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
 import com.fortify.integration.sonarqube.sq76.issue.FortifySQ76IssueJSONMapProcessorFactory;
+import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76AbstractProjectSensor;
 import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76IssueSensorProperties;
 
 
@@ -46,7 +47,7 @@ import com.fortify.integration.sonarqube.sq76.scanner.FortifySQ76IssueSensorProp
  *
  */
 @ScannerSide
-public class FortifySSCSQ76IssueSensor extends FortifySSCSQ76AbstractProjectSensor {
+public class FortifySSCSQ76IssueSensor extends FortifySQ76AbstractProjectSensor<IFortifySSCScannerSideConnectionHelper> {
 	private final FortifySQ76IssueSensorProperties sensorProperties;
 	private final FortifyIssuesProcessor issuesProcessor;
 	

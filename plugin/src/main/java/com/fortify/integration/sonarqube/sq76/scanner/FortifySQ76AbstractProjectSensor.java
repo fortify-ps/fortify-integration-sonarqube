@@ -22,19 +22,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.sq76.source.ssc.scanner;
+package com.fortify.integration.sonarqube.sq76.scanner;
 
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.scanner.sensor.ProjectSensor;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.common.IFortifyConnectionHelper;
 
 /**
  * This 7.6-specific abstract {@link ProjectSensor} base class provides functionality 
  * for storing the scanner-side connection helper, and executing concrete sensor 
- * implementations only if an SSC connection is available and the sensor is active.
+ * implementations only if an FoD connection is available and the sensor is active.
  * Contrary to the 6.7-specific implementation, implementations extending from this
  * based class are executed only once per project, instead of being executed separately
  * for every module.
@@ -42,18 +42,18 @@ import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCSc
  * @author Ruud Senden
  *
  */
-public abstract class FortifySSCSQ76AbstractProjectSensor implements ProjectSensor {
-	private static final Logger LOG = Loggers.get(FortifySSCSQ76AbstractProjectSensor.class);
-	private final IFortifySSCScannerSideConnectionHelper connHelper;
+public abstract class FortifySQ76AbstractProjectSensor<CH extends IFortifyConnectionHelper<?>> implements ProjectSensor {
+	private static final Logger LOG = Loggers.get(FortifySQ76AbstractProjectSensor.class);
+	private final CH connHelper;
 	
-	public FortifySSCSQ76AbstractProjectSensor(IFortifySSCScannerSideConnectionHelper connHelper) {
+	public FortifySQ76AbstractProjectSensor(CH connHelper) {
 		this.connHelper = connHelper;
 	}
 	
 	@Override
 	public final void execute(SensorContext context) {
 		if ( !connHelper.isConnectionAvailable() ) {
-			LOG.info("Skipping sensor execution; SSC connection has not been configured");
+			LOG.info("Skipping sensor execution; FoD connection has not been configured");
 		} else if ( !isActive(context) ) {
 			LOG.info("Skipping sensor execution; sensor is not active");
 		} else {
@@ -67,7 +67,7 @@ public abstract class FortifySSCSQ76AbstractProjectSensor implements ProjectSens
 		return true;
 	}
 
-	public final IFortifySSCScannerSideConnectionHelper getConnHelper() {
+	public final CH getConnHelper() {
 		return connHelper;
 	}
 }

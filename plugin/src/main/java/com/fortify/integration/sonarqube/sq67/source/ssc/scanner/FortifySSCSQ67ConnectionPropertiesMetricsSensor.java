@@ -29,15 +29,16 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 
 import com.fortify.integration.sonarqube.common.source.ssc.metrics.FortifySSCConnectionPropertiesMetrics;
 import com.fortify.integration.sonarqube.common.source.ssc.scanner.IFortifySSCScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.sq67.scanner.FortifySQ67AbstractSensor;
 
-public final class FortifySSCSQ67ConnectionPropertiesMetricsSensor extends FortifySSCSQ67AbstractSensor {
+public final class FortifySSCSQ67ConnectionPropertiesMetricsSensor extends FortifySQ67AbstractSensor<IFortifySSCScannerSideConnectionHelper> {
 	public FortifySSCSQ67ConnectionPropertiesMetricsSensor(IFortifySSCScannerSideConnectionHelper connHelper) {
 		super(connHelper);
 	}
 	
 	@Override
 	public void describe(SensorDescriptor descriptor) {
-		descriptor.name("Set connection properties for compute engine");
+		descriptor.name("Set SSC connection properties for compute engine");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -47,7 +48,7 @@ public final class FortifySSCSQ67ConnectionPropertiesMetricsSensor extends Forti
 		// that should not be able to see the SSC connection credentials. If so,
 		// probably best to have the configuration utility generate a Yaml file with
 		// a random shared secret to encrypt the URL/credentials here, and decrypt
-		// this in the FortifySSCComputeEngineSideConnectionHelper.getSscUrl() method above.
+		// this in FortifySSCComputeEngineSideConnectionHelper.
 		context.newMeasure().forMetric(FortifySSCConnectionPropertiesMetrics.METRIC_SSC_URL).on(context.module()).withValue(getConnHelper().getSSCUrl()).save();
 		context.newMeasure().forMetric(FortifySSCConnectionPropertiesMetrics.METRIC_SSC_APP_VERSION_ID).on(context.module()).withValue(getConnHelper().getApplicationVersionId()).save();
 	}

@@ -40,6 +40,7 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import com.fortify.client.ssc.api.SSCArtifactAPI;
+import com.fortify.integration.sonarqube.common.FortifyConstants;
 import com.fortify.integration.sonarqube.common.source.ssc.IFortifySSCConnectionHelper;
 import com.fortify.util.rest.json.JSONMap;
 
@@ -146,6 +147,7 @@ public abstract class AbstractFortifySSCUploadFPRStartable implements Startable 
 				.description("(Optional) Maximum amount of time SonarQube will wait for SSC to finish processing scan results")
 				.type(PropertyType.INTEGER)
 				.defaultValue("120")
+				.category(FortifyConstants.PROPERTY_CATEGORY_SSC)
 				.build());
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_SSC_FAIL_ON_ARTIFACT_STATES)
 				.name("Fail scan on artifact states")
@@ -154,12 +156,14 @@ public abstract class AbstractFortifySSCUploadFPRStartable implements Startable 
 				.type(PropertyType.STRING)
 				.defaultValue("")
 				.multiValues(true)
+				.category(FortifyConstants.PROPERTY_CATEGORY_SSC)
 				.build());
 		propertyDefinitions.add(PropertyDefinition.builder(PRP_UPLOAD_FPR)
 				.name("FPR file to upload to SSC")
 				.description("(Optional) FPR file to upload to SSC")
 				.type(PropertyType.STRING)
 				.onlyOnQualifiers(Qualifiers.PROJECT)
+				.category(FortifyConstants.PROPERTY_CATEGORY_SSC)
 				.build());
 	}
 }

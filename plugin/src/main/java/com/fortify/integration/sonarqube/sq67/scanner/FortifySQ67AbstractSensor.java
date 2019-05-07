@@ -22,38 +22,42 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.sq76.source.fod.scanner;
+package com.fortify.integration.sonarqube.sq67.scanner;
 
+import org.sonar.api.batch.InstantiationStrategy;
+import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.scanner.sensor.ProjectSensor;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.integration.sonarqube.common.source.fod.scanner.IFortifyFoDScannerSideConnectionHelper;
+import com.fortify.integration.sonarqube.common.IFortifyConnectionHelper;
 
 /**
- * This 7.6-specific abstract {@link ProjectSensor} base class provides functionality 
+ * This 6.7-specific abstract {@link Sensor} base class provides functionality 
  * for storing the scanner-side connection helper, and executing concrete sensor 
- * implementations only if an FoD connection is available and the sensor is active.
- * Contrary to the 6.7-specific implementation, implementations extending from this
- * based class are executed only once per project, instead of being executed separately
- * for every module.
+ * implementations only if an SSC connection is available and the sensor is active.
+ * Contrary to the 7.6-specific implementation, implementations extending from this
+ * based class are executed separately for every module, instead of being executed 
+ * only once per project.
  * 
  * @author Ruud Senden
  *
  */
-public abstract class FortifyFoDSQ76AbstractProjectSensor implements ProjectSensor {
-	private static final Logger LOG = Loggers.get(FortifyFoDSQ76AbstractProjectSensor.class);
-	private final IFortifyFoDScannerSideConnectionHelper connHelper;
+@ScannerSide
+@InstantiationStrategy(InstantiationStrategy.PER_BATCH)
+public abstract class FortifySQ67AbstractSensor<CH extends IFortifyConnectionHelper<?>> implements Sensor {
+	private static final Logger LOG = Loggers.get(FortifySQ67AbstractSensor.class);
+	private final CH connHelper;
 	
-	public FortifyFoDSQ76AbstractProjectSensor(IFortifyFoDScannerSideConnectionHelper connHelper) {
+	public FortifySQ67AbstractSensor(CH connHelper) {
 		this.connHelper = connHelper;
 	}
 	
 	@Override
 	public final void execute(SensorContext context) {
 		if ( !connHelper.isConnectionAvailable() ) {
-			LOG.info("Skipping sensor execution; FoD connection has not been configured");
+			LOG.info("Skipping sensor execution; SSC connection has not been configured");
 		} else if ( !isActive(context) ) {
 			LOG.info("Skipping sensor execution; sensor is not active");
 		} else {
@@ -67,7 +71,7 @@ public abstract class FortifyFoDSQ76AbstractProjectSensor implements ProjectSens
 		return true;
 	}
 
-	public final IFortifyFoDScannerSideConnectionHelper getConnHelper() {
+	public final CH getConnHelper() {
 		return connHelper;
 	}
 }
