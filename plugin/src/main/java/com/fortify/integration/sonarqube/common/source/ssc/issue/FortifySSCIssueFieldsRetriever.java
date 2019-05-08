@@ -26,15 +26,27 @@ package com.fortify.integration.sonarqube.common.source.ssc.issue;
 
 import java.util.Arrays;
 
-import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
+import com.fortify.integration.sonarqube.common.issue.AbstractFortifySourceSystemIssueFieldRetriever;
 import com.fortify.util.rest.json.JSONMap;
 
-public final class FortifySSCIssueFieldsRetriever implements IFortifySourceSystemIssueFieldRetriever {
-	private static enum ISSUE_FIELDS {
+public final class FortifySSCIssueFieldsRetriever extends AbstractFortifySourceSystemIssueFieldRetriever {
+	public static enum ISSUE_FIELDS {
 		id, deepLink, engineCategory, issueName, friority, lineNumber, fullFileName;
 		
 		public <T> T get(JSONMap issue, Class<T> returnType) {
 			return issue.get(name(), returnType);
+		}
+		
+		public String get(JSONMap issue) {
+			return get(issue, String.class);
+		}
+	}
+	
+	public static enum ISSUE_FIELDS_ON_DEMAND {
+		details, details_detail, details_recommendation;
+		
+		public <T> T get(JSONMap issue, Class<T> returnType) {
+			return issue.getPath(name().replace('_', '.'), returnType);
 		}
 		
 		public String get(JSONMap issue) {
@@ -61,4 +73,13 @@ public final class FortifySSCIssueFieldsRetriever implements IFortifySourceSyste
 
 	@Override
 	public final String getDeepLink(JSONMap issue) { return ISSUE_FIELDS.deepLink.get(issue);	}
+	
+	@Override
+	public String getRuleDescription(JSONMap issue) {
+		String style = "<style>span.code {white-space: pre;} span.code br {content:'';}</style>";
+		String detail = ISSUE_FIELDS_ON_DEMAND.details_detail.get(issue);
+		String recommendation = ISSUE_FIELDS_ON_DEMAND.details_recommendation.get(issue);
+		
+		return style+(detail+"\n\n"+recommendation).replace("\n", "<br/>\n");
+	}
 }

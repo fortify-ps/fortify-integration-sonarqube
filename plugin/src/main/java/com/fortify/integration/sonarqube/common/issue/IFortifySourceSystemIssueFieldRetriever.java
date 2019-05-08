@@ -24,13 +24,17 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.issue;
 
+import org.sonar.api.batch.rule.Severity;
+
 import com.fortify.util.rest.json.JSONMap;
 
 public interface IFortifySourceSystemIssueFieldRetriever {
 	public String getId(JSONMap issue);
 	public String getFileName(JSONMap issue);
 	public String getFriority(JSONMap issue);
+	public Severity getSeverity(JSONMap issue);
 	public Integer getLineNumber(JSONMap issue);
 	public String getCategory(JSONMap issue);
 	public String getDeepLink(JSONMap issue);
+	public String getRuleDescription(JSONMap issue);
 }

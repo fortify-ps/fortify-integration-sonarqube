@@ -22,32 +22,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.ssc.issue;
+package com.fortify.integration.sonarqube.common.issue;
 
-import com.fortify.client.ssc.api.SSCIssueAPI;
-import com.fortify.client.ssc.api.query.builder.SSCApplicationVersionIssuesQueryBuilder.QueryMode;
-import com.fortify.integration.sonarqube.common.issue.AbstractFortifySourceSystemIssueQueryHelper;
-import com.fortify.integration.sonarqube.common.source.ssc.IFortifySSCConnectionHelper;
-import com.fortify.util.rest.query.IRestConnectionQuery;
+import org.apache.commons.lang.StringUtils;
+import org.sonar.api.batch.rule.Severity;
 
-public final class FortifySSCIssueQueryHelper extends AbstractFortifySourceSystemIssueQueryHelper<IFortifySSCConnectionHelper> {
-	public static final String[] ISSUE_FIELD_NAMES = FortifySSCIssueFieldsRetriever.ISSUE_FIELD_NAMES;
-	
-	public FortifySSCIssueQueryHelper(IFortifySSCConnectionHelper connHelper) {
-		super(connHelper);
-	}
+import com.fortify.integration.sonarqube.common.FortifyConstants;
+import com.fortify.util.rest.json.JSONMap;
 
+public abstract class AbstractFortifySourceSystemIssueFieldRetriever implements IFortifySourceSystemIssueFieldRetriever {
 	@Override
-	public final IRestConnectionQuery getAllIssuesQuery() {
-		IFortifySSCConnectionHelper connHelper = getConnHelper();
-		return connHelper.getConnection().api(SSCIssueAPI.class).queryIssues(connHelper.getApplicationVersionId())
-			.paramFilterSet(connHelper.getFilterSetGuid())
-			.paramFields(ISSUE_FIELD_NAMES)
-			.paramShowHidden(false)
-			.paramShowRemoved(false)
-			.paramShowSuppressed(false)
-			.paramQm(QueryMode.issues)
-			.onDemandDetails()
-			.build();
+	public Severity getSeverity(JSONMap issue) {
+		String friority = StringUtils.lowerCase(getFriority(issue));
+		return FortifyConstants.FRIORITY_TO_SEVERITY(friority);
 	}
+
 }

@@ -60,7 +60,7 @@ public class FortifyFoDSQ76IssueSensor extends FortifySQ76AbstractProjectSensor<
 		this.sensorProperties = sensorProperties;
 		this.issuesProcessor = new FortifyIssuesProcessor(
 				new FortifyFoDIssueQueryHelper(getConnHelper()), 
-				new FortifySQ76IssueJSONMapProcessorFactory(new FortifyFoDIssueFieldsRetriever()));
+				new FortifySQ76IssueJSONMapProcessorFactory(new FortifyFoDIssueFieldsRetriever(), sensorProperties));
 	}
 	
 	@Override

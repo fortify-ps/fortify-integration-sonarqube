@@ -24,7 +24,6 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.issue;
 
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewIssue;
@@ -33,7 +32,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import com.fortify.integration.sonarqube.common.FortifyConstants;
 import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.AbstractJSONMapProcessor;
@@ -94,7 +92,9 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 			try {
 				for ( RuleKey ruleKey : issueRuleKeysRetriever.getRuleKeys(issueFieldRetriever, issue) ) {
 					NewIssue newIssue = createNewIssue(ruleKey, issue);
-					addIssueLocation(newIssue, inputFile, issue);
+					newIssue.overrideSeverity(issueFieldRetriever.getSeverity(issue));
+					newIssue.at(updateIssueLocation(newIssue.newLocation(), inputFile, issue));
+					
 					// TODO Low: Add .addFlow(Fortify evidence flow)
 					newIssue.save();
 				}
@@ -104,19 +104,15 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 		}
 
 		protected NewIssue createNewIssue(RuleKey ruleKey, JSONMap issue) {
-			String friority = StringUtils.lowerCase(issueFieldRetriever.getFriority(issue));
-			NewIssue newIssue = context.newIssue().forRule(ruleKey);
-			newIssue.overrideSeverity(FortifyConstants.FRIORITY_TO_SEVERITY(friority));
-			return newIssue;
+			return context.newIssue().forRule(ruleKey);
 		}
 
-		protected void addIssueLocation(NewIssue newIssue, InputFile inputFile, JSONMap issue) {
+		protected NewIssueLocation updateIssueLocation(NewIssueLocation newIssueLocation, InputFile inputFile, JSONMap issue) {
 			int lineNumber = Math.max(1, issueFieldRetriever.getLineNumber(issue));
-			NewIssueLocation primaryLocation = newIssue.newLocation()
+			return newIssueLocation
 					.on(inputFile)
 					.at(inputFile.selectLine(lineNumber))
 					.message(getIssueMessage(issue, false));
-			newIssue.at(primaryLocation);
 		}
 
 		protected String getIssueMessage(JSONMap issue, boolean includeFilename) {

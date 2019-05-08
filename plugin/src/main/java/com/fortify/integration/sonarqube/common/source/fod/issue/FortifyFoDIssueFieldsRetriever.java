@@ -26,12 +26,15 @@ package com.fortify.integration.sonarqube.common.source.fod.issue;
 
 import java.util.Arrays;
 
-import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
+import org.apache.commons.lang.StringUtils;
+
+import com.fortify.integration.sonarqube.common.issue.AbstractFortifySourceSystemIssueFieldRetriever;
 import com.fortify.util.rest.json.JSONMap;
 
-public final class FortifyFoDIssueFieldsRetriever implements IFortifySourceSystemIssueFieldRetriever {
+public final class FortifyFoDIssueFieldsRetriever extends AbstractFortifySourceSystemIssueFieldRetriever {
 	private static enum ISSUE_FIELDS {
-		id, deepLink, scantype, category, severityString, lineNumber, primaryLocationFull;
+		// TODO Can we make FoDReleaseVulnerabilitiesQueryBuilder automatically add releaseId (and id) to paramFields if on-demand properties depend on these fields?
+		id, releaseId, deepLink, scantype, category, severityString, lineNumber, primaryLocationFull;
 		
 		public <T> T get(JSONMap issue, Class<T> returnType) {
 			return issue.get(name(), returnType);
@@ -42,7 +45,20 @@ public final class FortifyFoDIssueFieldsRetriever implements IFortifySourceSyste
 		}
 	}
 	
+	public static enum ISSUE_FIELDS_ON_DEMAND {
+		details, recommendations, details_explanation, recommendations_recommendations, recommendations_tips, recommendations_references;
+		
+		public <T> T get(JSONMap issue, Class<T> returnType) {
+			return issue.getPath(name().replace('_', '.'), returnType);
+		}
+		
+		public String get(JSONMap issue) {
+			return get(issue, String.class);
+		}
+	}
+	
 	public static final String[] ISSUE_FIELD_NAMES = Arrays.stream(ISSUE_FIELDS.values()).map(Enum::name).toArray(String[]::new);
+	
 	
 	@Override
 	public final String getId(JSONMap issue) { return ISSUE_FIELDS.id.get(issue); }
@@ -60,5 +76,31 @@ public final class FortifyFoDIssueFieldsRetriever implements IFortifySourceSyste
 	public final String getCategory(JSONMap issue) { return ISSUE_FIELDS.category.get(issue); }
 
 	@Override
-	public final String getDeepLink(JSONMap issue) { return ISSUE_FIELDS.deepLink.get(issue);	}
+	public final String getDeepLink(JSONMap issue) { return ISSUE_FIELDS.deepLink.get(issue); }
+	
+	@Override
+	public String getRuleDescription(JSONMap issue) {
+		String explanation = ISSUE_FIELDS_ON_DEMAND.details_explanation.get(issue);
+		String recommendations = ISSUE_FIELDS_ON_DEMAND.recommendations_recommendations.get(issue);
+		String tips = ISSUE_FIELDS_ON_DEMAND.recommendations_tips.get(issue);
+		String references = ISSUE_FIELDS_ON_DEMAND.recommendations_references.get(issue);
+		
+		return "<b>Note that everything marked as 'As an example' may show an example that refers to an arbitrary Fortify issue that was loaded into SonarQube.</b>"
+			+ getRuleDescriptionElt("Explanation", explanation) // TODO Can we get an issue-agnostic explanation?
+			+ getRuleDescriptionElt("Recommendations", recommendations)
+			+ getRuleDescriptionElt("Tips", tips)
+			+ getRuleDescriptionElt("References", references);
+	}
+	
+	private String getRuleDescriptionElt(String header, String value) {
+		if ( StringUtils.isBlank(value) ) {
+			return "";
+		} else {
+			return "<br/><br/><b>"+header+"</b><br/>"
+				+value
+					.replace("<paragraph>", "<p>")
+					.replace("</paragraph>", "</p>")
+					.replace("In this case", "As an example");
+		}
+	}
 }

@@ -30,8 +30,6 @@ import com.fortify.integration.sonarqube.common.source.fod.IFortifyFoDConnection
 import com.fortify.util.rest.query.IRestConnectionQuery;
 
 public final class FortifyFoDIssueQueryHelper extends AbstractFortifySourceSystemIssueQueryHelper<IFortifyFoDConnectionHelper> {
-	private static final String[] ISSUE_FIELD_NAMES = FortifyFoDIssueFieldsRetriever.ISSUE_FIELD_NAMES;
-	
 	public FortifyFoDIssueQueryHelper(IFortifyFoDConnectionHelper connHelper) {
 		super(connHelper);
 	}
@@ -40,9 +38,11 @@ public final class FortifyFoDIssueQueryHelper extends AbstractFortifySourceSyste
 	public final IRestConnectionQuery getAllIssuesQuery() {
 		return getConnHelper().getConnection().api(FoDVulnerabilityAPI.class)
 				.queryVulnerabilities(getConnHelper().getReleaseId())
-				.paramFields(ISSUE_FIELD_NAMES)
+				.paramFields(FortifyFoDIssueFieldsRetriever.ISSUE_FIELD_NAMES)
 				.paramIncludeFixed(false)
 				.paramIncludeSuppressed(false)
+				.onDemandDetails(FortifyFoDIssueFieldsRetriever.ISSUE_FIELDS_ON_DEMAND.details.name())
+				.onDemandRecommendations(FortifyFoDIssueFieldsRetriever.ISSUE_FIELDS_ON_DEMAND.recommendations.name())
 				.build();
 	}
 }
