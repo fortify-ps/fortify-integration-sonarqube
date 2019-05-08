@@ -47,7 +47,7 @@ public final class FortifyConstants {
 	/** Map containing Fortify friority to SonarQube severity mapping */
 	private static final Map<String,Severity> MAP_FRIORITY_TO_SEVERITY = getFriorityToSeverityMap();
 
-	public static final String PROPERTY_CATEGORY_GENERIC = "Fortify - Generic";
+	public static final String PROPERTY_CATEGORY_GENERIC = "Fortify";
 	public static final String PROPERTY_CATEGORY_FOD = "Fortify - FoD";
 	public static final String PROPERTY_CATEGORY_SSC = "Fortify - SSC";
 	
