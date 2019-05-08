@@ -24,6 +24,8 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.externalmetadata;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,13 +35,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.codehaus.staxmate.in.SMInputCursor;
 
-
+// TODO This code can probably use some clean-up
 public class ExternalList {
 	private String id;
 	private String name;
 	private String description;
-	private final Map<String, ExternalCategory> externalCategories = new LinkedHashMap<>();
-	private final Map<String, String> internalToExternalCategoryMapping = new LinkedHashMap<>();
+	private final Map<String, ExternalCategory> externalCategoriesByName = new LinkedHashMap<>();
+	private final Map<String, Collection<ExternalCategory>> internalToExternalCategoryMapping = new LinkedHashMap<>();
 
 	public String getId() {
 		return id;
@@ -65,12 +67,12 @@ public class ExternalList {
 		this.description = description;
 	}
 
-	public Map<String, ExternalCategory> getExternalCategories() {
-		return externalCategories;
+	public Collection<ExternalCategory> getAllExternalCategories() {
+		return externalCategoriesByName.values();
 	}
 
-	public Map<String, String> getInternalToExternalCategoryMapping() {
-		return internalToExternalCategoryMapping;
+	public Collection<ExternalCategory> getExternalCategoriesForFortifyCategory(String fortifyCategory) {
+		return internalToExternalCategoryMapping.get(fortifyCategory);
 	}
 
 	public static final ExternalList parse(SMInputCursor childCursor) throws XMLStreamException {
@@ -86,7 +88,7 @@ public class ExternalList {
 				result.setDescription(StringUtils.trim(childCursor.collectDescendantText(false)));
 			} else if ("ExternalCategoryDefinition".equals(nodeName)) {
 				ExternalCategory category = ExternalCategory.parse(result, childCursor.childCursor());
-				result.getExternalCategories().put(category.getId(), category);
+				result.externalCategoriesByName.put(category.getName(), category);
 			} else if ("Mapping".equals(nodeName)) {
 				addMapping(result, childCursor.childCursor());
 			}
@@ -105,7 +107,12 @@ public class ExternalList {
 				externalCategory = StringUtils.trim(childCursor.collectDescendantText(false));
 			}
 		}
-		externalList.getInternalToExternalCategoryMapping().put(internalCategory, externalCategory);
+		Collection<ExternalCategory> externalCategories = externalList.internalToExternalCategoryMapping.get(internalCategory);
+		if ( externalCategories == null ) {
+			externalCategories = new ArrayList<>();
+			externalList.internalToExternalCategoryMapping.put(internalCategory, externalCategories);
+		}
+		externalCategories.add(externalList.externalCategoriesByName.get(externalCategory));
 	}
 
 	@Override

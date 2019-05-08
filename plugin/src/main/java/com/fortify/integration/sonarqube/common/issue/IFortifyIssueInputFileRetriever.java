@@ -22,27 +22,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.fod.issue;
+package com.fortify.integration.sonarqube.common.issue;
 
-import com.fortify.client.fod.api.FoDVulnerabilityAPI;
-import com.fortify.integration.sonarqube.common.issue.AbstractFortifySourceSystemIssueQueryHelper;
-import com.fortify.integration.sonarqube.common.source.fod.IFortifyFoDConnectionHelper;
-import com.fortify.util.rest.query.IRestConnectionQuery;
+import org.sonar.api.batch.fs.InputFile;
 
-public final class FortifyFoDIssueQueryHelper extends AbstractFortifySourceSystemIssueQueryHelper<IFortifyFoDConnectionHelper> {
-	private static final String[] ISSUE_FIELD_NAMES = FortifyFoDIssueFieldsRetriever.ISSUE_FIELD_NAMES;
-	
-	public FortifyFoDIssueQueryHelper(IFortifyFoDConnectionHelper connHelper) {
-		super(connHelper);
-	}
+import com.fortify.util.rest.json.JSONMap;
 
-	@Override
-	public final IRestConnectionQuery getAllIssuesQuery() {
-		return getConnHelper().getConnection().api(FoDVulnerabilityAPI.class)
-				.queryVulnerabilities(getConnHelper().getReleaseId())
-				.paramFields(ISSUE_FIELD_NAMES)
-				.paramIncludeFixed(false)
-				.paramIncludeSuppressed(false)
-				.build();
-	}
+public interface IFortifyIssueInputFileRetriever {
+	public InputFile getInputFile(IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, JSONMap issue);
 }

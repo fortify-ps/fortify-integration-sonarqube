@@ -24,14 +24,8 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.issue;
 
-import java.util.HashSet;
-
-import com.fortify.integration.sonarqube.common.externalmetadata.ExternalList;
 import com.fortify.util.rest.query.IRestConnectionQuery;
 
 public interface IFortifySourceSystemIssueQueryHelper {
-	public boolean supportsExternalList(ExternalList externalList);
-	public HashSet<String> getAvailableExternalCategories(ExternalList externalList);
 	public IRestConnectionQuery getAllIssuesQuery();
-	public IRestConnectionQuery getExternalCategoryIssuesQuery(ExternalList externalList, String externalCategory);
 }

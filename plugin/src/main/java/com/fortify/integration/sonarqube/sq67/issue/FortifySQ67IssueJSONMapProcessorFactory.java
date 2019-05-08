@@ -24,11 +24,12 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.sq67.issue;
 
-import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.sensor.SensorContext;
 
 import com.fortify.integration.sonarqube.common.issue.AbstractFortifyIssueJSONMapProcessorFactory;
+import com.fortify.integration.sonarqube.common.issue.IFortifyIssueInputFileRetriever;
 import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
+import com.fortify.integration.sonarqube.common.issue.IFortifyIssueRuleKeysRetriever;
 import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
 import com.fortify.util.rest.json.processor.IJSONMapProcessor;
 
@@ -38,13 +39,13 @@ public class FortifySQ67IssueJSONMapProcessorFactory extends AbstractFortifyIssu
 	}
 
 	@Override
-	public IJSONMapProcessor getProcessor(SensorContext context, ActiveRule activeRule, CacheHelper cacheHelper) {
-		return new FortifySQ67IssueJSONMapProcessor(context, activeRule, getIssueFieldRetriever(), cacheHelper);
+	public IJSONMapProcessor getProcessor(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeysRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever, CacheHelper cacheHelper) {
+		return new FortifySQ67IssueJSONMapProcessor(context, issueRuleKeysRetriever, getIssueFieldRetriever(), issueInputFileRetriever, cacheHelper);
 	}
 	
 	private static final class FortifySQ67IssueJSONMapProcessor extends AbstractFortifyIssueJSONMapProcessor {
-		public FortifySQ67IssueJSONMapProcessor(SensorContext context, ActiveRule activeRule, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, CacheHelper cacheHelper) {
-			super(context, activeRule, issueFieldRetriever, cacheHelper);
+		public FortifySQ67IssueJSONMapProcessor(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeysRetriever, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever, CacheHelper cacheHelper) {
+			super(context, issueRuleKeysRetriever, issueFieldRetriever, issueInputFileRetriever, cacheHelper);
 		}
 	}
 

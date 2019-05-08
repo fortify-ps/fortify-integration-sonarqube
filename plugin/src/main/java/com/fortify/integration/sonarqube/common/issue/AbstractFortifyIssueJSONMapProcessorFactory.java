@@ -24,20 +24,12 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.issue;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -60,16 +52,16 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 	protected static abstract class AbstractFortifyIssueJSONMapProcessor extends AbstractJSONMapProcessor {
 		private static final Logger LOG = Loggers.get(AbstractFortifyIssueJSONMapProcessor.class);
 		protected final SensorContext context;
-		protected final List<InputFile> inputFiles;
-		protected final ActiveRule activeRule;
+		protected final IFortifyIssueRuleKeysRetriever issueRuleKeysRetriever;
 		protected final IFortifySourceSystemIssueFieldRetriever issueFieldRetriever;
+		protected final IFortifyIssueInputFileRetriever issueInputFileRetriever;
 		protected final CacheHelper cacheHelper;
 		
-		public AbstractFortifyIssueJSONMapProcessor(SensorContext context, ActiveRule activeRule, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, CacheHelper cacheHelper) {
+		public AbstractFortifyIssueJSONMapProcessor(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeysRetriever, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever, CacheHelper cacheHelper) {
 			this.context = context;
-			this.inputFiles = getInputFilesSortedByPathLength(context.fileSystem());
-			this.activeRule = activeRule;
+			this.issueRuleKeysRetriever = issueRuleKeysRetriever;
 			this.issueFieldRetriever = issueFieldRetriever;
+			this.issueInputFileRetriever = issueInputFileRetriever;
 			this.cacheHelper = cacheHelper;
 		}
 
@@ -78,13 +70,13 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 			if ( !ignoreIssue(issue) ) {
 				try {
 					// Get the inputFile for the current issue
-					InputFile inputFile = getInputFileForIssue(inputFiles, issue);
+					InputFile inputFile = issueInputFileRetriever.getInputFile(issueFieldRetriever, issue);
 					if ( inputFile==null ) {
 						LOG.debug("No InputFile found for "+issueFieldRetriever.getFileName(issue)+" (vulnerability id "+issueFieldRetriever.getId(issue)+")");
-						createIssueWithoutInputFile(issue);
+						createIssuesWithoutInputFile(issue);
 					} else {
 						LOG.debug("InputFile found for "+issueFieldRetriever.getFileName(issue)+" (vulnerability id "+issueFieldRetriever.getId(issue)+")");
-						createIssueOnInputFile(inputFile, issue);
+						createIssuesOnInputFile(inputFile, issue);
 					}
 				} catch ( RuntimeException e ) {
 					LOG.error("Error creating SonarQube issue for vulnerability id "+issueFieldRetriever.getId(issue), e);
@@ -93,22 +85,27 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 		}
 		
 		protected boolean ignoreIssue(JSONMap issue) {
-			return cacheHelper!=null && cacheHelper.ignoreIssue(activeRule, issue);
+			return cacheHelper!=null && cacheHelper.ignoreIssue(issue);
 		}
 		
-		protected void createIssueWithoutInputFile(JSONMap issue) {}
+		protected void createIssuesWithoutInputFile(JSONMap issue) {}
 		
-		protected void createIssueOnInputFile(InputFile inputFile, JSONMap issue) {
-			if ( cacheHelper!=null ) { cacheHelper.addProcessedIssue(context, activeRule, issue); }
-			NewIssue newIssue = createNewIssue(issue);
-			addIssueLocation(newIssue, inputFile, issue);
-			// TODO Low: Add .addFlow(Fortify evidence flow)
-			newIssue.save();
+		protected void createIssuesOnInputFile(InputFile inputFile, JSONMap issue) {
+			try {
+				for ( RuleKey ruleKey : issueRuleKeysRetriever.getRuleKeys(issueFieldRetriever, issue) ) {
+					NewIssue newIssue = createNewIssue(ruleKey, issue);
+					addIssueLocation(newIssue, inputFile, issue);
+					// TODO Low: Add .addFlow(Fortify evidence flow)
+					newIssue.save();
+				}
+			} finally {
+				if ( cacheHelper!=null ) { cacheHelper.addProcessedIssue(context, issue); }
+			}
 		}
 
-		protected NewIssue createNewIssue(JSONMap issue) {
+		protected NewIssue createNewIssue(RuleKey ruleKey, JSONMap issue) {
 			String friority = StringUtils.lowerCase(issueFieldRetriever.getFriority(issue));
-			NewIssue newIssue = context.newIssue().forRule(activeRule.ruleKey());
+			NewIssue newIssue = context.newIssue().forRule(ruleKey);
 			newIssue.overrideSeverity(FortifyConstants.FRIORITY_TO_SEVERITY(friority));
 			return newIssue;
 		}
@@ -127,37 +124,6 @@ public abstract class AbstractFortifyIssueJSONMapProcessorFactory implements IFo
 			return prefix 
 				+ issueFieldRetriever.getCategory(issue) 
 				+ " ("+issueFieldRetriever.getDeepLink(issue)+")";
-		}
-		
-		protected final InputFile getInputFileForIssue(List<InputFile> inputFiles, JSONMap issue) {
-			String fortifyFileName = issueFieldRetriever.getFileName(issue);
-			Path fortifyFilePath = null;
-			try {
-				fortifyFilePath = Paths.get(fortifyFileName);
-			} catch ( RuntimeException e ) {
-				// This can happen, for example, if the Fortify file name is a URL and thus cannot be parsed as Path
-				LOG.debug("Unable to resolve input file for "+fortifyFileName+", returning null", e);
-				return null;
-			}
-			for ( InputFile inputFile : inputFiles ) {
-				Path path = inputFile.path();
-				if ( path.endsWith(fortifyFilePath) ) {
-					return inputFile;
-				}
-			}
-			
-			LOG.debug("No input file found for "+fortifyFileName+", returning null");
-			return null;
-		}
-		
-		// We sort by path name length, such that shorter paths will be matched first
-		public static final List<InputFile> getInputFilesSortedByPathLength(FileSystem fs) {
-			// This uses deprecated SQ API, but there seems to be no non-deprecated methods for getting
-			// the full file name; uri() is not deprecated but not guaranteed to return the actual file
-			// location.
-			List<InputFile> result = StreamSupport.stream(fs.inputFiles(fs.predicates().all()).spliterator(), false).collect(Collectors.toList());
-			result.sort(Comparator.<InputFile>comparingInt(inputFile -> inputFile.path().toString().length()));
-	        return result;
 		}
 	}
 }

@@ -24,14 +24,16 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.sq76.issue;
 
-import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scanner.fs.InputProject;
 
 import com.fortify.integration.sonarqube.common.issue.AbstractFortifyIssueJSONMapProcessorFactory;
 import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
+import com.fortify.integration.sonarqube.common.issue.IFortifyIssueInputFileRetriever;
+import com.fortify.integration.sonarqube.common.issue.IFortifyIssueRuleKeysRetriever;
 import com.fortify.integration.sonarqube.common.issue.IFortifySourceSystemIssueFieldRetriever;
 import com.fortify.util.rest.json.JSONMap;
 import com.fortify.util.rest.json.processor.IJSONMapProcessor;
@@ -42,21 +44,27 @@ public class FortifySQ76IssueJSONMapProcessorFactory extends AbstractFortifyIssu
 	}
 
 	@Override
-	public IJSONMapProcessor getProcessor(SensorContext context, ActiveRule activeRule, CacheHelper cacheHelper) {
-		return new FortifySQ76IssueJSONMapProcessor(context, activeRule, getIssueFieldRetriever(), cacheHelper);
+	public IJSONMapProcessor getProcessor(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeysRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever, CacheHelper cacheHelper) {
+		return new FortifySQ76IssueJSONMapProcessor(context, issueRuleKeysRetriever, getIssueFieldRetriever(), issueInputFileRetriever, cacheHelper);
 	}
 	
 	private static final class FortifySQ76IssueJSONMapProcessor extends AbstractFortifyIssueJSONMapProcessor {
-		public FortifySQ76IssueJSONMapProcessor(SensorContext context, ActiveRule activeRule, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, CacheHelper cacheHelper) {
-			super(context, activeRule, issueFieldRetriever, cacheHelper);
+		public FortifySQ76IssueJSONMapProcessor(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeysRetriever, IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever, CacheHelper cacheHelper) {
+			super(context, issueRuleKeysRetriever, issueFieldRetriever, issueInputFileRetriever, cacheHelper);
 		}
 		
 		@Override
-		protected void createIssueWithoutInputFile(JSONMap issue) {
-			if ( cacheHelper!=null ) { cacheHelper.addProcessedIssue(context, activeRule, issue); }
-			NewIssue newIssue = createNewIssue(issue);
-			addIssueLocation(newIssue, context.project(), issue);
-			newIssue.save();
+		protected void createIssuesWithoutInputFile(JSONMap issue) {
+			try {
+				for ( RuleKey ruleKey : issueRuleKeysRetriever.getRuleKeys(issueFieldRetriever, issue) ) {
+					NewIssue newIssue = createNewIssue(ruleKey, issue);
+					addIssueLocation(newIssue, context.project(), issue);
+					// TODO Low: Add .addFlow(Fortify evidence flow)
+					newIssue.save();
+				}
+			} finally {
+				if ( cacheHelper!=null ) { cacheHelper.addProcessedIssue(context, issue); }
+			}
 		}
 
 		protected void addIssueLocation(NewIssue newIssue, InputProject inputProject, JSONMap issue) {

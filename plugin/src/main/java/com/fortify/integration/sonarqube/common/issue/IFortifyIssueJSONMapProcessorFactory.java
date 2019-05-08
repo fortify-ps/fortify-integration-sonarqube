@@ -24,13 +24,12 @@
  ******************************************************************************/
 package com.fortify.integration.sonarqube.common.issue;
 
-import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.sensor.SensorContext;
 
 import com.fortify.integration.sonarqube.common.issue.FortifyIssuesProcessor.CacheHelper;
 import com.fortify.util.rest.json.processor.IJSONMapProcessor;
 
 public interface IFortifyIssueJSONMapProcessorFactory {
-	public IJSONMapProcessor getProcessor(SensorContext context, ActiveRule activeRule, CacheHelper cacheHelper);
+	public IJSONMapProcessor getProcessor(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeyRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever, CacheHelper cacheHelper);
 	public IFortifySourceSystemIssueFieldRetriever getIssueFieldRetriever();
 }

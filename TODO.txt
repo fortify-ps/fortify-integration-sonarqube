@@ -9,8 +9,8 @@ Plugin general:
   - Show information similar to previous widget
 - Clean-up/remove FortifyConstants
 - Add/improve error handling
-- Check whether hidden metric to pass SSC URL/credentials is somehow visible (for example through API)
-- Add support for manual mapping of Fortify category to active rules (to allow FoD implementation to use externalmetadata-based mappings)
+- Check whether hidden metrics to pass SSC/FoD URL/credentials are somehow visible (for example through API)
+
 
 Plugin on SQ 6.7:
 - Remove scanner warnings: [WARNING] Storing measures on folders or modules is deprecated. Provided value of metric ... is ignored
@@ -19,6 +19,12 @@ Plugin on SQ 6.7:
 
 Plugin on SQ 7.6:
 - Map Fortify issues to SonarQube-provided OWASP Top 10/SANS Top 25 Security Reports
+- Add FortifyIssueRuleKeyRetrieverAdHoc that generates SonarQube ad-hoc rules for Fortify categories
+  - First check whetehr ad hoc rules are supported for regular issues
+  - If enabled (through configuration utility, as alternative for single Fortify rule/external lists):
+    - Don't generate any Fortify-related rules/repositories/profiles
+    - Add additional issue query fields to retrieve rule description
+    - Generate (and cache) ad-hoc rule based on rule description in issue data  
 
   
 Metrics:

@@ -25,10 +25,9 @@
 package com.fortify.integration.sonarqube.common.issue;
 
 import java.io.Closeable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.IndexTreeList;
@@ -63,60 +62,46 @@ public class FortifyIssuesProcessor {
 	}
 	
 	public final void processIssues(SensorContext context) {
+		IFortifyIssueInputFileRetriever issueInputFileRetriever = new FortifyIssueInputFileRetrieverPathBased(context);
 		ExternalList externalList = FortifyRulesDefinition.getExternalList();
 		if ( externalList==null ) {
-			processAllIssues(context);
+			processIssuesWithoutExternalList(context, issueInputFileRetriever);
 		} else {
-			if ( !issueQueryHelper.supportsExternalList(externalList) ) {
-				// TODO; get all issues and map the fortify category to the external list rule, instead of just adding all issues to the 'Other' rule
-				processAllIssues(context);
-			} else {
-				processIssuesForExternalList(context, externalList);
-			}
+			processIssuesWithExternalList(context, externalList, issueInputFileRetriever);
 		}
 	}
 
-	private final void processIssuesForExternalList(SensorContext context, ExternalList externalList) {
+	private final void processIssuesWithExternalList(SensorContext context, ExternalList externalList, IFortifyIssueInputFileRetriever issueInputFileRetriever) {
 		LOG.debug("External list configured, mapping issues against corresponding external list category rules"); 
-		Set<String> availableExternalCategories = issueQueryHelper.getAvailableExternalCategories(externalList);
-		if ( LOG.isDebugEnabled() ) {
-			LOG.debug("Available external categories on source system: "+availableExternalCategories);
-		}
-		for ( ActiveRule activeRule : context.activeRules().findByRepository(FortifyRulesDefinition.REPOSITORY_KEY) ) {
-			String externalCategory = activeRule.internalKey();
-			LOG.debug("Processing rule for external category: "+externalCategory);
-			if ( !availableExternalCategories.contains(externalCategory) ) {
-				LOG.debug("External category "+externalCategory+" not available on source system");
-			} else {
-				LOG.debug("Processing issues for external category "+externalCategory);
-				processIssues(context, activeRule, issueQueryHelper.getExternalCategoryIssuesQuery(externalList, externalCategory));
-			}
+		// Check if there are any active Fortify rules, otherwise no need to process issues
+		if ( CollectionUtils.isNotEmpty(context.activeRules().findByRepository(FortifyRulesDefinition.REPOSITORY_KEY)) ) {
+			processIssues(context, new FortifyIssueRuleKeysRetrieverExternalList(context, externalList), issueInputFileRetriever);
 		}
 	}
 
-	private final void processAllIssues(SensorContext context) {
+	private final void processIssuesWithoutExternalList(SensorContext context, IFortifyIssueInputFileRetriever issueInputFileRetriever) {
 		LOG.debug("No external list configured, mapping all issues against single Fortify rule"); 
 		ActiveRule activeRule = context.activeRules().find(RuleKey.of(FortifyRulesDefinition.REPOSITORY_KEY, FortifyRulesDefinition.RULE_KEY_OTHER));
 		if ( activeRule!=null ) {
-			processIssues(context, activeRule, issueQueryHelper.getAllIssuesQuery());
+			processIssues(context, new FortifyIssueRuleKeysRetrieverSingleRule(activeRule), issueInputFileRetriever);
 		}
 	}
 	
-	private final void processIssues(SensorContext context, ActiveRule activeRule, IRestConnectionQuery query) {
-		IJSONMapProcessor processor = issueProcessorFactory.getProcessor(context, activeRule, cacheHelper);
+	private final void processIssues(SensorContext context, IFortifyIssueRuleKeysRetriever issueRuleKeyRetriever, IFortifyIssueInputFileRetriever issueInputFileRetriever) {
+		IJSONMapProcessor processor = issueProcessorFactory.getProcessor(context, issueRuleKeyRetriever, issueInputFileRetriever, cacheHelper);
 		if ( cacheHelper==null ) {
-			query.processAll(processor);
+			issueQueryHelper.getAllIssuesQuery().processAll(processor);
 		} else {
-			cacheHelper.getIssues(activeRule, query).forEach(processor::process);
+			cacheHelper.processIssues(issueQueryHelper.getAllIssuesQuery(), processor);
 		}
 	}
 	
 	public static final class CacheHelper implements Closeable {
 		private final IFortifySourceSystemIssueFieldRetriever issueFieldRetriever;
 		private final boolean ignorePreviousReportedIssues;
-		private final HashMap<String, IndexTreeList<JSONMap>> issuesByRuleKey = new HashMap<>();
 		private final HashSet<String> reportedIssueIds = new HashSet<>();
 		private DB db = null;
+		private IndexTreeList<JSONMap> issues;
 		
 		public CacheHelper(IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, boolean ignorePreviouslyReportedIssues) {
 			this.issueFieldRetriever = issueFieldRetriever;
@@ -141,29 +126,31 @@ public class FortifyIssuesProcessor {
 		}
 
 		@SuppressWarnings("unchecked")
-		public IndexTreeList<JSONMap> getIssues(ActiveRule activeRule, IRestConnectionQuery queryIfAbsent) {
-			return issuesByRuleKey.computeIfAbsent(activeRule.ruleKey().toString(), key -> {
-				IndexTreeList<JSONMap> result = (IndexTreeList<JSONMap>)getDB().<JSONMap>indexTreeList(key, Serializer.JAVA).create();
+		public synchronized void processIssues(IRestConnectionQuery queryIfAbsent, IJSONMapProcessor processor) {
+			if ( issues!=null ) {
+				issues.forEach(processor::process);
+			} else {
+				issues = (IndexTreeList<JSONMap>)getDB().<JSONMap>indexTreeList("issues", Serializer.JAVA).create();
 				queryIfAbsent.processAll(new AbstractJSONMapProcessor() {
 					@Override
 					public void process(JSONMap json) {
-						result.add(json);						
+						issues.add(json);
+						processor.process(json);
 					}
 				});
-				return result;
-			});
+			}
 		}
 
-		public boolean ignoreIssue(ActiveRule activeRule, JSONMap issue) {
-			return ignorePreviousReportedIssues && reportedIssueIds.contains(getProcessedIssueId(activeRule, issue));
+		public boolean ignoreIssue(JSONMap issue) {
+			return ignorePreviousReportedIssues && reportedIssueIds.contains(getProcessedIssueId(issue));
 		}
 
-		public void addProcessedIssue(SensorContext context, ActiveRule activeRule, JSONMap issue) {
-			if ( ignorePreviousReportedIssues ) { reportedIssueIds.add(getProcessedIssueId(activeRule, issue)); }
+		public void addProcessedIssue(SensorContext context, JSONMap issue) {
+			if ( ignorePreviousReportedIssues ) { reportedIssueIds.add(getProcessedIssueId(issue)); }
 		}
 		
-		private String getProcessedIssueId(ActiveRule activeRule, JSONMap issue) {
-			return activeRule.ruleKey()+"."+issueFieldRetriever.getId(issue);
+		private String getProcessedIssueId(JSONMap issue) {
+			return issueFieldRetriever.getId(issue);
 		}
 	}
 }

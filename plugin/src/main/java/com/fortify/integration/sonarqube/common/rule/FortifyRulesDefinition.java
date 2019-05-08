@@ -87,7 +87,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 		NewRepository repo = context.createRepository(REPOSITORY_KEY, FortifyConstants.FTFY_LANGUAGE_KEY);
 		repo.setName("Fortify");
 		if ( externalList != null ) {
-			for ( ExternalCategory category : externalList.getExternalCategories().values() ) {
+			for ( ExternalCategory category : externalList.getAllExternalCategories() ) {
 				LOG.debug("Defining external category rule (id: {0}, internalKey: {1}", category.getId(), category.getName());
 				repo.createRule(category.getId())
 					.setInternalKey(category.getName())
@@ -100,7 +100,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 		}
 		LOG.debug("Defining rule (id: {0}, internalKey: {1}", RULE_KEY_OTHER, externalList==null?null:"[NONE]");
 		repo.createRule(RULE_KEY_OTHER)
-			.setInternalKey(externalList==null?null:"[NONE]")
+			.setInternalKey(RULE_KEY_OTHER)
 			.setName("Other")
 			.setHtmlDescription("This SonarQube rule is used for any vulnerabilities that are not mapped to any external category.")
 			.setType(RuleType.VULNERABILITY)
@@ -118,7 +118,7 @@ public class FortifyRulesDefinition implements RulesDefinition {
 	public Collection<String> getRuleKeys() {
 		List<String> result = new ArrayList<>();
 		if ( externalList != null ) {
-			externalList.getExternalCategories().values().forEach(c -> result.add(c.getId()));
+			externalList.getAllExternalCategories().forEach(c -> result.add(c.getId()));
 		}
 		result.add(RULE_KEY_OTHER);
 		return result;

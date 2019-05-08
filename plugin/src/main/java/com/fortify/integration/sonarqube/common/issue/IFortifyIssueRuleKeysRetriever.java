@@ -22,27 +22,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.common.source.fod.issue;
+package com.fortify.integration.sonarqube.common.issue;
 
-import com.fortify.client.fod.api.FoDVulnerabilityAPI;
-import com.fortify.integration.sonarqube.common.issue.AbstractFortifySourceSystemIssueQueryHelper;
-import com.fortify.integration.sonarqube.common.source.fod.IFortifyFoDConnectionHelper;
-import com.fortify.util.rest.query.IRestConnectionQuery;
+import java.util.Collection;
 
-public final class FortifyFoDIssueQueryHelper extends AbstractFortifySourceSystemIssueQueryHelper<IFortifyFoDConnectionHelper> {
-	private static final String[] ISSUE_FIELD_NAMES = FortifyFoDIssueFieldsRetriever.ISSUE_FIELD_NAMES;
-	
-	public FortifyFoDIssueQueryHelper(IFortifyFoDConnectionHelper connHelper) {
-		super(connHelper);
-	}
+import org.sonar.api.rule.RuleKey;
 
-	@Override
-	public final IRestConnectionQuery getAllIssuesQuery() {
-		return getConnHelper().getConnection().api(FoDVulnerabilityAPI.class)
-				.queryVulnerabilities(getConnHelper().getReleaseId())
-				.paramFields(ISSUE_FIELD_NAMES)
-				.paramIncludeFixed(false)
-				.paramIncludeSuppressed(false)
-				.build();
-	}
+import com.fortify.util.rest.json.JSONMap;
+
+public interface IFortifyIssueRuleKeysRetriever {
+	public Collection<RuleKey> getRuleKeys(IFortifySourceSystemIssueFieldRetriever issueFieldRetriever, JSONMap issue);
 }
