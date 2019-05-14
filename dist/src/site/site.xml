@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  (c) Copyright 2017 EntIT Software LLC, a Micro Focus company
+  
+  Permission is hereby granted, free of charge, to any person obtaining a 
+  copy of this software and associated documentation files (the 
+  "Software"), to deal in the Software without restriction, including without 
+  limitation the rights to use, copy, modify, merge, publish, distribute, 
+  sublicense, and/or sell copies of the Software, and to permit persons to 
+  whom the Software is furnished to do so, subject to the following 
+  conditions:
+  
+  The above copyright notice and this permission notice shall be included 
+  in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
+  KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+  WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+  PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+  IN THE SOFTWARE.
+-->
+<project name="Fortify SonarQube Plugin">
+  <bannerLeft>
+    <name>Fortify SonarQube Plugin</name>
+    <href>https://github.com/fortify-ps/fortify-integration-sonarqube</href>
+  </bannerLeft>
+  <body>
+    <menu name="Fortify SonarQube Plugin">
+      <item name="Introduction" href="index.html"/>
+      <item name="Compatibility" href="compatibility.html"/>
+      <item name="SonarQube">
+      		<item name="Installation" href="sonar-install.html"/>
+      		<item name="Configuration" href="sonar-config.html"/>
+      		<item name="Rules" href="sonar-rules.html"/>
+      		<item name="Source Files" href="sonar-files.html"/>
+      </item>
+      <item name="SSC">
+      		<item name="Preparations" href="ssc-prep.html"/>
+      		<item name="Artifacts" href="ssc-artifacts.html"/>
+      		<item name="Usage" href="ssc-usage.html"/>
+      </item>
+      <item name="FoD">
+      		<item name="Usage" href="fod-usage.html"/>
+      </item>
+      <!-- <item name="JavaDoc" href="apidocs/index.html"/> -->
+    </menu>
+  </body>
+</project>

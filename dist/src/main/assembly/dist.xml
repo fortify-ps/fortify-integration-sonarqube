@@ -50,17 +50,21 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<outputDirectory>documentation</outputDirectory>
+			<directory>${project.build.directory}/site</directory>
+		</fileSet>
+		<fileSet>
 			<outputDirectory>/</outputDirectory>
 			<directory>${project.build.directory}/../../plugin/target</directory>
 			<includes>
-				<include>fortify-ssc-sonarqube-plugin-${project.version}.jar</include>
+				<include>fortify-sonarqube-plugin-${project.version}.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>
 			<outputDirectory>/</outputDirectory>
 			<directory>${project.build.directory}/../../configure/target</directory>
 			<includes>
-				<include>fortify-ssc-sonarqube-plugin-configure-${project.version}.jar</include>
+				<include>fortify-sonarqube-plugin-configure-${project.version}.jar</include>
 			</includes>
 		</fileSet>
 	</fileSets>
