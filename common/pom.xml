@@ -25,11 +25,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-		<artifactId>fortify-ssc-sonarqube-plugin-root</artifactId>
+		<groupId>com.fortify.integration.sonarqube</groupId>
+		<artifactId>fortify-sonarqube-plugin-root</artifactId>
 		<version>2.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
+	<artifactId>fortify-sonarqube-plugin-common</artifactId>
 	<packaging>jar</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin - Common</name>
 

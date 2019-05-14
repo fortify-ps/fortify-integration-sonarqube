@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.integration.sonarqube.ssc.configure;
+package com.fortify.integration.sonarqube.configure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

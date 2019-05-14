@@ -25,11 +25,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-		<artifactId>fortify-ssc-sonarqube-plugin-root</artifactId>
+		<groupId>com.fortify.integration.sonarqube</groupId>
+		<artifactId>fortify-sonarqube-plugin-root</artifactId>
 		<version>2.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>fortify-ssc-sonarqube-plugin-configure</artifactId>
+	<artifactId>fortify-sonarqube-plugin-configure</artifactId>
 	<packaging>jar</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin - Configuration Tool</name>
 	
@@ -39,8 +39,8 @@
 			<artifactId>client-api-ssc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin-common</artifactId>
+			<groupId>com.fortify.integration.sonarqube</groupId>
+			<artifactId>fortify-sonarqube-plugin-common</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>com.miglayout</groupId>
@@ -68,7 +68,7 @@
 						<configuration>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.fortify.integration.sonarqube.ssc.configure.PluginConfiguration</mainClass>
+									<mainClass>com.fortify.integration.sonarqube.configure.PluginConfiguration</mainClass>
 								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">

@@ -25,21 +25,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-		<artifactId>fortify-ssc-sonarqube-plugin-root</artifactId>
+		<groupId>com.fortify.integration.sonarqube</groupId>
+		<artifactId>fortify-sonarqube-plugin-root</artifactId>
 		<version>2.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>fortify-ssc-sonarqube-dist</artifactId>
+	<artifactId>fortify-sonarqube-plugin-dist</artifactId>
 	<packaging>pom</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin - Distribution</name>
 	<dependencies>
 		<dependency>
-			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin</artifactId>
+			<groupId>com.fortify.integration.sonarqube</groupId>
+			<artifactId>fortify-sonarqube-plugin</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fortify.integration.sonarqube.ssc</groupId>
-			<artifactId>fortify-ssc-sonarqube-plugin-configure</artifactId>
+			<groupId>com.fortify.integration.sonarqube</groupId>
+			<artifactId>fortify-sonarqube-plugin-configure</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
