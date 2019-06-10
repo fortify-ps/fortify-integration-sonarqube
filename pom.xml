@@ -26,7 +26,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.fortify.integration.sonarqube</groupId>
 	<artifactId>fortify-sonarqube-plugin-root</artifactId>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.5</version>
 	<packaging>pom</packaging>
 	<name>Micro Focus Fortify SonarQube Plugin - Root</name>
 	<organization>
@@ -49,7 +49,7 @@
 	</developers>
 	<scm>
 		<developerConnection>scm:git:https://github.com/fortify-ps/fortify-integration-sonarqube-ssc.git</developerConnection>
-		<tag>master</tag>
+		<tag>2.5</tag>
 	</scm>
 	<inceptionYear>2016</inceptionYear>
 	<properties>
