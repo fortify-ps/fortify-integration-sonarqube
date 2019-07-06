@@ -3,8 +3,13 @@ The plugin loads all Fortify-related data from Fortify SSC. In order to allow th
 the SSC URL and credentials in the SonarQube configuration or as plugin properties when running a SonarQube scan. To authenticate 
 with SSC, you can either provide SSC user name and password credentials, or an SSC authentication token. 
 
-For user-based authentication, no preparations are necessary on the SSC side, other than making sure that the given user has 
-sufficient permissions to view vulnerabilities on the appropriate application versions.
+The user used to connect to SSC must be assigned to the application versions that you want to use the SonarQube plugin with, or 
+alternatively the user needs to have a role with the 'Universal Access' permission. In addition, the user must have a role with 
+(at least) the following permissions:
+
+* View application versions
+* Upload analysis results
+* View jobs in queue
 
 For token-based authentication, you will need to define a SonarQube specific token in the SSC configuration, and then generate 
 an authentication token for use by the plugin.
