@@ -77,3 +77,8 @@ Once all prerequisites have been met, you can use the following commands to buil
 Once completed, build output like plugin JAR file and the binary distribution zip file 
 can be found in the dist/target directory.
    
+
+# Licensing
+
+See [LICENSE.TXT](LICENSE.TXT)
+
