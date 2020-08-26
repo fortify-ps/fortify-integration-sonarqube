@@ -1,6 +1,6 @@
 # Fortify plug-in for SonarQube
 
-DEPRECATION NOTICE
+Deprecation Notice
 ====
 As detailed in https://github.com/fortify-ps/fortify-integration-sonarqube/issues/11, this plugin is not compatible with SonarQube 8.0 and up. In order to support recent SonarQube versions, a full rewrite of the plugin would be required. Given the amount of effort required to keep the plugin up to date with frequent SonarQube API changes, and with customers moving to SonarCloud (which does not support 3rd-party plugins), we no longer consider it feasible to maintain this plugin. 
 
