@@ -1,5 +1,15 @@
 # Fortify plug-in for SonarQube
 
+DEPRECATION NOTICE
+====
+As detailed in https://github.com/fortify-ps/fortify-integration-sonarqube/issues/11, this plugin is not compatible with SonarQube 8.0 and up. In order to support recent SonarQube versions, a full rewrite of the plugin would be required. Given the amount of effort required to keep the plugin up to date with frequent SonarQube API changes, and with customers moving to SonarCloud (which does not support 3rd-party plugins), we no longer consider it feasible to maintain this plugin. 
+
+Existing customers may continue using this plugin if they don't plan on upgrading to SonarQube 8.0 or higher in the near future. Although Fortify Professional Services could assist customers with developing an updated plugin that does support SonarQube 8.x, it is likely that a future SonarQube version again breaks the plugin.
+
+As such, it is strongly recommended to consider alternative options. For example, a more lightweight integration could be considered based on [SonarQube Generic Issue Import Format](https://docs.sonarqube.org/latest/analysis/generic-issue/). Such a solution would also work for SonarCloud and would likely require much less maintenance effort, at the cost of reduced functionality due to SonarQube limitations (see for example https://community.sonarsource.com/t/generic-issue-data-ad-hoc-rules/9624). 
+
+Fortify Professional Services can assist you with implementing such alternative solutions; please contact your Fortify sales representative to discuss the options.
+
 Disclaimer
 ====
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
