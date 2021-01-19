@@ -2,13 +2,30 @@
 
 Deprecation Notice
 ====
-As detailed in https://github.com/fortify-ps/fortify-integration-sonarqube/issues/11, this plugin is not compatible with SonarQube 8.0 and up. In order to support recent SonarQube versions, a full rewrite of the plugin would be required. Given the amount of effort required to keep the plugin up to date with frequent SonarQube API changes, and with customers moving to SonarCloud (which does not support 3rd-party plugins), we no longer consider it feasible to maintain this plugin. 
+This plugin is not compatible with SonarQube 8.0 and up; see https://github.com/fortify-ps/fortify-integration-sonarqube/issues/11 for details. Given the amount of effort required to keep the plugin up to date with frequent SonarQube API changes, and with customers moving to SonarCloud (which does not support 3rd-party plugins), we no longer consider it feasible to maintain this plugin. 
 
-Existing customers may continue using this plugin if they don't plan on upgrading to SonarQube 8.0 or higher in the near future. Although Fortify Professional Services could assist customers with developing an updated plugin that does support SonarQube 8.x, it is likely that a future SonarQube version again breaks the plugin.
+[Fortify Vulnerability Exporter](https://github.com/fortify/FortifyVulnerabilityExporter) provides an alternative integration by exporting vulnerability data from Fortify on Demand and Fortify Software Security Center (SSC) to a file that can be imported by SonarQube. This lightweight integration is based on the [SonarQube Generic Issue Import Format](https://docs.sonarqube.org/latest/analysis/generic-issue/) that was introduced with SonarQube 7.2 and specifically targeted at importing third-party analysis results. 
 
-As such, it is strongly recommended to consider alternative options. For example, a more lightweight integration could be considered based on [SonarQube Generic Issue Import Format](https://docs.sonarqube.org/latest/analysis/generic-issue/). Such a solution would also work for SonarCloud and would likely require much less maintenance effort, at the cost of reduced functionality due to SonarQube limitations (see for example https://community.sonarsource.com/t/generic-issue-data-ad-hoc-rules/9624). 
+The [SonarQube Generic Issue Import Format](https://docs.sonarqube.org/latest/analysis/generic-issue/) does impose some limitations though. The following table illustrates some of these limitations by comparing the plugin-based integration to the import-based integration.
 
-Fortify Professional Services can assist you with implementing such alternative solutions; please contact your Fortify sales representative to discuss the options.
+| Plugin-based integration | Import-based integration |
+|--------------------------| ------------------------ |
+| Load issues from FoD or SSC during a SonarQube scan | FoD or SSC issues must be exported to a file before being imported into SonarQube |
+| Try various approaches for matching Fortify-provided source file names and paths to source files being scanned by SonarQube | Requires an exact match between Fortify-provided source file names and paths and source files being scanned by SonarQube |
+| Issues that cannot be matched to a source file can be reported at SonarQube project level | Issues that cannot be matched to a source file are silently ignored by SonarQube |
+| DAST and other non-SAST issues can be reported at SonarQube project level | DAST and other non-SAST issues are not supported and thus ignored |
+| Additional issue details can be provided through a SonarQube ad-hoc rule description | No additional issue details can be imported |
+
+Most of these limitations would require changes on the SonarQube side in order to be resolved, in particular:
+
+* Have SonarQube properly handle third-party issues that cannot be matched to any source file
+* Extend the [SonarQube Generic Issue Import Format](https://docs.sonarqube.org/latest/analysis/generic-issue/) to allow additional information like issue details and  recommendations to be reported on third-party issues
+
+Fortify Professional Services may be able to assist you with implementing work-arounds for some of these SonarQube limitations, for example:
+
+* Non-SAST issues could potentially be reported against a specific source file being scanned by SonarQube, for example by adding a dummy `DastIssues.java` file or reporting such issues against an existing `pom.xml`, `build.gradle`, or `package-info.java` file.
+* Use a very small, lightweight SonarQube plugin to extend the existing SonarQube functionality with the ability to import third-party SonarQube ad-hoc rules; see https://github.com/fortify-ps-sandbox/sonarqube-scanner-externalissue-rule for a prototype.
+
 
 Disclaimer
 ====
